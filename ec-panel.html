@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EC Panel | MPSC Cultural Club</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="logo.png">
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+  <header class="header-nav">
+    <div class="container nav-container">
+      <a href="index.html" class="brand-logo-link">
+        <img src="logo.png" alt="MPSC Cultural Club Logo" class="brand-logo-img">
+        <div class="brand-text-container">
+          <span class="brand-name">MPSC CULTURAL CLUB</span>
+          <span class="brand-sub">Est. 1976 â€¢ Mohammadpur</span>
+        </div>
+      </a>
+      <nav>
+        <ul class="nav-menu">
+          <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+          <li class="nav-item"><a href="events.html" class="nav-link">Events</a></li>
+          <li class="nav-item"><a href="ec-panel.html" class="nav-link active">EC Panel</a></li>
+          <li class="nav-item"><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <a href="events.html" class="btn-gold"><i class="fa-solid fa-ticket"></i> Register Now</a>
+        <button class="mobile-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu"><i
+            class="fa-solid fa-bars"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <section
+    style="padding-top: 160px; padding-bottom: 75px; text-align: center; background: radial-gradient(circle at center, rgba(16, 27, 59, 0.85) 0%, rgba(7, 13, 30, 0.95) 100%); border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+    <div class="container">
+      <span class="section-subtitle"
+        style="font-size: 0.92rem; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold-primary); font-weight: 700;">Meet
+        the</span>
+      <h1
+        style="font-family: var(--font-heading); font-size: clamp(2.5rem, 6.5vw, 4.2rem); font-weight: 800; color: #FFFFFF; text-shadow: 0 0 25px rgba(212, 175, 55, 0.5); margin-top: 0.4rem; margin-bottom: 0.8rem; line-height: 1.15; letter-spacing: -0.5px;">
+        EXECUTIVE COMMITTEE <span style="color: var(--gold-light);">PANEL</span>
+      </h1>
+      <div class="title-line"
+        style="width: 90px; height: 3px; background: var(--gold-gradient); margin: 0 auto; border-radius: 2px;"></div>
+    </div>
+  </section>
+
+  <section class="ec-section">
+    <div class="container">
+      <!-- Dynamic 4 Wing Panels Container (BVB, EVB, BVG, EVG) -->
+      <div id="ec-panel-wings-container">
+        <!-- Rendered by script.js -->
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <img src="logo.png" alt="MPSC Cultural Club Logo" class="footer-logo-img">
+            <div>
+              <div class="footer-brand-name">MPSC CULTURAL CLUB</div>
+              <div class="footer-brand-sub">Est. 1976</div>
+            </div>
+          </div>
+          <p class="footer-desc">Promoting heritage, artistic excellence, and youthful talent across Bangladesh.</p>
+          <div><span class="mpsc-affiliation">A CLUB OF MPSC</span></div>
+        </div>
+        <div>
+          <h4 class="footer-col-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="events.html">Events & Rules</a></li>
+            <li><a href="ec-panel.html">EC Panel</a></li>
+            <li><a href="gallery.html">Gallery</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-col-title">Fest Segments</h4>
+          <ul class="footer-links">
+            <li><a href="events.html">Sangeet</a></li>
+            <li><a href="events.html">Nritya</a></li>
+            <li><a href="events.html">Natya</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer-col-title">Contact Us</h4>
+          <div class="footer-contact-info">
+            <div class="contact-item"><i class="fa-solid fa-envelope"></i> mpscculturalclub.official@gmail.com</div>
+            <div class="contact-item"><i class="fa-solid fa-location-dot"></i> Mohammadpur, Dhaka 1207</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>Â© 2026 <strong>MPSC CULTURAL CLUBâ„¢</strong>. All Rights Reserved.</div>
+      </div>
+    </div>
+  </footer>
+  <script src="config.js"></script>
+  <script src="db.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>

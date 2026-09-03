@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Center | Cultura Fiesta 1.0</title>
+  <meta name="description" content="Management portal for MPSC Cultural Club administrators.">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Admin Portal Specific Styles */
+    .admin-body {
+      background-color: var(--bg-darker);
+      min-height: 100vh;
+    }
+
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, rgba(11, 19, 43, 0.95) 0%, rgba(5, 10, 23, 0.98) 100%);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      backdrop-filter: blur(15px);
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 440px;
+      padding: 2.5rem;
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold-bright);
+      box-shadow: var(--shadow-gold);
+      text-align: center;
+    }
+
+    .auth-logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.2rem auto;
+      border-radius: 50%;
+      border: 2px solid var(--gold-primary);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .auth-title {
+      font-family: var(--font-heading);
+      color: #FFFFFF;
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .auth-subtitle {
+      color: var(--gold-primary);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 1.8rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+      text-align: left;
+    }
+
+    .form-label {
+      display: block;
+      color: var(--gold-light);
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      background: rgba(5, 10, 23, 0.7);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-sm);
+      color: #FFFFFF;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition-fast);
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--gold-light);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+    }
+
+    .auth-error {
+      background: rgba(231, 76, 60, 0.15);
+      border: 1px solid rgba(231, 76, 60, 0.4);
+      color: #E74C3C;
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      margin-bottom: 1.2rem;
+      display: none;
+    }
+
+    .admin-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .admin-sidebar {
+      width: 280px;
+      background: rgba(7, 13, 30, 0.98);
+      border-right: 1px solid var(--border-gold);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 1.8rem 1.5rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.2rem;
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: var(--transition-fast);
+      cursor: pointer;
+    }
+
+    .sidebar-link i {
+      font-size: 1.1rem;
+      width: 24px;
+      color: var(--gold-primary);
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      background: rgba(212, 175, 55, 0.12);
+      color: var(--gold-light);
+      border: 1px solid var(--border-gold);
+    }
+
+    .admin-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 2.5rem;
+      transition: margin-left 0.3s ease;
+    }
+
+    .admin-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .mobile-admin-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border-gold);
+      color: var(--gold-light);
+      font-size: 1.4rem;
+      padding: 0.5rem 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+    }
+
+    .admin-card-table {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-md);
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .admin-table th {
+      color: var(--gold-light);
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-gold);
+    }
+
+    .admin-table td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: #E2E8F0;
+      font-size: 0.92rem;
+    }
+
+    .btn-danger-sm {
+      background: rgba(231, 76, 60, 0.2);
+      border: 1px solid #E74C3C;
+      color: #FF6B6B;
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: var(--transition-fast);
+    }
+
+    .btn-danger-sm:hover {
+      background: #E74C3C;
+      color: #FFF;
+    }
+
+    @media (max-width: 992px) {
+      .admin-sidebar {
+        transform: translateX(-100%);
+      }
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+      .admin-content {
+        margin-left: 0;
+        padding: 1.5rem;
+      }
+      .mobile-admin-toggle {
+        display: inline-block;
+      }
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <!-- Authentication Screen -->
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+      <img src="logo.png" alt="MPSC Logo" class="auth-logo">
+      <h2 class="auth-title">ADMIN PORTAL</h2>
+      <div class="auth-subtitle">The Cultura Fiesta 1.0</div>
+
+      <div id="authError" class="auth-error">
+        <i class="fa-solid fa-triangle-exclamation"></i> Invalid Admin Credentials!
+      </div>
+
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label class="form-label">ADMIN ID / EMAIL</label>
+          <input type="text" id="adminIdInput" class="form-input" placeholder="Enter Admin ID" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">PASSWORD</label>
+          <input type="password" id="adminPassInput" class="form-input" placeholder="Enter Password" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn-gold" style="width: 100%; margin-top: 1rem; padding: 0.85rem;">
+          <i class="fa-solid fa-lock"></i> Secure Login
+        </button>
+      </form>
+
+      <div style="margin-top: 1.5rem;">
+        <a href="index.html" style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-arrow-left"></i> Return to Main Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard Layout -->
+  <div class="admin-wrapper" id="adminMainWrapper" style="display: none;">
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-header">
+        <img src="logo.png" alt="MPSC Logo" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--gold-primary);">
+        <div>
+          <div style="font-family: var(--font-heading); color: #FFF; font-size: 1rem; font-weight: 700;">CULTURA ADMIN</div>
+          <div style="color: var(--gold-primary); font-size: 0.72rem; letter-spacing: 1px;">MPSC CULTURAL CLUB</div>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav">
+        <li class="sidebar-link active" data-tab="tab-dashboard">
+          <i class="fa-solid fa-chart-pie"></i> Dashboard Overview
+        </li>
+        <li class="sidebar-link" data-tab="tab-schedule">
+          <i class="fa-regular fa-calendar-check"></i> Schedule Event Manager
+        </li>
+        <li class="sidebar-link" data-tab="tab-ec">
+          <i class="fa-solid fa-user-gear"></i> Executive Committee Manager
+        </li>
+        <li class="sidebar-link" data-tab="tab-notices">
+          <i class="fa-solid fa-bullhorn"></i> Announcements & Notices
+        </li>
+        <li class="sidebar-link" data-tab="tab-database">
+          <i class="fa-solid fa-database"></i> Supabase Setup & Keys
+        </li>
+      </ul>
+
+      <div style="padding: 1.5rem; border-top: 1px solid rgba(212, 175, 55, 0.15);">
+        <button id="logoutBtn" class="btn-outline-gold" style="width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="admin-content">
+      <div class="admin-topbar">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <button class="mobile-admin-toggle" id="mobileSidebarToggle">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div>
+            <h1 style="font-family: var(--font-heading); color: #FFF; font-size: 1.6rem;" id="pageTitleHeading">Admin Portal</h1>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Manage live schedule, EC members, and database connection</p>
+          </div>
+        </div>
+
+        <div>
+          <a href="index.html" class="btn-outline-gold" target="_blank"><i class="fa-solid fa-globe"></i> View Live Site</a>
+        </div>
+      </div>
+
+      <!-- TAB 1: Dashboard Overview -->
+      <div id="tab-dashboard" class="admin-tab-pane">
+        <div class="stats-grid" style="margin-bottom: 2.5rem;">
+          <div class="stat-card">
+            <div class="stat-number" id="dashEventCount">9</div>
+            <div class="stat-label">Scheduled Events</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="dashEcCount">3</div>
+            <div class="stat-label">EC Members</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">120+</div>
+            <div class="stat-label">Registrations</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="dashDbStatus" style="font-size: 1.3rem; color: #2ECC71;">Local & Supabase Ready</div>
+            <div class="stat-label">Database Mode</div>
+          </div>
+        </div>
+
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-bolt" style="color: var(--gold-light);"></i> Quick Actions</h3>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn-gold" onclick="switchAdminTab('tab-schedule')"><i class="fa-solid fa-plus"></i> Schedule New Event</button>
+            <button class="btn-outline-gold" onclick="switchAdminTab('tab-ec')"><i class="fa-solid fa-user-plus"></i> Add EC Member</button>
+            <button class="btn-outline-gold" onclick="switchAdminTab('tab-database')"><i class="fa-solid fa-database"></i> Connect Supabase Keys</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Schedule Event Manager -->
+      <div id="tab-schedule" class="admin-tab-pane" style="display: none;">
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-calendar-plus" style="color: var(--gold-light);"></i> Add New Festival Event</h3>
+          <form id="addEventForm">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+              <div>
+                <label class="form-label">EVENT DAY</label>
+                <select id="eventDaySelect" class="form-select" required>
+                  <option value="day1">Day 01 - 14th Oct 2026</option>
+                  <option value="day2">Day 02 - 15th Oct 2026</option>
+                  <option value="day3">Day 03 - 16th Oct 2026</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="form-label">TIME SLOT</label>
+                <input type="text" id="eventTimeInput" class="form-input" placeholder="e.g. 10:30 AM" required>
+              </div>
+
+              <div>
+                <label class="form-label">VENUE / LOCATION</label>
+                <input type="text" id="eventVenueInput" class="form-input" placeholder="e.g. Main Auditorium" required>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1.2rem;">
+              <label class="form-label">EVENT TITLE</label>
+              <input type="text" id="eventTitleInput" class="form-input" placeholder="e.g. Solo Sangeet Battle" required>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <label class="form-label">EVENT DESCRIPTION</label>
+              <textarea id="eventDescInput" class="form-textarea" rows="3" placeholder="Short details of the segment..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-floppy-disk"></i> Save Event to Schedule</button>
+          </form>
+        </div>
+
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-list-check" style="color: var(--gold-light);"></i> Currently Scheduled Events</h3>
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Day</th>
+                  <th>Time</th>
+                  <th>Event Title</th>
+                  <th>Venue</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="scheduleTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Executive Committee Manager -->
+      <div id="tab-ec" class="admin-tab-pane" style="display: none;">
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-user-shield" style="color: var(--gold-light);"></i> Add Executive Committee Member</h3>
+          <form id="addEcForm">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+              <div>
+                <label class="form-label">MEMBER NAME</label>
+                <input type="text" id="ecNameInput" class="form-input" placeholder="e.g. Abrar Hossain" required>
+              </div>
+
+              <div>
+                <label class="form-label">EXECUTIVE ROLE</label>
+                <select id="ecRoleSelect" class="form-select" required>
+                  <option value="President">President</option>
+                  <option value="Vice President">Vice President</option>
+                  <option value="General Secretary">General Secretary</option>
+                  <option value="Organizing Secretary">Organizing Secretary</option>
+                  <option value="Publication Secretary">Publication Secretary</option>
+                  <option value="Office Secretary">Office Secretary</option>
+                  <option value="Head of Coordinator">Head of Coordinator</option>
+                  <option value="Head of Volunteer">Head of Volunteer</option>
+                  <option value="Treasurer">Treasurer</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="form-label">WING / TEAM</label>
+                <select id="ecWingSelect" class="form-select" required>
+                  <option value="BVB">BVB (Bangla Version Boys)</option>
+                  <option value="EVB">EVB (English Version Boys)</option>
+                  <option value="BVG">BVG (Bangla Version Girls)</option>
+                  <option value="EVG">EVG (English Version Girls)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="form-label">UPLOAD PHOTO FILE</label>
+                <input type="file" id="ecFileInput" accept="image/*" class="form-input" style="padding: 0.55rem;">
+              </div>
+
+              <div style="grid-column: 1 / -1;">
+                <label class="form-label">OR PASTE PHOTO URL (WEB LINK)</label>
+                <input type="text" id="ecImageInput" class="form-input" placeholder="e.g. https://... or image web link">
+              </div>
+            </div>
+
+            <div id="ecPhotoPreviewContainer" style="display: none; align-items: center; gap: 1rem; margin-bottom: 1.2rem; background: rgba(5, 10, 23, 0.7); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-gold);">
+              <img id="ecPhotoPreviewImg" src="logo.png" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-primary);">
+              <div>
+                <div style="color: var(--gold-light); font-size: 0.85rem; font-weight: 700;">Selected Photo Preview</div>
+                <div id="ecPhotoPreviewName" style="color: var(--text-muted); font-size: 0.75rem;">Ready to save</div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-user-plus"></i> Save Member</button>
+          </form>
+        </div>
+
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-users-gear" style="color: var(--gold-light);"></i> Executive Committee Roster</h3>
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Wing / Team</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="ecTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: Announcements -->
+      <div id="tab-notices" class="admin-tab-pane" style="display: none;">
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-bullhorn" style="color: var(--gold-light);"></i> Publish Notice / Announcement</h3>
+          <form id="addNoticeForm">
+            <div style="margin-bottom: 1.2rem;">
+              <label class="form-label">NOTICE TITLE</label>
+              <input type="text" id="noticeTitleInput" class="form-input" placeholder="e.g. Registration Deadline Extended!" required>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <label class="form-label">NOTICE BODY</label>
+              <textarea id="noticeBodyInput" class="form-textarea" rows="3" placeholder="Details of notice..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-paper-plane"></i> Publish Notice</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- TAB 5: Supabase Live Keys & Setup Instructions -->
+      <div id="tab-database" class="admin-tab-pane" style="display: none;">
+
+        <!-- config.js status banner -->
+        <div class="admin-card-table" id="configFileStatusCard">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 0.8rem;"><i class="fa-solid fa-file-code" style="color: var(--gold-light);"></i> Connection Method: <code style="font-size:0.9rem;" id="configMethodLabel">Checking...</code></h3>
+          <div id="configFileStatus" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;"></div>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.8rem;">
+            <strong style="color: var(--gold-light);">Recommended for hosting:</strong> Edit <code>config.js</code> with your real Supabase keys and upload it to your server. No admin panel input needed — it auto-connects on every page load permanently.
+          </p>
+        </div>
+
+        <!-- Live Key Connection Form (fallback / local override) -->
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-plug" style="color: var(--gold-light);"></i> Fallback: Enter Credentials Manually</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            Use this only if you haven't set up <code>config.js</code> yet. Credentials are saved in browser localStorage and may need re-entering on a fresh browser session.
+          </p>
+
+          <form id="supabaseKeyForm">
+            <div style="margin-bottom: 1.2rem;">
+              <label class="form-label">SUPABASE PROJECT URL</label>
+              <input type="text" id="supabaseUrlInput" class="form-input" placeholder="https://your-project-id.supabase.co" required>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <label class="form-label">SUPABASE ANON KEY</label>
+              <input type="text" id="supabaseKeyInput" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required>
+            </div>
+
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-circle-check"></i> Connect Supabase Database</button>
+          </form>
+        </div>
+
+
+        <!-- SQL Schema Instructions -->
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-code" style="color: var(--gold-light);"></i> Supabase SQL Setup Script (Run in Supabase SQL Editor)</h3>
+          <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1rem;">
+            Open your Supabase Project Dashboard -> <strong>SQL Editor</strong> -> New Query, paste the SQL below and click <strong>RUN</strong>:
+          </p>
+          <pre style="background: rgba(5, 10, 23, 0.9); border: 1px solid var(--border-gold); padding: 1.2rem; border-radius: var(--radius-sm); color: #F1C40F; font-size: 0.82rem; overflow-x: auto;">
+-- 1. Create events table
+create table public.events (
+  id uuid default gen_random_uuid() primary key,
+  day text not null,
+  time text not null,
+  title text not null,
+  venue text not null,
+  description text,
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- 2. Create ec_members table
+create table public.ec_members (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  role text not null,
+  wing text not null,
+  image_url text,
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- 3. Enable Public Read & Insert Policies
+alter table public.events enable row level security;
+alter table public.ec_members enable row level security;
+
+create policy "Public Access Events" on public.events for all using (true);
+create policy "Public Access EC" on public.ec_members for all using (true);
+          </pre>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Database & Admin Logic -->
+  <script src="config.js"></script>
+  <script src="db.js"></script>
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const authOverlay = document.getElementById('authOverlay');
+      const adminMainWrapper = document.getElementById('adminMainWrapper');
+      const loginForm = document.getElementById('adminLoginForm');
+      const authError = document.getElementById('authError');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const mobileSidebarToggle = document.getElementById('mobileSidebarToggle');
+      const adminSidebar = document.getElementById('adminSidebar');
+
+      // Show config.js connection status in the Database tab
+      function checkConfigFileStatus() {
+        const label = document.getElementById('configMethodLabel');
+        const status = document.getElementById('configFileStatus');
+        if (!label || !status) return;
+        const cfg = window.CULTURA_CONFIG;
+        const hasFileConfig = cfg && cfg.supabaseUrl && !cfg.supabaseUrl.includes('YOUR-PROJECT-ID');
+        const hasLocalStorage = !!localStorage.getItem('cultura_supabase_url');
+
+        if (hasFileConfig) {
+          label.textContent = 'config.js ✅';
+          label.style.color = '#2ecc71';
+          status.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#2ecc71;"></i> <strong style="color:#2ecc71;">Auto-connected via config.js</strong> — credentials are loaded from the file on the server. No manual entry needed.`;
+        } else if (hasLocalStorage) {
+          label.textContent = 'localStorage (manual)';
+          label.style.color = '#F39C12';
+          status.innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:#F39C12;"></i> <strong style="color:#F39C12;">Using localStorage credentials</strong> — works locally but will reset on new browsers/servers. <strong>Recommended: set up config.js for permanent hosting.</strong>`;
+        } else {
+          label.textContent = 'Not connected ❌';
+          label.style.color = '#e74c3c';
+          status.innerHTML = `<i class="fa-solid fa-circle-xmark" style="color:#e74c3c;"></i> <strong style="color:#e74c3c;">No Supabase credentials found.</strong> Edit <code>config.js</code> with your keys and re-upload, or enter them below.`;
+        }
+      }
+      checkConfigFileStatus();
+
+      // Pre-fill Supabase Inputs if saved
+      const savedUrl = localStorage.getItem('cultura_supabase_url');
+      const savedKey = localStorage.getItem('cultura_supabase_key');
+      if (savedUrl) document.getElementById('supabaseUrlInput').value = savedUrl;
+      if (savedKey) document.getElementById('supabaseKeyInput').value = savedKey;
+
+      if (sessionStorage.getItem('cultura_admin_logged_in') === 'true') {
+        authOverlay.style.display = 'none';
+        adminMainWrapper.style.display = 'flex';
+        renderAdminTables();
+      }
+
+      loginForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('adminIdInput').value.trim();
+        const pass = document.getElementById('adminPassInput').value.trim();
+
+        const result = await authenticateAdmin(id, pass);
+
+        if (result.success) {
+          sessionStorage.setItem('cultura_admin_logged_in', 'true');
+          authOverlay.style.display = 'none';
+          adminMainWrapper.style.display = 'flex';
+          authError.style.display = 'none';
+          renderAdminTables();
+        } else {
+          authError.style.display = 'block';
+        }
+      });
+
+      logoutBtn?.addEventListener('click', () => {
+        sessionStorage.removeItem('cultura_admin_logged_in');
+        window.location.reload();
+      });
+
+      mobileSidebarToggle?.addEventListener('click', () => {
+        adminSidebar.classList.toggle('open');
+      });
+
+      const sidebarLinks = document.querySelectorAll('.sidebar-link');
+      sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          sidebarLinks.forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+
+          const tabId = link.getAttribute('data-tab');
+          switchAdminTab(tabId);
+          adminSidebar.classList.remove('open');
+        });
+      });
+    });
+
+    function switchAdminTab(tabId) {
+      document.querySelectorAll('.admin-tab-pane').forEach(pane => {
+        pane.style.display = pane.id === tabId ? 'block' : 'none';
+      });
+
+      const titleMap = {
+        'tab-dashboard': 'Dashboard Overview',
+        'tab-schedule': 'Schedule Event Manager',
+        'tab-ec': 'Executive Committee Manager',
+        'tab-notices': 'Announcements & Notices',
+        'tab-database': 'Supabase Setup & Keys'
+      };
+
+      const titleHeading = document.getElementById('pageTitleHeading');
+      if (titleHeading && titleMap[tabId]) {
+        titleHeading.innerText = titleMap[tabId];
+      }
+    }
+
+    async function renderAdminTables() {
+      const schedule = await fetchDbSchedule();
+      const scheduleTableBody = document.getElementById('scheduleTableBody');
+      const dashEventCount = document.getElementById('dashEventCount');
+
+      if (scheduleTableBody) {
+        scheduleTableBody.innerHTML = '';
+        let totalCount = 0;
+
+        ['day1', 'day2', 'day3'].forEach(dayKey => {
+          const dayLabel = dayKey === 'day1' ? 'Day 1 (14 Oct)' : dayKey === 'day2' ? 'Day 2 (15 Oct)' : 'Day 3 (16 Oct)';
+          (schedule[dayKey] || []).forEach((item, index) => {
+            totalCount++;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td><span style="color: var(--gold-light); font-weight: 600;">${dayLabel}</span></td>
+              <td>${item.time}</td>
+              <td><strong>${item.title}</strong></td>
+              <td>${item.venue}</td>
+              <td>
+                <button class="btn-danger-sm" onclick="handleDeleteEvent('${dayKey}', ${index}, '${item.id || ''}')">
+                  <i class="fa-solid fa-trash"></i> Delete
+                </button>
+              </td>
+            `;
+            scheduleTableBody.appendChild(tr);
+          });
+        });
+
+        if (dashEventCount) dashEventCount.innerText = totalCount;
+      }
+
+      const ROLE_RANK_ORDER_ADMIN = ['President','Vice President','General Secretary','Organizing Secretary','Publication Secretary','Office Secretary','Head of Coordinator','Head of Volunteer','Treasurer'];
+      const rawEcMembers = await fetchDbEcMembers();
+      const ecMembers = [...rawEcMembers].sort((a, b) => {
+        const rankA = ROLE_RANK_ORDER_ADMIN.indexOf(a.role);
+        const rankB = ROLE_RANK_ORDER_ADMIN.indexOf(b.role);
+        return (rankA === -1 ? 99 : rankA) - (rankB === -1 ? 99 : rankB);
+      });
+      const ecTableBody = document.getElementById('ecTableBody');
+      const dashEcCount = document.getElementById('dashEcCount');
+
+      if (ecTableBody) {
+        ecTableBody.innerHTML = '';
+        ecMembers.forEach((member, index) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>
+              <img src="${member.image || 'logo.png'}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold-primary);" onerror="this.src='logo.png'">
+            </td>
+            <td><strong>${member.name}</strong></td>
+            <td><span style="color: var(--gold-light);">${member.role}</span></td>
+            <td><span class="ec-wing-badge">${member.wing || 'BVB'}</span></td>
+            <td>
+              <button class="btn-danger-sm" onclick="handleDeleteEc(${index}, '${member.id || ''}')">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </td>
+          `;
+          ecTableBody.appendChild(tr);
+        });
+
+        if (dashEcCount) dashEcCount.innerText = ecMembers.length;
+      }
+    }
+
+    // Save Supabase Form Handler
+    document.getElementById('supabaseKeyForm')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const url = document.getElementById('supabaseUrlInput').value.trim();
+      const key = document.getElementById('supabaseKeyInput').value.trim();
+
+      const success = saveSupabaseCredentials(url, key);
+      if (success) {
+        alert('âœ… Supabase credentials saved and connected successfully!');
+      } else {
+        alert('Supabase credentials saved locally. Please verify your Project URL and Anon Key.');
+      }
+    });
+
+    document.getElementById('addEventForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const day = document.getElementById('eventDaySelect').value;
+      const time = document.getElementById('eventTimeInput').value.trim();
+      const title = document.getElementById('eventTitleInput').value.trim();
+      const venue = document.getElementById('eventVenueInput').value.trim();
+      const desc = document.getElementById('eventDescInput').value.trim();
+
+      await addDbEvent(day, time, title, venue, desc);
+      e.target.reset();
+      await renderAdminTables();
+      alert('Event successfully added to schedule!');
+    });
+
+    async function handleDeleteEvent(dayKey, index, dbId) {
+      if (confirm('Are you sure you want to delete this event?')) {
+        await deleteDbEvent(dayKey, index, dbId);
+        await renderAdminTables();
+      }
+    }
+
+    let uploadedImageDataUrl = '';
+
+    document.getElementById('ecFileInput')?.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const maxDim = 400;
+            let width = img.width;
+            let height = img.height;
+            if (width > height) {
+              if (width > maxDim) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              }
+            } else {
+              if (height > maxDim) {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            uploadedImageDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+            const container = document.getElementById('ecPhotoPreviewContainer');
+            const previewImg = document.getElementById('ecPhotoPreviewImg');
+            const previewName = document.getElementById('ecPhotoPreviewName');
+            if (container && previewImg) {
+              previewImg.src = uploadedImageDataUrl;
+              if (previewName) previewName.innerText = file.name;
+              container.style.display = 'flex';
+            }
+          };
+          img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('addEcForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('ecNameInput').value.trim();
+      const role = document.getElementById('ecRoleSelect').value;
+      const wing = document.getElementById('ecWingSelect').value;
+      const urlInput = document.getElementById('ecImageInput')?.value.trim() || '';
+      const image = uploadedImageDataUrl || urlInput || 'logo.png';
+
+      await addDbEcMember(name, role, wing, image);
+      e.target.reset();
+      uploadedImageDataUrl = '';
+      const previewContainer = document.getElementById('ecPhotoPreviewContainer');
+      if (previewContainer) previewContainer.style.display = 'none';
+
+      await renderAdminTables();
+      alert('EC Member successfully added!');
+    });
+
+    async function handleDeleteEc(index, dbId) {
+      if (confirm('Delete this EC member?')) {
+        await deleteDbEcMember(index, dbId);
+        await renderAdminTables();
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,306 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Cultura Fiesta 1.0 | MPSC Cultural Club</title>
+  <meta name="description" content="Official website for The Cultura Fiesta 1.0, the national cultural festival organized by MPSC Cultural Club (Mohammadpur Preparatory School and College).">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       Header & Navigation Bar
+       ========================================================================== -->
+  <header class="header-nav">
+    <div class="container nav-container">
+      <!-- Brand Logo & Title -->
+      <a href="index.html" class="brand-logo-link">
+        <img src="logo.png" alt="MPSC Cultural Club Logo" class="brand-logo-img">
+        <div class="brand-text-container">
+          <span class="brand-name">MPSC CULTURAL CLUB</span>
+          <span class="brand-sub">Est. 1976 â€¢ Mohammadpur</span>
+        </div>
+      </a>
+
+      <!-- Navigation Menu -->
+      <nav>
+        <ul class="nav-menu">
+          <!-- Mobile Drawer Luxury Branding Header (Hidden on Desktop) -->
+          <li class="mobile-drawer-header">
+            <img src="logo.png" alt="MPSC Cultural Club Logo" class="mobile-drawer-logo">
+            <div class="mobile-drawer-title">MPSC CULTURAL CLUB</div>
+            <div class="mobile-drawer-sub">The Cultura Fiesta 1.0</div>
+          </li>
+
+          <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
+          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+          <li class="nav-item"><a href="events.html" class="nav-link">Events</a></li>
+          <li class="nav-item"><a href="ec-panel.html" class="nav-link">EC Panel</a></li>
+          <li class="nav-item"><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+
+          <!-- Mobile Drawer Luxury Footer (Hidden on Desktop) -->
+          <li class="mobile-drawer-footer">
+            <a href="events.html" class="btn-gold mobile-menu-cta"><i class="fa-solid fa-ticket"></i> Register For Fiesta 1.0</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Action Button & Mobile Toggle -->
+      <div class="nav-actions">
+        <a href="events.html" class="btn-gold"><i class="fa-solid fa-ticket"></i> <span>Register</span></a>
+        <button class="mobile-toggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       Hero Section
+       ========================================================================== -->
+  <section class="hero-section">
+    <div class="hero-glow-1"></div>
+
+    <div class="container hero-content-grid">
+      <!-- Hero Left: Title & Countdown -->
+      <div class="hero-text-col">
+        <h1 class="hero-main-title">
+          The Cultura <span class="text-gold">Fiesta 1.0</span>
+        </h1>
+        
+        <p class="hero-subtitle">
+          Celebrating Heritage â€¢ Inspiring Creativity â€¢ Uniting Culture
+        </p>
+
+        <p class="hero-description">
+          Step into the grandest stage of cultural grandeur organized by <strong>MPSC Cultural Club</strong>. 3 days of mesmerizing music, dance, theatre, fine arts, and literary mastery.
+        </p>
+
+        <!-- Meta Info Pills -->
+        <div class="hero-meta-list">
+          <div class="hero-meta-item">
+            <i class="fa-regular fa-calendar-days"></i>
+            <span><strong>Date:</strong> 14th - 16th October, 2026</span>
+          </div>
+          <div class="hero-meta-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <span><strong>Venue:</strong> Mohammadpur Preparatory School & College</span>
+          </div>
+        </div>
+
+        <!-- Countdown Clock -->
+        <div class="countdown-box">
+          <div class="countdown-title">Fest Starts In</div>
+          <div class="countdown-timer">
+            <div class="timer-unit">
+              <span class="timer-num" id="days">00</span>
+              <span class="timer-label">Days</span>
+            </div>
+            <span class="timer-divider">:</span>
+            <div class="timer-unit">
+              <span class="timer-num" id="hours">00</span>
+              <span class="timer-label">Hours</span>
+            </div>
+            <span class="timer-divider">:</span>
+            <div class="timer-unit">
+              <span class="timer-num" id="minutes">00</span>
+              <span class="timer-label">Minutes</span>
+            </div>
+            <span class="timer-divider">:</span>
+            <div class="timer-unit">
+              <span class="timer-num" id="seconds">00</span>
+              <span class="timer-label">Seconds</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action CTAs -->
+        <div class="hero-cta-group">
+          <a href="events.html" class="btn-gold"><i class="fa-solid fa-sparkles"></i> Explore Competitions</a>
+          <a href="about.html" class="btn-outline-gold"><i class="fa-solid fa-circle-info"></i> Discover Club</a>
+        </div>
+      </div>
+
+      <!-- Hero Right: Official Banner Showcase -->
+      <div class="hero-banner-col">
+        <div class="hero-banner-container">
+          <img src="banner.jpeg" alt="The Cultura Fiesta 1.0 Official Banner" class="hero-banner-img">
+          <div class="banner-overlay-badge">
+            <i class="fa-solid fa-award"></i> Official Fest Banner
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       Event Schedule Snapshot
+       ========================================================================== -->
+  <section class="schedule-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Festival Itinerary</span>
+        <h2 class="section-title">Schedule <span>Snapshot</span></h2>
+        <div class="title-line"></div>
+      </div>
+
+      <!-- Schedule Tabs (1-Row Bubble Bar) -->
+      <div class="timeline-nav">
+        <button class="timeline-tab active" data-day="day1">Day 01 - 14 Oct</button>
+        <button class="timeline-tab" data-day="day2">Day 02 - 15 Oct</button>
+        <button class="timeline-tab" data-day="day3">Day 03 - 16 Oct</button>
+      </div>
+
+      <!-- Day 1 Panel -->
+      <div class="timeline-content">
+        <div id="day1" class="timeline-panel">
+          <div class="schedule-items-container" data-day-container="day1">
+            <!-- Dynamic Items Injected -->
+          </div>
+        </div>
+
+        <!-- Day 2 Panel -->
+        <div id="day2" class="timeline-panel" style="display: none;">
+          <div class="schedule-items-container" data-day-container="day2">
+            <!-- Dynamic Items Injected -->
+          </div>
+        </div>
+
+        <!-- Day 3 Panel -->
+        <div id="day3" class="timeline-panel" style="display: none;">
+          <div class="schedule-items-container" data-day-container="day3">
+            <!-- Dynamic Items Injected -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       Executive Committee Panel Section
+       ========================================================================== -->
+  <section class="ec-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-subtitle">Leadership & Management</span>
+        <h2 class="section-title">Executive <span>Panel</span></h2>
+        <div class="title-line"></div>
+      </div>
+
+      <div class="ec-marquee-outer" id="landing-ec-marquee-outer">
+        <div class="ec-marquee-track" id="landing-ec-grid">
+          <!-- Dynamic EC Members Injected -->
+        </div>
+      </div>
+
+      <div class="center-btn-wrapper">
+        <a href="ec-panel.html" class="btn-outline-gold">View Full EC Panel Details <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       Registration Call to Action
+       ========================================================================== -->
+  <section class="cta-banner-section">
+    <div class="container">
+      <div class="cta-box">
+        <h2 class="cta-title">Be Part of <span class="text-gold">Cultural History</span></h2>
+        <p class="cta-subtitle">
+          Registrations are now open for all school, college, and university students. Secure your spot in Bangladesh's premier cultural stage!
+        </p>
+        <a href="events.html" class="btn-gold" style="font-size: 0.95rem; padding: 0.85rem 2rem;">
+          <i class="fa-solid fa-ticket"></i> Register For Fiesta 1.0
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       Site Footer
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand Info -->
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <img src="logo.png" alt="MPSC Cultural Club Logo" class="footer-logo-img">
+            <div>
+              <div class="footer-brand-name">MPSC CULTURAL CLUB</div>
+              <div class="footer-brand-sub">Est. 1976</div>
+            </div>
+          </div>
+          <p class="footer-desc">
+            Promoting heritage, artistic excellence, and youthful talent across music, drama, dance, and literature.
+          </p>
+          <div>
+            <span class="mpsc-affiliation">A CLUB OF MPSC</span>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="footer-col-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> Home</a></li>
+            <li><a href="about.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> About Us</a></li>
+            <li><a href="events.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> Segments & Rules</a></li>
+            <li><a href="ec-panel.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> EC Panel</a></li>
+            <li><a href="gallery.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> Gallery</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <h4 class="footer-col-title">Contact Us</h4>
+          <div class="footer-contact-info">
+            <div class="contact-item">
+              <i class="fa-solid fa-envelope"></i>
+              <span>mpscculturalclub.official@gmail.com</span>
+            </div>
+            <div class="contact-item">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Mohammadpur Preparatory School & College</span>
+            </div>
+            <div class="contact-item">
+              <i class="fa-solid fa-phone"></i>
+              <span>+880 1700-000000</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom">
+        <div>
+          Â© 2026 <strong>MPSC CULTURAL CLUBâ„¢</strong>. All Rights Reserved.
+        </div>
+        <div class="social-links">
+          <a href="#" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" class="social-icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Database & Main Scripts -->
+  <script src="config.js"></script>
+  <script src="db.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
