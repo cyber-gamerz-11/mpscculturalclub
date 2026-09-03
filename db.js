@@ -61,7 +61,9 @@ async function fetchDbSchedule() {
         .select('*')
         .order('created_at', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (error) {
+        console.warn('⚠️ Supabase events query error (falling back to local):', error.message || error);
+      } else if (Array.isArray(data)) {
         const schedule = { day1: [], day2: [], day3: [] };
         data.forEach(item => {
           if (schedule[item.day]) {
@@ -77,7 +79,7 @@ async function fetchDbSchedule() {
         return schedule;
       }
     } catch (e) {
-      console.error('Supabase fetchSchedule error:', e);
+      console.error('Supabase fetchSchedule exception:', e);
     }
   }
   return getStoredSchedule();
@@ -92,9 +94,17 @@ async function addDbEvent(day, time, title, venue, desc) {
       const { data, error } = await supabaseClient
         .from('events')
         .insert([{ day, time, title, venue, description: desc }]);
-      if (!error) return true;
+      
+      if (error) {
+        console.error('Supabase addEvent error:', error);
+        alert('⚠️ Supabase Error adding event: ' + (error.message || JSON.stringify(error)));
+        return false;
+      }
+      return true;
     } catch (e) {
-      console.error('Supabase addEvent error:', e);
+      console.error('Supabase addEvent exception:', e);
+      alert('⚠️ Exception saving event to Supabase: ' + e.message);
+      return false;
     }
   }
 
@@ -112,10 +122,15 @@ async function addDbEvent(day, time, title, venue, desc) {
 async function deleteDbEvent(dayKey, index, dbId = null) {
   if (supabaseClient && dbId) {
     try {
-      await supabaseClient.from('events').delete().eq('id', dbId);
+      const { error } = await supabaseClient.from('events').delete().eq('id', dbId);
+      if (error) {
+        console.error('Supabase deleteEvent error:', error);
+        alert('⚠️ Error deleting event from Supabase: ' + error.message);
+        return false;
+      }
       return true;
     } catch (e) {
-      console.error('Supabase deleteEvent error:', e);
+      console.error('Supabase deleteEvent exception:', e);
     }
   }
 
@@ -161,7 +176,9 @@ async function fetchDbEcMembers() {
         .select('*')
         .order('created_at', { ascending: true });
 
-      if (!error && data && data.length > 0) {
+      if (error) {
+        console.warn('⚠️ Supabase ec_members query error (falling back to local):', error.message || error);
+      } else if (Array.isArray(data)) {
         const mapped = data.map(item => ({
           id: item.id,
           name: item.name,
@@ -172,7 +189,7 @@ async function fetchDbEcMembers() {
         return sortEcMembersByRank(mapped);
       }
     } catch (e) {
-      console.error('Supabase fetchEcMembers error:', e);
+      console.error('Supabase fetchEcMembers exception:', e);
     }
   }
   return sortEcMembersByRank(getStoredEcMembers());
@@ -186,10 +203,18 @@ async function addDbEcMember(name, role, wing, image = 'logo.png') {
     try {
       const { data, error } = await supabaseClient
         .from('ec_members')
-        .insert([{ name, role, wing, image_url: image }]);
-      if (!error) return true;
+        .insert([{ name, role, wing, batch: wing, image_url: image }]);
+
+      if (error) {
+        console.error('Supabase addEcMember error:', error);
+        alert('⚠️ Supabase Error adding EC member: ' + (error.message || JSON.stringify(error)));
+        return false;
+      }
+      return true;
     } catch (e) {
-      console.error('Supabase addEcMember error:', e);
+      console.error('Supabase addEcMember exception:', e);
+      alert('⚠️ Exception saving EC member to Supabase: ' + e.message);
+      return false;
     }
   }
 
@@ -206,10 +231,15 @@ async function addDbEcMember(name, role, wing, image = 'logo.png') {
 async function deleteDbEcMember(index, dbId = null) {
   if (supabaseClient && dbId) {
     try {
-      await supabaseClient.from('ec_members').delete().eq('id', dbId);
+      const { error } = await supabaseClient.from('ec_members').delete().eq('id', dbId);
+      if (error) {
+        console.error('Supabase deleteEcMember error:', error);
+        alert('⚠️ Error deleting EC member from Supabase: ' + error.message);
+        return false;
+      }
       return true;
     } catch (e) {
-      console.error('Supabase deleteEcMember error:', e);
+      console.error('Supabase deleteEcMember exception:', e);
     }
   }
 
@@ -217,6 +247,43 @@ async function deleteDbEcMember(index, dbId = null) {
   const members = getStoredEcMembers();
   members.splice(index, 1);
   saveStoredEcMembers(members);
+  return true;
+}
+
+/**
+ * Helper to push any local storage data up to Supabase
+ */
+async function syncLocalDataToSupabase() {
+  if (!supabaseClient) {
+    alert('❌ Supabase is not connected!');
+    return false;
+  }
+
+  let eventsPushed = 0;
+  let ecPushed = 0;
+
+  // Push local schedule events
+  const localSchedule = getStoredSchedule();
+  for (const dayKey of ['day1', 'day2', 'day3']) {
+    const events = localSchedule[dayKey] || [];
+    for (const item of events) {
+      const { error } = await supabaseClient
+        .from('events')
+        .insert([{ day: dayKey, time: item.time, title: item.title, venue: item.venue, description: item.desc || '' }]);
+      if (!error) eventsPushed++;
+    }
+  }
+
+  // Push local EC members
+  const localMembers = getStoredEcMembers();
+  for (const member of localMembers) {
+    const { error } = await supabaseClient
+      .from('ec_members')
+      .insert([{ name: member.name, role: member.role, wing: member.wing || 'BVB', batch: member.wing || 'BVB', image_url: member.image || 'logo.png' }]);
+    if (!error) ecPushed++;
+  }
+
+  alert(`✅ Sync complete!\nPushed ${eventsPushed} event(s) and ${ecPushed} EC member(s) to Supabase.`);
   return true;
 }
 
