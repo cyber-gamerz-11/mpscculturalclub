@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLandingSchedule();
   renderLandingEcGrid();
   renderEcPanelPage();
+  renderEventsPage();
 });
 
 // Countdown Clock Logic
@@ -395,4 +396,172 @@ async function renderEcPanelPage() {
 
   container.innerHTML = html;
 }
+
+// --------------------------------------------------------------------------
+// 4. Events Page & Interactive 3-Tier Tree Modal Renderer
+// --------------------------------------------------------------------------
+let globalSegmentsCache = [];
+
+function formatIconClass(iconStr) {
+  if (!iconStr || typeof iconStr !== 'string') return 'fa-solid fa-star';
+  let clean = iconStr.trim();
+  if (clean.startsWith('fa-solid ') || clean.startsWith('fa-regular ') || clean.startsWith('fa-brands ')) {
+    return clean;
+  }
+  if (!clean.startsWith('fa-')) {
+    clean = 'fa-' + clean;
+  }
+  return 'fa-solid ' + clean;
+}
+
+async function renderEventsPage() {
+  const container = document.getElementById('segments-grid');
+  if (!container) return;
+
+  const segments = (typeof fetchDbSegments === 'function') ? await fetchDbSegments() : getStoredSegments();
+  globalSegmentsCache = segments;
+
+  if (!segments || segments.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding: 4rem 1rem; color: var(--text-muted); grid-column: 1 / -1;">
+        <i class="fa-solid fa-layer-group" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 1rem; display: block;"></i>
+        <h3>No Segments Available</h3>
+        <p>Segments will appear here once configured in the Admin Center.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = segments.map((seg, idx) => {
+    const evtCount = (seg.events || []).length;
+    const iconClass = formatIconClass(seg.icon);
+    const tagText = seg.tag || 'Cultura Festival';
+    const descText = seg.description || 'Competition segment details, age categories, and guidelines.';
+    const dayText = seg.day_info || 'Festival Schedule';
+
+    return `
+      <div class="glass-panel segment-card" onclick="openSegmentModal('${seg.id || idx}')" style="cursor: pointer;">
+        <div class="segment-icon-box"><i class="${iconClass}"></i></div>
+        <span class="segment-tag">${tagText}</span>
+        <h3 class="segment-title">${seg.title || 'Competition Segment'}</h3>
+        <p class="segment-desc">${descText}</p>
+        <div class="segment-footer">
+          <span class="segment-meta"><i class="fa-solid fa-calendar-day"></i> ${dayText} &bull; ${evtCount} Event(s)</span>
+          <span class="text-gold" style="font-weight: 700;">View Details <i class="fa-solid fa-chevron-right"></i></span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.openSegmentModal = function(segmentId) {
+  const modal = document.getElementById('segmentDetailModal');
+  const content = document.getElementById('modalSegmentContent');
+  if (!modal || !content) return;
+
+  const seg = globalSegmentsCache.find((s, idx) => String(s.id) === String(segmentId) || String(idx) === String(segmentId));
+  if (!seg) return;
+
+  const tagText = seg.tag || 'Cultura Festival';
+  const descText = seg.description || 'Competition segment details, age categories, and guidelines.';
+
+  let eventsHTML = '';
+  if (!seg.events || seg.events.length === 0) {
+    eventsHTML = `
+      <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); font-style: italic; background: rgba(11, 19, 43, 0.4); border-radius: var(--radius-md); border: 1px dashed var(--border-gold);">
+        No competition events added under this segment yet.
+      </div>
+    `;
+  } else {
+    eventsHTML = seg.events.map((evt, eIdx) => {
+      const boxId = `cat-box-${evt.id || eIdx}`;
+      const hasGroups = evt.groups && evt.groups.length > 0;
+
+      let groupsCollapsibleHTML = '';
+      if (hasGroups) {
+        groupsCollapsibleHTML = `
+          <div id="${boxId}" class="event-categories-box" style="display: none;">
+            ${evt.groups.map(grp => {
+              const priceTag = grp.price ? ` · ৳${grp.price}` : '';
+              return `
+              <div class="category-block-item">
+                <div class="category-block-info">
+                  <div class="category-block-name">${grp.group_name || grp.name || 'Category'}</div>
+                  ${(grp.age_limit || grp.age_group) ? `<span class="category-block-eligibility">${grp.age_limit || grp.age_group}</span>` : ''}
+                  ${grp.rules ? `<div class="category-block-rules">${grp.rules}</div>` : ''}
+                </div>
+                <div>
+                  <a href="#register" class="btn-gold-sm" onclick="closeSegmentModal()"><i class="fa-solid fa-ticket"></i> Register${priceTag}</a>
+                </div>
+              </div>
+            `}).join('')}
+          </div>
+        `;
+      }
+
+      const evtPriceTag = evt.price ? ` · ৳${evt.price}` : '';
+
+      return `
+        <div class="event-block-card">
+          <div class="event-block-header">
+            <div class="event-block-title">${evt.title || 'Event'}</div>
+          </div>
+          ${evt.venue ? `<div class="event-block-venue"><i class="fa-solid fa-location-dot"></i> ${evt.venue}</div>` : ''}
+          ${evt.description ? `<p class="event-block-desc">${evt.description}</p>` : ''}
+
+          <div class="event-block-footer">
+            ${hasGroups ? `
+              <button type="button" class="btn-outline-gold-sm" onclick="toggleEventCategories('${boxId}')">
+                <i class="fa-solid fa-layer-group"></i> View Categories (${evt.groups.length}) <i class="fa-solid fa-chevron-down"></i>
+              </button>
+            ` : `
+              <a href="#register" class="btn-gold-sm" onclick="closeSegmentModal()"><i class="fa-solid fa-ticket"></i> Register${evtPriceTag}</a>
+            `}
+          </div>
+
+          ${groupsCollapsibleHTML}
+        </div>
+      `;
+    }).join('');
+  }
+
+  content.innerHTML = `
+    <div style="text-align: center; margin-bottom: 1.8rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+      <span class="ec-wing-badge" style="margin-bottom: 0.6rem;">${tagText}</span>
+      <h2 style="font-family: var(--font-heading); color: #FFF; font-size: clamp(1.4rem, 4vw, 2rem); margin-bottom: 0.5rem;">${seg.title || 'Competition Segment'}</h2>
+      <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 650px; margin: 0 auto; line-height: 1.6;">${descText}</p>
+    </div>
+
+    <!-- Block-by-Block Events Stack -->
+    <div class="events-block-stack">
+      ${eventsHTML}
+    </div>
+  `;
+
+  modal.classList.add('open');
+};
+
+window.toggleEventCategories = function(boxId) {
+  const box = document.getElementById(boxId);
+  if (box) {
+    if (box.style.display === 'none' || !box.style.display) {
+      box.style.display = 'flex';
+    } else {
+      box.style.display = 'none';
+    }
+  }
+};
+
+window.closeSegmentModal = function() {
+  const modal = document.getElementById('segmentDetailModal');
+  if (modal) modal.classList.remove('open');
+};
+
+// Backdrop click listener to close modal
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('segmentDetailModal');
+  if (modal && e.target === modal) {
+    closeSegmentModal();
+  }
+});
 

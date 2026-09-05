@@ -259,6 +259,55 @@
       color: #FFF;
     }
 
+    .btn-edit-sm {
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-light);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: var(--transition-fast);
+    }
+    .btn-edit-sm:hover {
+      background: var(--gold-primary);
+      color: #000;
+    }
+
+    /* Edit Modal Overlay */
+    .admin-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+    .admin-modal-box {
+      background: #121622;
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 550px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+      padding: 1.8rem;
+      position: relative;
+      animation: modalFadeIn 0.25s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+
     @media (max-width: 992px) {
       .admin-sidebar {
         transform: translateX(-100%);
@@ -327,6 +376,9 @@
         <li class="sidebar-link active" data-tab="tab-dashboard">
           <i class="fa-solid fa-chart-pie"></i> Dashboard Overview
         </li>
+        <li class="sidebar-link" data-tab="tab-segments">
+          <i class="fa-solid fa-sitemap"></i> Segment & Event Manager
+        </li>
         <li class="sidebar-link" data-tab="tab-schedule">
           <i class="fa-regular fa-calendar-check"></i> Schedule Event Manager
         </li>
@@ -392,6 +444,123 @@
             <button class="btn-outline-gold" onclick="switchAdminTab('tab-ec')"><i class="fa-solid fa-user-plus"></i> Add EC Member</button>
             <button class="btn-outline-gold" onclick="switchAdminTab('tab-database')"><i class="fa-solid fa-database"></i> Connect Supabase Keys</button>
           </div>
+        </div>
+      </div>
+
+      <!-- TAB: Segment & Event Hierarchy Manager -->
+      <div id="tab-segments" class="admin-tab-pane" style="display: none;">
+        <!-- 1. Add Segment -->
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-folder-plus" style="color: var(--gold-light);"></i> 1. Create New Segment</h3>
+          <form id="addSegmentForm">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+              <div>
+                <label class="form-label">SEGMENT TITLE <span style="color: var(--gold-light);">*</span></label>
+                <input type="text" id="segTitleInput" class="form-input" placeholder="e.g. Solo Vocal & Band Beats" required>
+              </div>
+              <div>
+                <label class="form-label">CATEGORY TAG (Optional)</label>
+                <input type="text" id="segTagInput" class="form-input" placeholder="e.g. Sangeet &bull; Music">
+              </div>
+              <div>
+                <label class="form-label">ICON CLASS (Optional)</label>
+                <input type="text" id="segIconInput" class="form-input" placeholder="e.g. fa-guitar or singing">
+              </div>
+              <div>
+                <label class="form-label">DAY / SCHEDULE INFO (Optional)</label>
+                <input type="text" id="segDayInfoInput" class="form-input" placeholder="e.g. Day 1 & Day 2">
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+              <label class="form-label">DESCRIPTION (Optional)</label>
+              <textarea id="segDescInput" class="form-textarea" rows="2" placeholder="Brief summary of segment competitions..."></textarea>
+            </div>
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Create Segment</button>
+          </form>
+        </div>
+
+        <!-- Segments & Events Hierarchy Manager -->
+        <div class="admin-card-table">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-layer-group" style="color: var(--gold-light);"></i> Existing Segments, Events & Categories</h3>
+          <div id="segmentsHierarchyContainer" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- 2. Add Event to Segment -->
+        <div class="admin-card-table" style="margin-top: 2rem;">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-calendar-plus" style="color: var(--gold-light);"></i> 2. Add Event Under Segment</h3>
+          <form id="addSegmentEventForm">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+              <div>
+                <label class="form-label">SELECT PARENT SEGMENT <span style="color: var(--gold-light);">*</span></label>
+                <select id="selectSegmentForEvent" class="form-select" required>
+                  <option value="">-- Choose Segment --</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">EVENT TITLE <span style="color: var(--gold-light);">*</span></label>
+                <input type="text" id="segEvtTitleInput" class="form-input" placeholder="e.g. Solo Vocal Battle" required>
+              </div>
+              <div>
+                <label class="form-label">VENUE (Optional)</label>
+                <input type="text" id="segEvtVenueInput" class="form-input" placeholder="e.g. Main Auditorium">
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+              <label class="form-label">EVENT DESCRIPTION (Optional)</label>
+              <textarea id="segEvtDescInput" class="form-textarea" rows="2" placeholder="Details of this specific competition event..."></textarea>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+              <label class="form-label">EVENT REGISTRATION PRICE (Optional)</label>
+              <div style="position: relative; max-width: 220px;">
+                <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gold-light); font-weight: 700; font-size: 1rem;">&#2547;</span>
+                <input type="number" id="segEvtPriceInput" class="form-input" placeholder="e.g. 200" min="0" step="1" style="padding-left: 30px;">
+              </div>
+            </div>
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Add Event to Segment</button>
+          </form>
+        </div>
+
+        <!-- 3. Add Group / Age Category to Event -->
+        <div class="admin-card-table" style="margin-top: 2rem;">
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-users" style="color: var(--gold-light);"></i> 3. Add Age Group / Category Under Event</h3>
+          <form id="addEventGroupForm">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+              <div>
+                <label class="form-label">SELECT SEGMENT <span style="color: var(--gold-light);">*</span></label>
+                <select id="selectSegmentForGroup" class="form-select" required>
+                  <option value="">-- Choose Segment --</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">SELECT EVENT <span style="color: var(--gold-light);">*</span></label>
+                <select id="selectEventForGroup" class="form-select" required disabled>
+                  <option value="">-- Select Segment First --</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">GROUP / CATEGORY NAME <span style="color: var(--gold-light);">*</span></label>
+                <input type="text" id="groupNameInput" class="form-input" placeholder="e.g. Group A (Junior)" required>
+              </div>
+              <div>
+                <label class="form-label">AGE / CLASS ELIGIBILITY (Optional)</label>
+                <input type="text" id="groupAgeLimitInput" class="form-input" placeholder="e.g. Class 6 to Class 8">
+              </div>
+              <div>
+                <label class="form-label">REGISTRATION PRICE (Optional)</label>
+                <div style="position: relative;">
+                  <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gold-light); font-weight: 700; font-size: 1rem;">&#2547;</span>
+                  <input type="number" id="groupPriceInput" class="form-input" placeholder="e.g. 150" min="0" step="1" style="padding-left: 30px;">
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+              <label class="form-label">RULES & PARTICIPATION GUIDELINES (Optional)</label>
+              <textarea id="groupRulesInput" class="form-textarea" rows="2" placeholder="e.g. Max 4 mins stage time. 1 backing track allowed."></textarea>
+            </div>
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Save Age Group / Category</button>
+          </form>
         </div>
       </div>
 
@@ -598,7 +767,7 @@
             Open your Supabase Project Dashboard -> <strong>SQL Editor</strong> -> New Query, paste the SQL below and click <strong>RUN</strong>:
           </p>
           <pre style="background: rgba(5, 10, 23, 0.9); border: 1px solid var(--border-gold); padding: 1.2rem; border-radius: var(--radius-sm); color: #F1C40F; font-size: 0.82rem; overflow-x: auto;">
--- 1. Create events table
+-- 1. Create schedule events table
 create table if not exists public.events (
   id uuid default gen_random_uuid() primary key,
   day text not null,
@@ -629,15 +798,57 @@ begin
   end if;
 end $$;
 
--- 4. Enable RLS and Create Full Access Policies (Read + Insert + Delete)
+-- 4. Create segments table
+create table if not exists public.segments (
+  id uuid default gen_random_uuid() primary key,
+  title text not null,
+  tag text not null default 'Cultural Segment',
+  icon text not null default 'fa-star',
+  description text,
+  day_info text default 'Festival Day',
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- 5. Create segment_events table
+create table if not exists public.segment_events (
+  id uuid default gen_random_uuid() primary key,
+  segment_id text not null,
+  title text not null,
+  description text,
+  time text,
+  venue text,
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- 6. Create event_groups table
+create table if not exists public.event_groups (
+  id uuid default gen_random_uuid() primary key,
+  event_id text not null,
+  group_name text not null,
+  age_limit text,
+  rules text,
+  description text,
+  created_at timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- 7. Enable RLS and Create Full Access Policies
 alter table public.events enable row level security;
 alter table public.ec_members enable row level security;
+alter table public.segments enable row level security;
+alter table public.segment_events enable row level security;
+alter table public.event_groups enable row level security;
 
 drop policy if exists "Public Access Events" on public.events;
 drop policy if exists "Public Access EC" on public.ec_members;
+drop policy if exists "Public Access Segments" on public.segments;
+drop policy if exists "Public Access Segment Events" on public.segment_events;
+drop policy if exists "Public Access Event Groups" on public.event_groups;
 
 create policy "Public Access Events" on public.events for all using (true) with check (true);
 create policy "Public Access EC" on public.ec_members for all using (true) with check (true);
+create policy "Public Access Segments" on public.segments for all using (true) with check (true);
+create policy "Public Access Segment Events" on public.segment_events for all using (true) with check (true);
+create policy "Public Access Event Groups" on public.event_groups for all using (true) with check (true);
           </pre>
           <div style="margin-top: 1.2rem;">
             <button type="button" class="btn-outline-gold" onclick="syncLocalDataToSupabase()"><i class="fa-solid fa-cloud-arrow-up"></i> Push Local Data to Supabase</button>
@@ -746,6 +957,7 @@ create policy "Public Access EC" on public.ec_members for all using (true) with 
 
       const titleMap = {
         'tab-dashboard': 'Dashboard Overview',
+        'tab-segments': 'Segment & Event Manager',
         'tab-schedule': 'Schedule Event Manager',
         'tab-ec': 'Executive Committee Manager',
         'tab-notices': 'Announcements & Notices',
@@ -758,7 +970,105 @@ create policy "Public Access EC" on public.ec_members for all using (true) with 
       }
     }
 
+    let cachedSegmentsData = [];
+
     async function renderAdminTables() {
+      // 1. Render Segments & Event Hierarchy
+      const segments = (typeof fetchDbSegments === 'function') ? await fetchDbSegments() : getStoredSegments();
+      cachedSegmentsData = segments;
+
+      const hierarchyContainer = document.getElementById('segmentsHierarchyContainer');
+      const selectSegForEvt = document.getElementById('selectSegmentForEvent');
+      const selectSegForGrp = document.getElementById('selectSegmentForGroup');
+
+      if (hierarchyContainer) {
+        hierarchyContainer.innerHTML = '';
+        if (segments.length === 0) {
+          hierarchyContainer.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--text-muted);">No segments created yet. Create one above!</div>`;
+        } else {
+          segments.forEach((seg, idx) => {
+            const card = document.createElement('div');
+            card.className = 'segment-admin-card';
+            card.style.cssText = 'background: rgba(18,22,34,0.7); border: 1px solid var(--border-gold); border-radius: 10px; padding: 1rem;';
+            
+            const eventsList = (seg.events || []).map(evt => {
+              const groupsList = (evt.groups || []).map(grp => `
+                <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; padding: 0.4rem 0.7rem; display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span style="color: #FFF; font-weight: 600; font-size: 0.85rem;">${grp.group_name}</span>
+                    ${grp.age_limit ? `<span style="color: var(--gold-light); font-size: 0.8rem; margin-left: 0.5rem;">(${grp.age_limit})</span>` : ''}
+                    ${grp.price ? `<span style="background: rgba(212,175,55,0.2); color: #FFF; border: 1px solid var(--border-gold); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">৳${grp.price}</span>` : ''}
+                    ${grp.rules ? `<div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.1rem;"><i class="fa-solid fa-circle-info"></i> ${grp.rules}</div>` : ''}
+                  </div>
+                  <div style="display: flex; gap: 0.3rem;">
+                    <button class="btn-edit-sm" style="padding: 0.15rem 0.4rem; font-size: 0.7rem;" onclick="openEditGroupModal('${seg.id}', '${evt.id}', '${grp.id}')"><i class="fa-solid fa-pen"></i> Edit</button>
+                    <button class="btn-danger-sm" style="padding: 0.15rem 0.4rem; font-size: 0.7rem;" onclick="handleDeleteGroupUnderEvent('${seg.id}', '${evt.id}', '${grp.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                  </div>
+                </div>
+              `).join('');
+
+              return `
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 0.6rem 0.8rem; margin-bottom: 0.6rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                      <strong style="color: var(--gold-primary); font-size: 0.95rem;">${evt.title}</strong>
+                      ${evt.venue ? `<span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.6rem;"><i class="fa-solid fa-location-dot"></i> ${evt.venue}</span>` : ''}
+                      ${evt.price ? `<span style="background: rgba(212,175,55,0.2); color: #FFF; border: 1px solid var(--border-gold); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 0.6rem;">৳${evt.price}</span>` : ''}
+                      ${evt.description ? `<div style="color: #DDD; font-size: 0.8rem; margin-top: 0.2rem;">${evt.description}</div>` : ''}
+                    </div>
+                    <div style="display: flex; gap: 0.4rem;">
+                      <button class="btn-edit-sm" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="openEditEventModal('${seg.id}', '${evt.id}')"><i class="fa-solid fa-pen"></i> Edit Event</button>
+                      <button class="btn-danger-sm" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="handleDeleteEventUnderSegment('${seg.id}', '${evt.id}')"><i class="fa-solid fa-trash"></i> Delete</button>
+                    </div>
+                  </div>
+
+                  ${groupsList ? `
+                    <div style="margin-top: 0.6rem; padding-top: 0.5rem; border-top: 1px dashed rgba(255,255,255,0.1); display: grid; gap: 0.4rem;">
+                      ${groupsList}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('');
+
+            card.innerHTML = `
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(212,175,55,0.2); padding-bottom: 0.6rem; margin-bottom: 0.8rem;">
+                <div>
+                  <span style="color: var(--gold-light); font-size: 0.8rem; font-weight: 600;"><i class="fa-solid ${seg.icon || 'fa-star'}"></i> ${seg.tag} &bull; ${seg.day_info || 'Day 1'}</span>
+                  <h4 style="color: #FFF; font-family: var(--font-heading); margin: 0.2rem 0 0 0; font-size: 1.1rem;">${seg.title}</h4>
+                  ${seg.description ? `<p style="color: var(--text-muted); font-size: 0.8rem; margin: 0.2rem 0 0 0;">${seg.description}</p>` : ''}
+                </div>
+                <div style="display: flex; gap: 0.4rem;">
+                  <button class="btn-edit-sm" onclick="openEditSegmentModal('${seg.id}')"><i class="fa-solid fa-pen-to-square"></i> Edit Segment</button>
+                  <button class="btn-danger-sm" onclick="handleDeleteSegment('${seg.id}', ${idx})"><i class="fa-solid fa-trash"></i> Delete</button>
+                </div>
+              </div>
+
+              <div style="margin-left: 0.8rem; border-left: 2px solid rgba(212,175,55,0.3); padding-left: 0.8rem;">
+                ${eventsList.length === 0 ? `<div style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">No events added under this segment yet.</div>` : eventsList}
+              </div>
+            `;
+            hierarchyContainer.appendChild(card);
+          });
+        }
+      }
+
+      // Populate Segment Select Dropdowns
+      [selectSegForEvt, selectSegForGrp].forEach(sel => {
+        if (sel) {
+          const currentVal = sel.value;
+          sel.innerHTML = `<option value="">-- Choose Segment --</option>`;
+          segments.forEach(seg => {
+            const opt = document.createElement('option');
+            opt.value = seg.id;
+            opt.textContent = `${seg.tag} - ${seg.title}`;
+            sel.appendChild(opt);
+          });
+          if (currentVal) sel.value = currentVal;
+        }
+      });
+
+      // 2. Render Schedule Events Table
       const schedule = await fetchDbSchedule();
       const scheduleTableBody = document.getElementById('scheduleTableBody');
       const dashEventCount = document.getElementById('dashEventCount');
@@ -790,6 +1100,7 @@ create policy "Public Access EC" on public.ec_members for all using (true) with 
         if (dashEventCount) dashEventCount.innerText = totalCount;
       }
 
+      // 3. Render Executive Committee Table
       const ROLE_RANK_ORDER_ADMIN = ['President','Vice President','General Secretary','Organizing Secretary','Publication Secretary','Office Secretary','Head of Coordinator','Head of Volunteer','Treasurer'];
       const rawEcMembers = await fetchDbEcMembers();
       const ecMembers = [...rawEcMembers].sort((a, b) => {
@@ -823,6 +1134,94 @@ create policy "Public Access EC" on public.ec_members for all using (true) with 
         if (dashEcCount) dashEcCount.innerText = ecMembers.length;
       }
     }
+
+    // Dynamic cascade for Segment -> Events dropdown in Admin
+    document.getElementById('selectSegmentForGroup')?.addEventListener('change', (e) => {
+      const segId = e.target.value;
+      const selectEvt = document.getElementById('selectEventForGroup');
+      if (!selectEvt) return;
+
+      selectEvt.innerHTML = `<option value="">-- Select Event --</option>`;
+      if (!segId) {
+        selectEvt.disabled = true;
+        return;
+      }
+
+      const targetSeg = cachedSegmentsData.find(s => String(s.id) === String(segId));
+      if (targetSeg && targetSeg.events && targetSeg.events.length > 0) {
+        targetSeg.events.forEach(evt => {
+          const opt = document.createElement('option');
+          opt.value = evt.id;
+          opt.textContent = evt.title;
+          selectEvt.appendChild(opt);
+        });
+        selectEvt.disabled = false;
+      } else {
+        selectEvt.innerHTML = `<option value="">-- No Events in Segment (Add event first) --</option>`;
+        selectEvt.disabled = true;
+      }
+    });
+
+    // Form Submit Handlers for Segments, Segment Events, and Groups
+    document.getElementById('addSegmentForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('segTitleInput').value.trim();
+      const tag = document.getElementById('segTagInput').value.trim();
+      const icon = document.getElementById('segIconInput').value.trim() || 'fa-star';
+      const dayInfo = document.getElementById('segDayInfoInput').value.trim();
+      const desc = document.getElementById('segDescInput').value.trim();
+
+      await addDbSegment(title, tag, icon, desc, dayInfo);
+      e.target.reset();
+      await renderAdminTables();
+      alert('Segment created successfully!');
+    });
+
+    async function handleDeleteSegment(segId, index) {
+      if (confirm('Are you sure you want to delete this Segment and all its sub-events?')) {
+        await deleteDbSegment(segId, index);
+        await renderAdminTables();
+      }
+    }
+
+    document.getElementById('addSegmentEventForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const segId = document.getElementById('selectSegmentForEvent').value;
+      const title = document.getElementById('segEvtTitleInput').value.trim();
+      const venue = document.getElementById('segEvtVenueInput')?.value.trim() || '';
+      const desc = document.getElementById('segEvtDescInput')?.value.trim() || '';
+      const price = document.getElementById('segEvtPriceInput')?.value.trim() || '';
+
+      if (!segId) {
+        alert('Please select a Segment!');
+        return;
+      }
+
+      await addDbSegmentEvent(segId, title, desc, '', venue, price);
+      e.target.reset();
+      await renderAdminTables();
+      alert('Event added to Segment successfully!');
+    });
+
+    document.getElementById('addEventGroupForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const segId = document.getElementById('selectSegmentForGroup').value;
+      const evtId = document.getElementById('selectEventForGroup').value;
+      const name = document.getElementById('groupNameInput').value.trim();
+      const ageLimit = document.getElementById('groupAgeLimitInput').value.trim();
+      const rules = document.getElementById('groupRulesInput').value.trim();
+      const price = document.getElementById('groupPriceInput').value.trim();
+
+      if (!segId || !evtId) {
+        alert('Please select both Segment and Event!');
+        return;
+      }
+
+      await addDbEventGroup(segId, evtId, name, ageLimit, rules, '', price);
+      e.target.reset();
+      await renderAdminTables();
+      alert('Age Group / Category added successfully!');
+    });
 
     // Save Supabase Form Handler
     document.getElementById('supabaseKeyForm')?.addEventListener('submit', (e) => {
@@ -928,6 +1327,190 @@ create policy "Public Access EC" on public.ec_members for all using (true) with 
         await renderAdminTables();
       }
     }
+
+    // Modal Edit Functionality for Segments, Events, and Categories
+    let currentEditType = null; // 'segment', 'event', or 'group'
+    let currentEditIds = {};    // { segId, evtId, grpId }
+
+    function closeEditModal() {
+      const modal = document.getElementById('editModalOverlay');
+      if (modal) modal.style.display = 'none';
+      currentEditType = null;
+      currentEditIds = {};
+    }
+
+    function openEditSegmentModal(segId) {
+      const seg = cachedSegmentsData.find(s => String(s.id) === String(segId));
+      if (!seg) return alert('Segment not found.');
+
+      currentEditType = 'segment';
+      currentEditIds = { segId };
+
+      document.getElementById('editModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--gold-light);"></i> Edit Segment`;
+      
+      document.getElementById('editModalFields').innerHTML = `
+        <div style="display: grid; gap: 1rem;">
+          <div>
+            <label class="form-label">SEGMENT TITLE <span style="color: var(--gold-light);">*</span></label>
+            <input type="text" id="editSegTitle" class="form-input" value="${seg.title || ''}" required>
+          </div>
+          <div>
+            <label class="form-label">CATEGORY TAG</label>
+            <input type="text" id="editSegTag" class="form-input" value="${seg.tag || ''}">
+          </div>
+          <div>
+            <label class="form-label">ICON CLASS (FontAwesome)</label>
+            <input type="text" id="editSegIcon" class="form-input" value="${seg.icon || ''}">
+          </div>
+          <div>
+            <label class="form-label">DAY / SCHEDULE INFO</label>
+            <input type="text" id="editSegDayInfo" class="form-input" value="${seg.day_info || ''}">
+          </div>
+          <div>
+            <label class="form-label">DESCRIPTION</label>
+            <textarea id="editSegDesc" class="form-textarea" rows="3">${seg.description || ''}</textarea>
+          </div>
+        </div>
+      `;
+      document.getElementById('editModalOverlay').style.display = 'flex';
+    }
+
+    function openEditEventModal(segId, evtId) {
+      const seg = cachedSegmentsData.find(s => String(s.id) === String(segId));
+      const evt = seg?.events?.find(e => String(e.id) === String(evtId));
+      if (!evt) return alert('Event not found.');
+
+      currentEditType = 'event';
+      currentEditIds = { segId, evtId };
+
+      document.getElementById('editModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--gold-light);"></i> Edit Event`;
+
+      document.getElementById('editModalFields').innerHTML = `
+        <div style="display: grid; gap: 1rem;">
+          <div>
+            <label class="form-label">EVENT TITLE <span style="color: var(--gold-light);">*</span></label>
+            <input type="text" id="editEvtTitle" class="form-input" value="${evt.title || ''}" required>
+          </div>
+          <div>
+            <label class="form-label">VENUE</label>
+            <input type="text" id="editEvtVenue" class="form-input" value="${evt.venue || ''}">
+          </div>
+          <div>
+            <label class="form-label">EVENT REGISTRATION PRICE (৳)</label>
+            <input type="number" id="editEvtPrice" class="form-input" value="${evt.price || ''}" min="0" step="1">
+          </div>
+          <div>
+            <label class="form-label">EVENT DESCRIPTION</label>
+            <textarea id="editEvtDesc" class="form-textarea" rows="3">${evt.description || ''}</textarea>
+          </div>
+        </div>
+      `;
+      document.getElementById('editModalOverlay').style.display = 'flex';
+    }
+
+    function openEditGroupModal(segId, evtId, grpId) {
+      const seg = cachedSegmentsData.find(s => String(s.id) === String(segId));
+      const evt = seg?.events?.find(e => String(e.id) === String(evtId));
+      const grp = evt?.groups?.find(g => String(g.id) === String(grpId));
+      if (!grp) return alert('Category not found.');
+
+      currentEditType = 'group';
+      currentEditIds = { segId, evtId, grpId };
+
+      document.getElementById('editModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--gold-light);"></i> Edit Category / Age Group`;
+
+      document.getElementById('editModalFields').innerHTML = `
+        <div style="display: grid; gap: 1rem;">
+          <div>
+            <label class="form-label">CATEGORY / GROUP NAME <span style="color: var(--gold-light);">*</span></label>
+            <input type="text" id="editGrpName" class="form-input" value="${grp.group_name || ''}" required>
+          </div>
+          <div>
+            <label class="form-label">AGE / CLASS ELIGIBILITY</label>
+            <input type="text" id="editGrpAge" class="form-input" value="${grp.age_limit || ''}">
+          </div>
+          <div>
+            <label class="form-label">REGISTRATION PRICE (৳)</label>
+            <input type="number" id="editGrpPrice" class="form-input" value="${grp.price || ''}" min="0" step="1">
+          </div>
+          <div>
+            <label class="form-label">RULES & GUIDELINES</label>
+            <textarea id="editGrpRules" class="form-textarea" rows="2">${grp.rules || ''}</textarea>
+          </div>
+          <div>
+            <label class="form-label">DESCRIPTION</label>
+            <textarea id="editGrpDesc" class="form-textarea" rows="2">${grp.description || ''}</textarea>
+          </div>
+        </div>
+      `;
+      document.getElementById('editModalOverlay').style.display = 'flex';
+    }
+
+    async function handleSaveEditSubmit(e) {
+      if (e) e.preventDefault();
+      if (currentEditType === 'segment') {
+        const title = document.getElementById('editSegTitle').value.trim();
+        const tag = document.getElementById('editSegTag').value.trim();
+        const icon = document.getElementById('editSegIcon').value.trim();
+        const day_info = document.getElementById('editSegDayInfo').value.trim();
+        const description = document.getElementById('editSegDesc').value.trim();
+        await updateDbSegment(currentEditIds.segId, { title, tag, icon, day_info, description });
+      } else if (currentEditType === 'event') {
+        const title = document.getElementById('editEvtTitle').value.trim();
+        const venue = document.getElementById('editEvtVenue').value.trim();
+        const price = document.getElementById('editEvtPrice').value.trim();
+        const description = document.getElementById('editEvtDesc').value.trim();
+        await updateDbSegmentEvent(currentEditIds.segId, currentEditIds.evtId, { title, venue, price, description });
+      } else if (currentEditType === 'group') {
+        const group_name = document.getElementById('editGrpName').value.trim();
+        const age_limit = document.getElementById('editGrpAge').value.trim();
+        const price = document.getElementById('editGrpPrice').value.trim();
+        const rules = document.getElementById('editGrpRules').value.trim();
+        const description = document.getElementById('editGrpDesc').value.trim();
+        await updateDbEventGroup(currentEditIds.segId, currentEditIds.evtId, currentEditIds.grpId, { group_name, age_limit, price, rules, description });
+      }
+
+      closeEditModal();
+      await renderAdminTables();
+      alert('Updated successfully!');
+    }
+    window.handleSaveEditSubmit = handleSaveEditSubmit;
+
+    async function handleDeleteEventUnderSegment(segId, evtId) {
+      if (confirm('Delete this event and all its categories?')) {
+        await deleteDbSegmentEvent(segId, evtId);
+        await renderAdminTables();
+      }
+    }
+
+    async function handleDeleteGroupUnderEvent(segId, evtId, grpId) {
+      if (confirm('Delete this age category?')) {
+        await deleteDbEventGroup(segId, evtId, grpId);
+        await renderAdminTables();
+      }
+    }
   </script>
+
+  <!-- Edit Modal Container -->
+  <div id="editModalOverlay" class="admin-modal-overlay" style="display: none;">
+    <div class="admin-modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-gold); padding-bottom: 0.8rem;">
+        <h3 id="editModalTitle" style="font-family: var(--font-heading); color: #FFF; margin: 0;">
+          <i class="fa-solid fa-pen-to-square" style="color: var(--gold-light);"></i> Edit Item
+        </h3>
+        <button type="button" onclick="closeEditModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <form id="editModalForm" onsubmit="handleSaveEditSubmit(event)">
+        <div id="editModalFields"></div>
+        <div style="display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 1.5rem;">
+          <button type="button" class="btn-danger-sm" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #FFF;" onclick="closeEditModal()">Cancel</button>
+          <button type="submit" class="btn-gold"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>
+

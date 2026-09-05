@@ -250,6 +250,586 @@ async function deleteDbEcMember(index, dbId = null) {
   return true;
 }
 
+// --------------------------------------------------------------------------
+// 3. Segment & Event Hierarchy API Methods (3-Tier: Segment -> Event -> Group)
+// --------------------------------------------------------------------------
+
+const DEFAULT_SEGMENTS_HIERARCHY = [
+  {
+    id: "seg-1",
+    title: "Solo Vocal & Band Beats",
+    tag: "Sangeet • Music",
+    icon: "fa-guitar",
+    description: "Classical, Folk, Nazrul Geeti, Rabindra Sangeet, and Western Rock Band Competitions.",
+    day_info: "Day 2 & Day 3",
+    events: [
+      {
+        id: "evt-101",
+        title: "Solo Vocal Battle",
+        description: "Perform your best solo vocal rendition across classical, folk, or modern categories.",
+        time: "10:00 AM - 01:00 PM",
+        venue: "Main Auditorium",
+        groups: [
+          {
+            id: "grp-1001",
+            group_name: "Group A (Junior)",
+            age_limit: "Class 6 to Class 8",
+            rules: "Perform 1 Classical or Folk song. Maximum stage duration is 4 minutes.",
+            description: "Junior solo vocal category.",
+            price: "100"
+          },
+          {
+            id: "grp-1002",
+            group_name: "Group B (Senior)",
+            age_limit: "Class 9 to Class 12",
+            rules: "Perform 1 Rabindra, Nazrul or Modern song. Maximum stage duration is 5 minutes.",
+            description: "Senior solo vocal category.",
+            price: "150"
+          }
+        ]
+      },
+      {
+        id: "evt-102",
+        title: "Band Beats (Battle of Bands)",
+        description: "College and School band musical clash.",
+        time: "03:00 PM - 07:00 PM",
+        venue: "Open Air Stage",
+        groups: [
+          {
+            id: "grp-1003",
+            group_name: "Open Rock & Fusion Category",
+            age_limit: "Open for all students",
+            rules: "Maximum 15 minutes total stage setup and performance time. Original composition or cover song allowed.",
+            description: "Band battle competition.",
+            price: "500"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "seg-2",
+    title: "Classical & Folk Dance",
+    tag: "Nritya • Dance",
+    icon: "fa-person-dancing",
+    description: "Solo classical choreography, Manipuri, Bharatnatyam, Kathak, and Modern Creative Dance.",
+    day_info: "Day 1",
+    events: [
+      {
+        id: "evt-201",
+        title: "Classical Solo Choreography",
+        description: "Showcase classical traditional moves.",
+        time: "11:00 AM - 02:00 PM",
+        venue: "Drama Hall",
+        groups: [
+          {
+            id: "grp-2001",
+            group_name: "Group A (Junior)",
+            age_limit: "Class 6 to Class 8",
+            rules: "Manipuri, Kathak or Bharatnatyam. Max 4 mins.",
+            description: "Junior classical dance.",
+            price: "100"
+          },
+          {
+            id: "grp-2002",
+            group_name: "Group B (Senior)",
+            age_limit: "Class 9 to Class 12",
+            rules: "Classical solo performance. Max 5 mins.",
+            description: "Senior classical dance.",
+            price: "150"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "seg-3",
+    title: "Street Play & Drama Skit",
+    tag: "Natya • Theatre",
+    icon: "fa-masks-theater",
+    description: "Group drama stage plays, social street theatre, and dramatic solo monologues.",
+    day_info: "Day 2",
+    events: [
+      {
+        id: "evt-301",
+        title: "Street Play (Rasta Natok)",
+        description: "Social message street theatre.",
+        time: "02:00 PM - 05:00 PM",
+        venue: "Campus Plaza",
+        groups: [
+          {
+            id: "grp-3001",
+            group_name: "Group Skit Team",
+            age_limit: "All registered institutions",
+            rules: "Max 12 members per team. Stage setup within 3 mins. Total 15 mins allowed.",
+            description: "Inter-institutional group drama competition.",
+            price: "300"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "seg-4",
+    title: "Art, Calligraphy & Craft",
+    tag: "Chitrakala • Fine Arts",
+    icon: "fa-palette",
+    description: "On-spot painting, Bengali calligraphy exhibition, and traditional eco-craft creation.",
+    day_info: "Day 1 & Day 2",
+    events: [
+      {
+        id: "evt-401",
+        title: "On-Spot Canvas Painting",
+        description: "Live art creation on given theme.",
+        time: "10:00 AM - 12:30 PM",
+        venue: "Art Gallery Wing",
+        groups: [
+          {
+            id: "grp-4001",
+            group_name: "Group A (Junior)",
+            age_limit: "Class 6 to Class 8",
+            rules: "Theme disclosed on spot. Art paper provided. Bring your own colors.",
+            description: "Junior art competition.",
+            price: "80"
+          },
+          {
+            id: "grp-4002",
+            group_name: "Group B (Senior)",
+            age_limit: "Class 9 to Class 12",
+            rules: "Theme disclosed on spot. Canvas provided. Acrylic / Watercolor.",
+            description: "Senior art competition.",
+            price: "120"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "seg-5",
+    title: "Poetry & Scriptwriting",
+    tag: "Aabritti • Recitation",
+    icon: "fa-feather-pointed",
+    description: "Bengali poetry recitation, English elocution, and creative scriptwriting competition.",
+    day_info: "Day 1",
+    events: [
+      {
+        id: "evt-501",
+        title: "Kabita Aabritti (Poetry Recitation)",
+        description: "Expressive Bengali & English recitation.",
+        time: "09:30 AM - 12:00 PM",
+        venue: "Seminar Room 101",
+        groups: [
+          {
+            id: "grp-5001",
+            group_name: "Group A",
+            age_limit: "Class 6 to Class 8",
+            rules: "Recite 1 selected Bengali poem. Max 3 mins.",
+            description: "Junior recitation.",
+            price: "50"
+          },
+          {
+            id: "grp-5002",
+            group_name: "Group B",
+            age_limit: "Class 9 to Class 12",
+            rules: "Recite 1 classic Bengali poem. Max 4 mins.",
+            description: "Senior recitation.",
+            price: "75"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "seg-6",
+    title: "Cultural & Heritage Olympiad",
+    tag: "Jiggasa • Heritage Quiz",
+    icon: "fa-brain",
+    description: "Quiz battle covering Bengali literature, national history, art history, and folk music.",
+    day_info: "Day 2",
+    events: [
+      {
+        id: "evt-601",
+        title: "Heritage Quiz Battle",
+        description: "Buzzer round cultural trivia.",
+        time: "11:00 AM - 01:30 PM",
+        venue: "Auditorium Annex",
+        groups: [
+          {
+            id: "grp-6001",
+            group_name: "School Wing",
+            age_limit: "Class 6 to Class 10",
+            rules: "Team of 3 students per institution.",
+            description: "School quiz league.",
+            price: "100"
+          },
+          {
+            id: "grp-6002",
+            group_name: "College Wing",
+            age_limit: "Class 11 to Class 12",
+            rules: "Team of 3 students per institution.",
+            description: "College quiz league.",
+            price: "150"
+          }
+        ]
+      }
+    ]
+  }
+];
+
+function getStoredSegments() {
+  const data = localStorage.getItem('cultura_segments_hierarchy');
+  if (!data) {
+    localStorage.setItem('cultura_segments_hierarchy', JSON.stringify(DEFAULT_SEGMENTS_HIERARCHY));
+    return DEFAULT_SEGMENTS_HIERARCHY;
+  }
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    return DEFAULT_SEGMENTS_HIERARCHY;
+  }
+}
+
+function saveStoredSegments(segmentsArr) {
+  localStorage.setItem('cultura_segments_hierarchy', JSON.stringify(segmentsArr));
+}
+
+/**
+ * Fetch all segments with nested events and groups
+ */
+async function fetchDbSegments() {
+  if (supabaseClient) {
+    try {
+      const { data: segs, error: segErr } = await supabaseClient
+        .from('segments')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (!segErr && Array.isArray(segs) && segs.length > 0) {
+        const { data: evts } = await supabaseClient.from('segment_events').select('*');
+        const { data: grps } = await supabaseClient.from('event_groups').select('*');
+
+        const result = segs.map(s => {
+          const matchedEvts = (evts || []).filter(e => e.segment_id === s.id).map(e => {
+            const matchedGrps = (grps || []).filter(g => g.event_id === e.id).map(g => ({
+              id: g.id,
+              group_name: g.group_name || g.name,
+              age_limit: g.age_limit || g.age_group,
+              rules: g.rules || '',
+              description: g.description || '',
+              price: g.price || ''
+            }));
+            return {
+              id: e.id,
+              title: e.title,
+              description: e.description,
+              time: e.time,
+              venue: e.venue,
+              price: e.price || '',
+              groups: matchedGrps
+            };
+          });
+          return {
+            id: s.id,
+            title: s.title,
+            tag: s.tag || 'Cultural Segment',
+            icon: s.icon || 'fa-star',
+            description: s.description || '',
+            day_info: s.day_info || 'Festival Day',
+            events: matchedEvts
+          };
+        });
+        return result;
+      }
+    } catch (e) {
+      console.warn('Supabase fetchDbSegments exception (falling back to local):', e);
+    }
+  }
+  return getStoredSegments();
+}
+
+/**
+ * Add new Segment
+ */
+async function addDbSegment(title, tag, icon, description, day_info = 'Day 1') {
+  const newSeg = {
+    id: 'seg-' + Date.now(),
+    title,
+    tag: tag || 'Cultural Segment',
+    icon: icon || 'fa-star',
+    description,
+    day_info,
+    events: []
+  };
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('segments')
+        .insert([{ title, tag, icon, description, day_info }])
+        .select();
+
+      if (error) {
+        console.error('Supabase addSegment error:', error);
+      } else if (data && data[0]) {
+        newSeg.id = data[0].id;
+      }
+    } catch (e) {
+      console.error('Supabase addSegment exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  segments.push(newSeg);
+  saveStoredSegments(segments);
+  return true;
+}
+
+/**
+ * Delete Segment
+ */
+async function deleteDbSegment(segmentId, index) {
+  if (supabaseClient && segmentId && !String(segmentId).startsWith('seg-')) {
+    try {
+      await supabaseClient.from('segments').delete().eq('id', segmentId);
+    } catch (e) {
+      console.error('Supabase deleteSegment exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  if (segments[index]) {
+    segments.splice(index, 1);
+  } else {
+    const foundIdx = segments.findIndex(s => s.id === segmentId);
+    if (foundIdx !== -1) segments.splice(foundIdx, 1);
+  }
+  saveStoredSegments(segments);
+  return true;
+}
+
+/**
+ * Add Event under a Segment
+ */
+async function addDbSegmentEvent(segmentId, title, description, time, venue, price) {
+  const newEvt = {
+    id: 'evt-' + Date.now(),
+    title,
+    description,
+    time: time || 'TBA',
+    venue: venue || 'Main Campus',
+    price: price || '',
+    groups: []
+  };
+
+  if (supabaseClient && segmentId && !String(segmentId).startsWith('seg-')) {
+    try {
+      const insertObj = { segment_id: segmentId, title, description, time, venue };
+      if (price) insertObj.price = price;
+      const { data, error } = await supabaseClient
+        .from('segment_events')
+        .insert([insertObj])
+        .select();
+      if (data && data[0]) {
+        newEvt.id = data[0].id;
+      }
+    } catch (e) {
+      console.error('Supabase addSegmentEvent exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  const targetSeg = segments.find(s => String(s.id) === String(segmentId));
+  if (targetSeg) {
+    if (!targetSeg.events) targetSeg.events = [];
+    targetSeg.events.push(newEvt);
+    saveStoredSegments(segments);
+  }
+  return true;
+}
+
+/**
+ * Delete Event under a Segment
+ */
+async function deleteDbSegmentEvent(segmentId, eventId) {
+  if (supabaseClient && eventId && !String(eventId).startsWith('evt-')) {
+    try {
+      await supabaseClient.from('segment_events').delete().eq('id', eventId);
+    } catch (e) {
+      console.error('Supabase deleteSegmentEvent exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  const targetSeg = segments.find(s => String(s.id) === String(segmentId));
+  if (targetSeg && targetSeg.events) {
+    targetSeg.events = targetSeg.events.filter(e => String(e.id) !== String(eventId));
+    saveStoredSegments(segments);
+  }
+  return true;
+}
+
+/**
+ * Add Group / Category under an Event
+ */
+async function addDbEventGroup(segmentId, eventId, group_name, age_limit, rules, description, price) {
+  const newGrp = {
+    id: 'grp-' + Date.now(),
+    group_name,
+    age_limit: age_limit || 'All ages',
+    rules: rules || '',
+    description: description || '',
+    price: price || ''
+  };
+
+  if (supabaseClient && eventId && !String(eventId).startsWith('evt-')) {
+    try {
+      const insertObj = { event_id: eventId, group_name, age_limit, rules, description };
+      if (price) insertObj.price = price;
+      const { data } = await supabaseClient
+        .from('event_groups')
+        .insert([insertObj])
+        .select();
+      if (data && data[0]) {
+        newGrp.id = data[0].id;
+      }
+    } catch (e) {
+      console.error('Supabase addEventGroup exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  const targetSeg = segments.find(s => String(s.id) === String(segmentId));
+  if (targetSeg && targetSeg.events) {
+    const targetEvt = targetSeg.events.find(e => String(e.id) === String(eventId));
+    if (targetEvt) {
+      if (!targetEvt.groups) targetEvt.groups = [];
+      targetEvt.groups.push(newGrp);
+      saveStoredSegments(segments);
+    }
+  }
+  return true;
+}
+
+/**
+ * Delete Group under an Event
+ */
+async function deleteDbEventGroup(segmentId, eventId, groupId) {
+  if (supabaseClient && groupId && !String(groupId).startsWith('grp-')) {
+    try {
+      await supabaseClient.from('event_groups').delete().eq('id', groupId);
+    } catch (e) {
+      console.error('Supabase deleteEventGroup exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  const targetSeg = segments.find(s => String(s.id) === String(segmentId));
+  if (targetSeg && targetSeg.events) {
+    const targetEvt = targetSeg.events.find(e => String(e.id) === String(eventId));
+    if (targetEvt && targetEvt.groups) {
+      targetEvt.groups = targetEvt.groups.filter(g => String(g.id) !== String(groupId));
+      saveStoredSegments(segments);
+    }
+  }
+  return true;
+}
+
+/**
+ * Update Segment
+ */
+async function updateDbSegment(segmentId, data) {
+  const { title, tag, icon, description, day_info } = data;
+  if (supabaseClient && segmentId && !String(segmentId).startsWith('seg-')) {
+    try {
+      await supabaseClient
+        .from('segments')
+        .update({ title, tag, icon, description, day_info })
+        .eq('id', segmentId);
+    } catch (e) {
+      console.error('Supabase updateDbSegment exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  const target = segments.find(s => String(s.id) === String(segmentId));
+  if (target) {
+    if (title !== undefined) target.title = title;
+    if (tag !== undefined) target.tag = tag;
+    if (icon !== undefined) target.icon = icon;
+    if (description !== undefined) target.description = description;
+    if (day_info !== undefined) target.day_info = day_info;
+    saveStoredSegments(segments);
+  }
+  return true;
+}
+
+/**
+ * Update Event under a Segment
+ */
+async function updateDbSegmentEvent(segmentId, eventId, data) {
+  const { title, description, venue, price } = data;
+  if (supabaseClient && eventId && !String(eventId).startsWith('evt-')) {
+    try {
+      await supabaseClient
+        .from('segment_events')
+        .update({ title, description, venue, price })
+        .eq('id', eventId);
+    } catch (e) {
+      console.error('Supabase updateDbSegmentEvent exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  const targetSeg = segments.find(s => String(s.id) === String(segmentId));
+  if (targetSeg && targetSeg.events) {
+    const targetEvt = targetSeg.events.find(e => String(e.id) === String(eventId));
+    if (targetEvt) {
+      if (title !== undefined) targetEvt.title = title;
+      if (description !== undefined) targetEvt.description = description;
+      if (venue !== undefined) targetEvt.venue = venue;
+      if (price !== undefined) targetEvt.price = price;
+      saveStoredSegments(segments);
+    }
+  }
+  return true;
+}
+
+/**
+ * Update Group/Category under an Event
+ */
+async function updateDbEventGroup(segmentId, eventId, groupId, data) {
+  const { group_name, age_limit, rules, description, price } = data;
+  if (supabaseClient && groupId && !String(groupId).startsWith('grp-')) {
+    try {
+      await supabaseClient
+        .from('event_groups')
+        .update({ group_name, age_limit, rules, description, price })
+        .eq('id', groupId);
+    } catch (e) {
+      console.error('Supabase updateDbEventGroup exception:', e);
+    }
+  }
+
+  const segments = getStoredSegments();
+  const targetSeg = segments.find(s => String(s.id) === String(segmentId));
+  if (targetSeg && targetSeg.events) {
+    const targetEvt = targetSeg.events.find(e => String(e.id) === String(eventId));
+    if (targetEvt && targetEvt.groups) {
+      const targetGrp = targetEvt.groups.find(g => String(g.id) === String(groupId));
+      if (targetGrp) {
+        if (group_name !== undefined) targetGrp.group_name = group_name;
+        if (age_limit !== undefined) targetGrp.age_limit = age_limit;
+        if (rules !== undefined) targetGrp.rules = rules;
+        if (description !== undefined) targetGrp.description = description;
+        if (price !== undefined) targetGrp.price = price;
+        saveStoredSegments(segments);
+      }
+    }
+  }
+  return true;
+}
+
+
 /**
  * Helper to push any local storage data up to Supabase
  */
