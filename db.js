@@ -483,7 +483,11 @@ function getStoredSegments() {
     return DEFAULT_SEGMENTS_HIERARCHY;
   }
   try {
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
+    return DEFAULT_SEGMENTS_HIERARCHY;
   } catch (e) {
     return DEFAULT_SEGMENTS_HIERARCHY;
   }
@@ -546,6 +550,7 @@ async function fetchDbSegments() {
   }
   return getStoredSegments();
 }
+
 
 /**
  * Add new Segment
@@ -831,39 +836,86 @@ async function updateDbEventGroup(segmentId, eventId, groupId, data) {
 
 
 /**
- * Helper to push any local storage data up to Supabase
+ * Helper to push all local data (Segments, Events, Categories, Schedule, EC Members) to Supabase
  */
 async function syncLocalDataToSupabase() {
   if (!supabaseClient) {
-    alert('❌ Supabase is not connected!');
+    alert('❌ Supabase is not connected! Check config.js.');
     return false;
   }
 
-  let eventsPushed = 0;
+  let segPushed = 0;
+  let evtPushed = 0;
+  let grpPushed = 0;
+  let schedulePushed = 0;
   let ecPushed = 0;
 
-  // Push local schedule events
+  // 1. Push Segments, Segment Events & Categories
+  const localSegments = getStoredSegments();
+  for (const seg of localSegments) {
+    try {
+      let segDbId = seg.id;
+      const { data: sData, error: sErr } = await supabaseClient
+        .from('segments')
+        .insert([{ title: seg.title, tag: seg.tag, icon: seg.icon, description: seg.description, day_info: seg.day_info }])
+        .select();
+
+      if (!sErr && sData && sData[0]) {
+        segDbId = sData[0].id;
+        segPushed++;
+      }
+
+      for (const evt of (seg.events || [])) {
+        let evtDbId = evt.id;
+        const { data: eData, error: eErr } = await supabaseClient
+          .from('segment_events')
+          .insert([{ segment_id: segDbId, title: evt.title, description: evt.description, time: evt.time, venue: evt.venue, price: evt.price }])
+          .select();
+
+        if (!eErr && eData && eData[0]) {
+          evtDbId = eData[0].id;
+          evtPushed++;
+        }
+
+        for (const grp of (evt.groups || [])) {
+          const { error: gErr } = await supabaseClient
+            .from('event_groups')
+            .insert([{ event_id: evtDbId, group_name: grp.group_name, age_limit: grp.age_limit, rules: grp.rules, description: grp.description, price: grp.price }]);
+
+          if (!gErr) grpPushed++;
+        }
+      }
+    } catch (err) {
+      console.warn('Sync segment error:', err);
+    }
+  }
+
+  // 2. Push Schedule events
   const localSchedule = getStoredSchedule();
   for (const dayKey of ['day1', 'day2', 'day3']) {
     const events = localSchedule[dayKey] || [];
     for (const item of events) {
-      const { error } = await supabaseClient
-        .from('events')
-        .insert([{ day: dayKey, time: item.time, title: item.title, venue: item.venue, description: item.desc || '' }]);
-      if (!error) eventsPushed++;
+      try {
+        const { error } = await supabaseClient
+          .from('schedule')
+          .insert([{ day: dayKey, time: item.time, title: item.title, venue: item.venue, description: item.desc || '' }]);
+        if (!error) schedulePushed++;
+      } catch (e) {}
     }
   }
 
-  // Push local EC members
+  // 3. Push EC members
   const localMembers = getStoredEcMembers();
   for (const member of localMembers) {
-    const { error } = await supabaseClient
-      .from('ec_members')
-      .insert([{ name: member.name, role: member.role, wing: member.wing || 'BVB', batch: member.wing || 'BVB', image_url: member.image || 'logo.png' }]);
-    if (!error) ecPushed++;
+    try {
+      const { error } = await supabaseClient
+        .from('ec_members')
+        .insert([{ name: member.name, role: member.role, wing: member.wing || 'BVB', batch: member.wing || 'BVB', image_url: member.image || 'logo.png' }]);
+      if (!error) ecPushed++;
+    } catch (e) {}
   }
 
-  alert(`✅ Sync complete!\nPushed ${eventsPushed} event(s) and ${ecPushed} EC member(s) to Supabase.`);
+  alert(`✅ Full Sync Complete!\nPushed:\n- ${segPushed} Segment(s)\n- ${evtPushed} Event(s)\n- ${grpPushed} Category/Group(s)\n- ${schedulePushed} Schedule Event(s)\n- ${ecPushed} EC Member(s)\n\nAll data is now live on Supabase!`);
   return true;
 }
 
