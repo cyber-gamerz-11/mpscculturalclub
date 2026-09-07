@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Countdown Clock Logic
 function initCountdown() {
-  const targetDate = new Date('October 14, 2026 09:00:00').getTime();
+  const targetDate = new Date('October 1, 2026 09:00:00').getTime();
 
   function updateCountdown() {
     const now = new Date().getTime();
