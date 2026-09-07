@@ -644,9 +644,11 @@
                   <option value="General Secretary">General Secretary</option>
                   <option value="Organizing Secretary">Organizing Secretary</option>
                   <option value="Publication Secretary">Publication Secretary</option>
+                  <option value="Graphic Designer">Graphic Designer</option>
                   <option value="Office Secretary">Office Secretary</option>
                   <option value="Head of Coordinator">Head of Coordinator</option>
                   <option value="Head of Volunteer">Head of Volunteer</option>
+                  <option value="External Affairs Secretary">External Affairs Secretary</option>
                   <option value="Treasurer">Treasurer</option>
                 </select>
               </div>
@@ -1101,7 +1103,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       }
 
       // 3. Render Executive Committee Table
-      const ROLE_RANK_ORDER_ADMIN = ['President','Vice President','General Secretary','Organizing Secretary','Publication Secretary','Office Secretary','Head of Coordinator','Head of Volunteer','Treasurer'];
+      const ROLE_RANK_ORDER_ADMIN = ['President','Vice President','General Secretary','Organizing Secretary','Publication Secretary','Graphic Designer','Office Secretary','Head of Coordinator','Head of Volunteer','External Affairs Secretary','Treasurer'];
       const rawEcMembers = await fetchDbEcMembers();
       const ecMembers = [...rawEcMembers].sort((a, b) => {
         const rankA = ROLE_RANK_ORDER_ADMIN.indexOf(a.role);

@@ -149,9 +149,11 @@ const ROLE_RANK_ORDER = [
   'General Secretary',
   'Organizing Secretary',
   'Publication Secretary',
+  'Graphic Designer',
   'Office Secretary',
   'Head of Coordinator',
   'Head of Volunteer',
+  'External Affairs Secretary',
   'Treasurer'
 ];
 

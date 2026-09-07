@@ -272,7 +272,8 @@ async function renderLandingEcGrid() {
   const WING_ORDER = ['BVB', 'EVB', 'BVG', 'EVG'];
   const ROLE_RANK_LANDING = [
     'President','Vice President','General Secretary','Organizing Secretary',
-    'Publication Secretary','Office Secretary','Head of Coordinator','Head of Volunteer','Treasurer'
+    'Publication Secretary','Graphic Designer','Office Secretary','Head of Coordinator',
+    'Head of Volunteer','External Affairs Secretary','Treasurer'
   ];
 
   const sorted = [...ecMembers].sort((a, b) => {
