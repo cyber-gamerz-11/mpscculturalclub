@@ -950,52 +950,14 @@ async function authenticateAdmin(emailOrId, password) {
    PARTICIPANT REGISTRATION & BKASH SYSTEM ENGINE
    ========================================================================== */
 
-const INITIAL_DEMO_REGISTRATIONS = [
-  {
-    id: 'reg-demo-1',
-    name: 'Abrar Hossain',
-    class_name: 'HSC 1st Year',
-    institute: 'Govt. Science College',
-    phone: '01712345678',
-    email: 'abrar.hossain@gmail.com',
-    segment_title: 'Sangeet (Music)',
-    event_title: 'Rabindra Sangeet Solo',
-    category_name: 'Category B (HSC / College)',
-    amount: '50',
-    sender_bkash: '01712345678',
-    trx_id: '9A8B7C6D5E',
-    status: 'pending',
-    created_at: new Date(Date.now() - 3600000 * 2).toISOString()
-  },
-  {
-    id: 'reg-demo-2',
-    name: 'Nusrat Jahan',
-    class_name: 'Class 10',
-    institute: 'Holy Cross Girls High School',
-    phone: '01898765432',
-    email: 'nusrat.jahan@gmail.com',
-    segment_title: 'Natya (Drama & Theatre)',
-    event_title: 'Mono Act Play',
-    category_name: 'Category A (School)',
-    amount: '100',
-    sender_bkash: '01898765432',
-    trx_id: '8F7E6D5C4B',
-    status: 'approved',
-    created_at: new Date(Date.now() - 3600000 * 12).toISOString()
-  }
-];
-
 function getStoredRegistrations() {
   const data = localStorage.getItem('cultura_registrations');
-  if (!data) {
-    saveStoredRegistrations(INITIAL_DEMO_REGISTRATIONS);
-    return INITIAL_DEMO_REGISTRATIONS;
-  }
+  if (!data) return [];
   try {
     const parsed = JSON.parse(data);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : INITIAL_DEMO_REGISTRATIONS;
+    return Array.isArray(parsed) ? parsed : [];
   } catch (e) {
-    return INITIAL_DEMO_REGISTRATIONS;
+    return [];
   }
 }
 
@@ -1003,56 +965,50 @@ function saveStoredRegistrations(arr) {
   localStorage.setItem('cultura_registrations', JSON.stringify(arr));
 }
 
+/**
+ * Fetch registrations: Supabase is the SINGLE SOURCE OF TRUTH.
+ * When Supabase is connected and returns data, localStorage is overwritten
+ * to mirror it exactly, so local and online always stay in sync.
+ * localStorage is only used as a fallback when Supabase is unreachable.
+ */
 async function fetchDbRegistrations() {
-  let supabaseRegs = [];
-  let supabaseSuccess = false;
   if (supabaseClient) {
     try {
       const { data, error } = await supabaseClient
         .from('registrations')
         .select('*')
         .order('created_at', { ascending: false });
+
       if (!error && Array.isArray(data)) {
-        supabaseRegs = data;
-        supabaseSuccess = true;
+        // Supabase is the truth — sync localStorage to match it exactly
+        const mapped = data.map(r => ({
+          id: r.id,
+          name: r.name,
+          class_name: r.class_name,
+          institute: r.institute,
+          phone: r.phone,
+          email: r.email,
+          segment_title: r.segment_title,
+          event_title: r.event_title,
+          category_name: r.category_name || '',
+          amount: r.amount || '0',
+          sender_bkash: r.sender_bkash,
+          trx_id: r.trx_id,
+          status: r.status || 'pending',
+          created_at: r.created_at
+        }));
+        saveStoredRegistrations(mapped);
+        return mapped;
       } else if (error) {
         console.warn('⚠️ Supabase registrations query notice (falling back to local):', error.message || error);
       }
     } catch (e) {
-      console.warn('Supabase fetchDbRegistrations exception:', e);
+      console.warn('Supabase fetchDbRegistrations exception (falling back to local):', e);
     }
   }
 
-  const localRegs = getStoredRegistrations();
-  if (!supabaseSuccess || supabaseRegs.length === 0) {
-    return localRegs;
-  }
-
-  const map = new Map();
-  localRegs.forEach(r => map.set(r.trx_id || r.id, r));
-  supabaseRegs.forEach(r => {
-    const key = r.trx_id || r.id;
-    map.set(key, {
-      id: r.id,
-      name: r.name,
-      class_name: r.class_name,
-      institute: r.institute,
-      phone: r.phone,
-      email: r.email,
-      segment_title: r.segment_title,
-      event_title: r.event_title,
-      category_name: r.category_name || '',
-      amount: r.amount || '0',
-      sender_bkash: r.sender_bkash,
-      trx_id: r.trx_id,
-      status: r.status || 'pending',
-      created_at: r.created_at
-    });
-  });
-
-  const merged = Array.from(map.values());
-  merged.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  return merged;
+  // Fallback: Supabase unreachable, use whatever is in localStorage
+  return getStoredRegistrations();
 }
 
 async function addDbRegistration(regData) {
@@ -1095,12 +1051,14 @@ async function addDbRegistration(regData) {
         .select();
       if (!error && data && data[0]) {
         newReg.id = data[0].id;
+        newReg.created_at = data[0].created_at || newReg.created_at;
       }
     } catch (e) {
       console.error('Supabase addDbRegistration exception:', e);
     }
   }
 
+  // Also add to localStorage cache
   const current = getStoredRegistrations();
   current.unshift(newReg);
   saveStoredRegistrations(current);
@@ -1108,6 +1066,7 @@ async function addDbRegistration(regData) {
 }
 
 async function updateRegistrationStatus(regId, newStatus) {
+  // Update in Supabase first (source of truth)
   if (supabaseClient && regId && !String(regId).startsWith('reg-')) {
     try {
       await supabaseClient
@@ -1119,6 +1078,7 @@ async function updateRegistrationStatus(regId, newStatus) {
     }
   }
 
+  // Sync localStorage cache
   const list = getStoredRegistrations();
   const item = list.find(r => String(r.id) === String(regId));
   if (item) {
@@ -1129,6 +1089,7 @@ async function updateRegistrationStatus(regId, newStatus) {
 }
 
 async function deleteDbRegistration(regId) {
+  // Delete from Supabase first (source of truth)
   if (supabaseClient && regId && !String(regId).startsWith('reg-')) {
     try {
       await supabaseClient
@@ -1140,6 +1101,7 @@ async function deleteDbRegistration(regId) {
     }
   }
 
+  // Remove from localStorage cache
   const list = getStoredRegistrations();
   const idx = list.findIndex(r => String(r.id) === String(regId));
   if (idx !== -1) {
@@ -1148,3 +1110,4 @@ async function deleteDbRegistration(regId) {
   }
   return true;
 }
+
