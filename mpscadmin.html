@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Center | Cultura Fiesta 1.0</title>
   <meta name="description" content="Management portal for MPSC Cultural Club administrators.">
-  
+
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  
+
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="styles.css">
-  
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="logo.png">
 
@@ -90,7 +91,9 @@
       text-transform: uppercase;
     }
 
-    .form-input, .form-select, .form-textarea {
+    .form-input,
+    .form-select,
+    .form-textarea {
       width: 100%;
       padding: 0.85rem 1.1rem;
       background: rgba(5, 10, 23, 0.7);
@@ -103,7 +106,9 @@
       transition: var(--transition-fast);
     }
 
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
       border-color: var(--gold-light);
       box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
     }
@@ -174,7 +179,8 @@
       color: var(--gold-primary);
     }
 
-    .sidebar-link:hover, .sidebar-link.active {
+    .sidebar-link:hover,
+    .sidebar-link.active {
       background: rgba(212, 175, 55, 0.12);
       color: var(--gold-light);
       border: 1px solid var(--border-gold);
@@ -269,6 +275,7 @@
       font-size: 0.8rem;
       transition: var(--transition-fast);
     }
+
     .btn-edit-sm:hover {
       background: var(--gold-primary);
       color: #000;
@@ -289,6 +296,7 @@
       align-items: center;
       padding: 1rem;
     }
+
     .admin-modal-box {
       background: #121622;
       border: 1px solid var(--border-gold);
@@ -302,9 +310,17 @@
       position: relative;
       animation: modalFadeIn 0.25s ease-out;
     }
+
     @keyframes modalFadeIn {
-      from { opacity: 0; transform: translateY(-10px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
 
@@ -312,19 +328,23 @@
       .admin-sidebar {
         transform: translateX(-100%);
       }
+
       .admin-sidebar.open {
         transform: translateX(0);
       }
+
       .admin-content {
         margin-left: 0;
         padding: 1.5rem;
       }
+
       .mobile-admin-toggle {
         display: inline-block;
       }
     }
   </style>
 </head>
+
 <body class="admin-body">
 
   <!-- Authentication Screen -->
@@ -341,12 +361,14 @@
       <form id="adminLoginForm">
         <div class="form-group">
           <label class="form-label">ADMIN ID / EMAIL</label>
-          <input type="text" id="adminIdInput" class="form-input" placeholder="Enter Admin ID" required autocomplete="username">
+          <input type="text" id="adminIdInput" class="form-input" placeholder="Enter Admin ID" required
+            autocomplete="username">
         </div>
 
         <div class="form-group">
           <label class="form-label">PASSWORD</label>
-          <input type="password" id="adminPassInput" class="form-input" placeholder="Enter Password" required autocomplete="current-password">
+          <input type="password" id="adminPassInput" class="form-input" placeholder="Enter Password" required
+            autocomplete="current-password">
         </div>
 
         <button type="submit" class="btn-gold" style="width: 100%; margin-top: 1rem; padding: 0.85rem;">
@@ -355,7 +377,8 @@
       </form>
 
       <div style="margin-top: 1.5rem;">
-        <a href="index.html" style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-arrow-left"></i> Return to Main Website</a>
+        <a href="index.html" style="color: var(--text-muted); font-size: 0.85rem;"><i
+            class="fa-solid fa-arrow-left"></i> Return to Main Website</a>
       </div>
     </div>
   </div>
@@ -365,9 +388,11 @@
     <!-- Sidebar Navigation -->
     <aside class="admin-sidebar" id="adminSidebar">
       <div class="sidebar-header">
-        <img src="logo.png" alt="MPSC Logo" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--gold-primary);">
+        <img src="logo.png" alt="MPSC Logo"
+          style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--gold-primary);">
         <div>
-          <div style="font-family: var(--font-heading); color: #FFF; font-size: 1rem; font-weight: 700;">CULTURA ADMIN</div>
+          <div style="font-family: var(--font-heading); color: #FFF; font-size: 1rem; font-weight: 700;">CULTURA ADMIN
+          </div>
           <div style="color: var(--gold-primary); font-size: 0.72rem; letter-spacing: 1px;">MPSC CULTURAL CLUB</div>
         </div>
       </div>
@@ -375,6 +400,9 @@
       <ul class="sidebar-nav">
         <li class="sidebar-link active" data-tab="tab-dashboard">
           <i class="fa-solid fa-chart-pie"></i> Dashboard Overview
+        </li>
+        <li class="sidebar-link" data-tab="tab-registrations">
+          <i class="fa-solid fa-users-rectangle"></i> Registrations & Payments
         </li>
         <li class="sidebar-link" data-tab="tab-segments">
           <i class="fa-solid fa-sitemap"></i> Segment & Event Manager
@@ -394,7 +422,8 @@
       </ul>
 
       <div style="padding: 1.5rem; border-top: 1px solid rgba(212, 175, 55, 0.15);">
-        <button id="logoutBtn" class="btn-outline-gold" style="width: 100%;"><i class="fa-solid fa-right-from-bracket"></i> Log Out</button>
+        <button id="logoutBtn" class="btn-outline-gold" style="width: 100%;"><i
+            class="fa-solid fa-right-from-bracket"></i> Log Out</button>
       </div>
     </aside>
 
@@ -406,43 +435,134 @@
             <i class="fa-solid fa-bars"></i>
           </button>
           <div>
-            <h1 style="font-family: var(--font-heading); color: #FFF; font-size: 1.6rem;" id="pageTitleHeading">Admin Portal</h1>
-            <p style="color: var(--text-muted); font-size: 0.88rem;">Manage live schedule, EC members, and database connection</p>
+            <h1 style="font-family: var(--font-heading); color: #FFF; font-size: 1.6rem;" id="pageTitleHeading">Admin
+              Portal</h1>
+            <p style="color: var(--text-muted); font-size: 0.88rem;">Manage live schedule, EC members, and database
+              connection</p>
           </div>
         </div>
 
         <div>
-          <a href="index.html" class="btn-outline-gold" target="_blank"><i class="fa-solid fa-globe"></i> View Live Site</a>
+          <a href="index.html" class="btn-outline-gold" target="_blank"><i class="fa-solid fa-globe"></i> View Live
+            Site</a>
         </div>
       </div>
 
       <!-- TAB 1: Dashboard Overview -->
       <div id="tab-dashboard" class="admin-tab-pane">
-        <div class="stats-grid" style="margin-bottom: 2.5rem;">
-          <div class="stat-card">
-            <div class="stat-number" id="dashEventCount">9</div>
-            <div class="stat-label">Scheduled Events</div>
+        <div class="dash-grid" style="margin-bottom: 2.5rem;">
+          <div class="stat-card" onclick="switchAdminTab('tab-registrations')" style="cursor: pointer;">
+            <div class="stat-number" id="dashRegCount">0</div>
+            <div class="stat-label">Registrations & Payments</div>
           </div>
-          <div class="stat-card">
-            <div class="stat-number" id="dashEcCount">3</div>
+          <div class="stat-card" onclick="switchAdminTab('tab-segments')" style="cursor: pointer;">
+            <div class="stat-number" id="dashSegCount">0</div>
+            <div class="stat-label">Total Segments</div>
+          </div>
+          <div class="stat-card" onclick="switchAdminTab('tab-schedule')" style="cursor: pointer;">
+            <div class="stat-number" id="dashEventCount">0</div>
+            <div class="stat-label">Schedule Items</div>
+          </div>
+          <div class="stat-card" onclick="switchAdminTab('tab-ec')" style="cursor: pointer;">
+            <div class="stat-number" id="dashEcCount">0</div>
             <div class="stat-label">EC Members</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number">120+</div>
-            <div class="stat-label">Registrations</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-number" id="dashDbStatus" style="font-size: 1.3rem; color: #2ECC71;">Local & Supabase Ready</div>
-            <div class="stat-label">Database Mode</div>
           </div>
         </div>
 
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-bolt" style="color: var(--gold-light);"></i> Quick Actions</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-bolt"
+              style="color: var(--gold-light);"></i> Quick Actions</h3>
           <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button class="btn-gold" onclick="switchAdminTab('tab-schedule')"><i class="fa-solid fa-plus"></i> Schedule New Event</button>
-            <button class="btn-outline-gold" onclick="switchAdminTab('tab-ec')"><i class="fa-solid fa-user-plus"></i> Add EC Member</button>
-            <button class="btn-outline-gold" onclick="switchAdminTab('tab-database')"><i class="fa-solid fa-database"></i> Connect Supabase Keys</button>
+            <button class="btn-gold" onclick="switchAdminTab('tab-registrations')"><i
+                class="fa-solid fa-users-rectangle"></i> Manage Registrations</button>
+            <button class="btn-outline-gold" onclick="switchAdminTab('tab-schedule')"><i class="fa-solid fa-plus"></i>
+              Schedule New Event</button>
+            <button class="btn-outline-gold" onclick="switchAdminTab('tab-ec')"><i class="fa-solid fa-user-plus"></i>
+              Add EC Member</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: Registrations & bKash Payments Manager -->
+      <div id="tab-registrations" class="admin-tab-pane" style="display: none;">
+        <!-- Metrics Bar -->
+        <div class="dash-grid"
+          style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 1.5rem;">
+          <div class="stat-card">
+            <div class="stat-number" id="regTotalCount">0</div>
+            <div class="stat-label">Total Applications</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="regPendingCount" style="color: #F1C40F;">0</div>
+            <div class="stat-label">Pending Review</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="regApprovedCount" style="color: #2ECC71;">0</div>
+            <div class="stat-label">Approved Participants</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="regTotalRevenue" style="color: var(--gold-primary);">৳0</div>
+            <div class="stat-label">Total Fee Revenue</div>
+          </div>
+        </div>
+
+        <div class="admin-card-table">
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.2rem;">
+            <div>
+              <h3 style="font-family: var(--font-heading); color: #FFF; margin: 0;"><i
+                  class="fa-solid fa-users-rectangle" style="color: var(--gold-light);"></i> Participant Registrations
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0.2rem 0 0 0;">Verify bKash transactions,
+                approve entries, dispatch tickets via WhatsApp & export CSV roster.</p>
+            </div>
+
+            <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+              <button type="button" class="btn-gold" onclick="exportRegistrationsCSV()"><i
+                  class="fa-solid fa-file-excel"></i> Export CSV Roster</button>
+            </div>
+          </div>
+
+          <!-- Status Filters & Search -->
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.2rem; background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn-outline-gold-sm reg-filter-btn active"
+                onclick="filterRegistrationsTab('all', this)">All (<span id="countFilterAll">0</span>)</button>
+              <button class="btn-outline-gold-sm reg-filter-btn"
+                onclick="filterRegistrationsTab('pending', this)">Pending (<span
+                  id="countFilterPending">0</span>)</button>
+              <button class="btn-outline-gold-sm reg-filter-btn"
+                onclick="filterRegistrationsTab('approved', this)">Approved (<span
+                  id="countFilterApproved">0</span>)</button>
+              <button class="btn-outline-gold-sm reg-filter-btn"
+                onclick="filterRegistrationsTab('rejected', this)">Rejected (<span
+                  id="countFilterRejected">0</span>)</button>
+            </div>
+
+            <div style="width: 250px;">
+              <input type="text" id="regSearchInput" class="form-input" placeholder="Search by name, phone or TrxID..."
+                oninput="handleRegSearch(this.value)" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>DATE & ID</th>
+                  <th>PARTICIPANT DETAILS</th>
+                  <th>CONTACT</th>
+                  <th>EVENT & FEE</th>
+                  <th>BKASH & TrxID</th>
+                  <th>STATUS</th>
+                  <th>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="registrationsTableBody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -451,12 +571,15 @@
       <div id="tab-segments" class="admin-tab-pane" style="display: none;">
         <!-- 1. Add Segment -->
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-folder-plus" style="color: var(--gold-light);"></i> 1. Create New Segment</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i
+              class="fa-solid fa-folder-plus" style="color: var(--gold-light);"></i> 1. Create New Segment</h3>
           <form id="addSegmentForm">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
               <div>
                 <label class="form-label">SEGMENT TITLE <span style="color: var(--gold-light);">*</span></label>
-                <input type="text" id="segTitleInput" class="form-input" placeholder="e.g. Solo Vocal & Band Beats" required>
+                <input type="text" id="segTitleInput" class="form-input" placeholder="e.g. Solo Vocal & Band Beats"
+                  required>
               </div>
               <div>
                 <label class="form-label">CATEGORY TAG (Optional)</label>
@@ -473,7 +596,8 @@
             </div>
             <div style="margin-bottom: 1.5rem;">
               <label class="form-label">DESCRIPTION (Optional)</label>
-              <textarea id="segDescInput" class="form-textarea" rows="2" placeholder="Brief summary of segment competitions..."></textarea>
+              <textarea id="segDescInput" class="form-textarea" rows="2"
+                placeholder="Brief summary of segment competitions..."></textarea>
             </div>
             <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Create Segment</button>
           </form>
@@ -481,7 +605,9 @@
 
         <!-- Segments & Events Hierarchy Manager -->
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-layer-group" style="color: var(--gold-light);"></i> Existing Segments, Events & Categories</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i
+              class="fa-solid fa-layer-group" style="color: var(--gold-light);"></i> Existing Segments, Events &
+            Categories</h3>
           <div id="segmentsHierarchyContainer" style="display: flex; flex-direction: column; gap: 1rem;">
             <!-- Dynamically populated -->
           </div>
@@ -489,9 +615,11 @@
 
         <!-- 2. Add Event to Segment -->
         <div class="admin-card-table" style="margin-top: 2rem;">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-calendar-plus" style="color: var(--gold-light);"></i> 2. Add Event Under Segment</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i
+              class="fa-solid fa-calendar-plus" style="color: var(--gold-light);"></i> 2. Add Event Under Segment</h3>
           <form id="addSegmentEventForm">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
               <div>
                 <label class="form-label">SELECT PARENT SEGMENT <span style="color: var(--gold-light);">*</span></label>
                 <select id="selectSegmentForEvent" class="form-select" required>
@@ -500,7 +628,8 @@
               </div>
               <div>
                 <label class="form-label">EVENT TITLE <span style="color: var(--gold-light);">*</span></label>
-                <input type="text" id="segEvtTitleInput" class="form-input" placeholder="e.g. Solo Vocal Battle" required>
+                <input type="text" id="segEvtTitleInput" class="form-input" placeholder="e.g. Solo Vocal Battle"
+                  required>
               </div>
               <div>
                 <label class="form-label">VENUE (Optional)</label>
@@ -509,13 +638,16 @@
             </div>
             <div style="margin-bottom: 1.5rem;">
               <label class="form-label">EVENT DESCRIPTION (Optional)</label>
-              <textarea id="segEvtDescInput" class="form-textarea" rows="2" placeholder="Details of this specific competition event..."></textarea>
+              <textarea id="segEvtDescInput" class="form-textarea" rows="2"
+                placeholder="Details of this specific competition event..."></textarea>
             </div>
             <div style="margin-bottom: 1.5rem;">
               <label class="form-label">EVENT REGISTRATION PRICE (Optional)</label>
               <div style="position: relative; max-width: 220px;">
-                <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gold-light); font-weight: 700; font-size: 1rem;">&#2547;</span>
-                <input type="number" id="segEvtPriceInput" class="form-input" placeholder="e.g. 200" min="0" step="1" style="padding-left: 30px;">
+                <span
+                  style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gold-light); font-weight: 700; font-size: 1rem;">&#2547;</span>
+                <input type="number" id="segEvtPriceInput" class="form-input" placeholder="e.g. 200" min="0" step="1"
+                  style="padding-left: 30px;">
               </div>
             </div>
             <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Add Event to Segment</button>
@@ -524,9 +656,11 @@
 
         <!-- 3. Add Group / Age Category to Event -->
         <div class="admin-card-table" style="margin-top: 2rem;">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-users" style="color: var(--gold-light);"></i> 3. Add Age Group / Category Under Event</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-users"
+              style="color: var(--gold-light);"></i> 3. Add Age Group / Category Under Event</h3>
           <form id="addEventGroupForm">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
               <div>
                 <label class="form-label">SELECT SEGMENT <span style="color: var(--gold-light);">*</span></label>
                 <select id="selectSegmentForGroup" class="form-select" required>
@@ -550,16 +684,20 @@
               <div>
                 <label class="form-label">REGISTRATION PRICE (Optional)</label>
                 <div style="position: relative;">
-                  <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gold-light); font-weight: 700; font-size: 1rem;">&#2547;</span>
-                  <input type="number" id="groupPriceInput" class="form-input" placeholder="e.g. 150" min="0" step="1" style="padding-left: 30px;">
+                  <span
+                    style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gold-light); font-weight: 700; font-size: 1rem;">&#2547;</span>
+                  <input type="number" id="groupPriceInput" class="form-input" placeholder="e.g. 150" min="0" step="1"
+                    style="padding-left: 30px;">
                 </div>
               </div>
             </div>
             <div style="margin-bottom: 1.5rem;">
               <label class="form-label">RULES & PARTICIPATION GUIDELINES (Optional)</label>
-              <textarea id="groupRulesInput" class="form-textarea" rows="2" placeholder="e.g. Max 4 mins stage time. 1 backing track allowed."></textarea>
+              <textarea id="groupRulesInput" class="form-textarea" rows="2"
+                placeholder="e.g. Max 4 mins stage time. 1 backing track allowed."></textarea>
             </div>
-            <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Save Age Group / Category</button>
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Save Age Group /
+              Category</button>
           </form>
         </div>
       </div>
@@ -567,9 +705,11 @@
       <!-- TAB 2: Schedule Event Manager -->
       <div id="tab-schedule" class="admin-tab-pane" style="display: none;">
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-calendar-plus" style="color: var(--gold-light);"></i> Add New Festival Event</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i
+              class="fa-solid fa-calendar-plus" style="color: var(--gold-light);"></i> Add New Festival Event</h3>
           <form id="addEventForm">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
               <div>
                 <label class="form-label">EVENT DAY</label>
                 <select id="eventDaySelect" class="form-select" required>
@@ -592,20 +732,24 @@
 
             <div style="margin-bottom: 1.2rem;">
               <label class="form-label">EVENT TITLE</label>
-              <input type="text" id="eventTitleInput" class="form-input" placeholder="e.g. Solo Sangeet Battle" required>
+              <input type="text" id="eventTitleInput" class="form-input" placeholder="e.g. Solo Sangeet Battle"
+                required>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
               <label class="form-label">EVENT DESCRIPTION</label>
-              <textarea id="eventDescInput" class="form-textarea" rows="3" placeholder="Short details of the segment..." required></textarea>
+              <textarea id="eventDescInput" class="form-textarea" rows="3" placeholder="Short details of the segment..."
+                required></textarea>
             </div>
 
-            <button type="submit" class="btn-gold"><i class="fa-solid fa-floppy-disk"></i> Save Event to Schedule</button>
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-floppy-disk"></i> Save Event to
+              Schedule</button>
           </form>
         </div>
 
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-list-check" style="color: var(--gold-light);"></i> Currently Scheduled Events</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i
+              class="fa-solid fa-list-check" style="color: var(--gold-light);"></i> Currently Scheduled Events</h3>
           <div class="table-responsive">
             <table class="admin-table">
               <thead>
@@ -628,9 +772,11 @@
       <!-- TAB 3: Executive Committee Manager -->
       <div id="tab-ec" class="admin-tab-pane" style="display: none;">
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-user-shield" style="color: var(--gold-light);"></i> Add Executive Committee Member</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i
+              class="fa-solid fa-user-shield" style="color: var(--gold-light);"></i> Add Executive Committee Member</h3>
           <form id="addEcForm">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem;">
               <div>
                 <label class="form-label">MEMBER NAME</label>
                 <input type="text" id="ecNameInput" class="form-input" placeholder="e.g. Abrar Hossain" required>
@@ -670,14 +816,18 @@
 
               <div style="grid-column: 1 / -1;">
                 <label class="form-label">OR PASTE PHOTO URL (WEB LINK)</label>
-                <input type="text" id="ecImageInput" class="form-input" placeholder="e.g. https://... or image web link">
+                <input type="text" id="ecImageInput" class="form-input"
+                  placeholder="e.g. https://... or image web link">
               </div>
             </div>
 
-            <div id="ecPhotoPreviewContainer" style="display: none; align-items: center; gap: 1rem; margin-bottom: 1.2rem; background: rgba(5, 10, 23, 0.7); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-gold);">
-              <img id="ecPhotoPreviewImg" src="logo.png" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-primary);">
+            <div id="ecPhotoPreviewContainer"
+              style="display: none; align-items: center; gap: 1rem; margin-bottom: 1.2rem; background: rgba(5, 10, 23, 0.7); padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-gold);">
+              <img id="ecPhotoPreviewImg" src="logo.png"
+                style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--gold-primary);">
               <div>
-                <div style="color: var(--gold-light); font-size: 0.85rem; font-weight: 700;">Selected Photo Preview</div>
+                <div style="color: var(--gold-light); font-size: 0.85rem; font-weight: 700;">Selected Photo Preview
+                </div>
                 <div id="ecPhotoPreviewName" style="color: var(--text-muted); font-size: 0.75rem;">Ready to save</div>
               </div>
             </div>
@@ -687,7 +837,8 @@
         </div>
 
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-users-gear" style="color: var(--gold-light);"></i> Executive Committee Roster</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i
+              class="fa-solid fa-users-gear" style="color: var(--gold-light);"></i> Executive Committee Roster</h3>
           <div class="table-responsive">
             <table class="admin-table">
               <thead>
@@ -710,16 +861,19 @@
       <!-- TAB 4: Announcements -->
       <div id="tab-notices" class="admin-tab-pane" style="display: none;">
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i class="fa-solid fa-bullhorn" style="color: var(--gold-light);"></i> Publish Notice / Announcement</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1.2rem;"><i
+              class="fa-solid fa-bullhorn" style="color: var(--gold-light);"></i> Publish Notice / Announcement</h3>
           <form id="addNoticeForm">
             <div style="margin-bottom: 1.2rem;">
               <label class="form-label">NOTICE TITLE</label>
-              <input type="text" id="noticeTitleInput" class="form-input" placeholder="e.g. Registration Deadline Extended!" required>
+              <input type="text" id="noticeTitleInput" class="form-input"
+                placeholder="e.g. Registration Deadline Extended!" required>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
               <label class="form-label">NOTICE BODY</label>
-              <textarea id="noticeBodyInput" class="form-textarea" rows="3" placeholder="Details of notice..." required></textarea>
+              <textarea id="noticeBodyInput" class="form-textarea" rows="3" placeholder="Details of notice..."
+                required></textarea>
             </div>
 
             <button type="submit" class="btn-gold"><i class="fa-solid fa-paper-plane"></i> Publish Notice</button>
@@ -732,43 +886,55 @@
 
         <!-- config.js status banner -->
         <div class="admin-card-table" id="configFileStatusCard">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 0.8rem;"><i class="fa-solid fa-file-code" style="color: var(--gold-light);"></i> Connection Method: <code style="font-size:0.9rem;" id="configMethodLabel">Checking...</code></h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 0.8rem;"><i
+              class="fa-solid fa-file-code" style="color: var(--gold-light);"></i> Connection Method: <code
+              style="font-size:0.9rem;" id="configMethodLabel">Checking...</code></h3>
           <div id="configFileStatus" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;"></div>
           <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.8rem;">
-            <strong style="color: var(--gold-light);">Recommended for hosting:</strong> Edit <code>config.js</code> with your real Supabase keys and upload it to your server. No admin panel input needed — it auto-connects on every page load permanently.
+            <strong style="color: var(--gold-light);">Recommended for hosting:</strong> Edit <code>config.js</code> with
+            your real Supabase keys and upload it to your server. No admin panel input needed — it auto-connects on
+            every page load permanently.
           </p>
         </div>
 
         <!-- Live Key Connection Form (fallback / local override) -->
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-plug" style="color: var(--gold-light);"></i> Fallback: Enter Credentials Manually</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-plug"
+              style="color: var(--gold-light);"></i> Fallback: Enter Credentials Manually</h3>
           <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
-            Use this only if you haven't set up <code>config.js</code> yet. Credentials are saved in browser localStorage and may need re-entering on a fresh browser session.
+            Use this only if you haven't set up <code>config.js</code> yet. Credentials are saved in browser
+            localStorage and may need re-entering on a fresh browser session.
           </p>
 
           <form id="supabaseKeyForm">
             <div style="margin-bottom: 1.2rem;">
               <label class="form-label">SUPABASE PROJECT URL</label>
-              <input type="text" id="supabaseUrlInput" class="form-input" placeholder="https://your-project-id.supabase.co" required>
+              <input type="text" id="supabaseUrlInput" class="form-input"
+                placeholder="https://your-project-id.supabase.co" required>
             </div>
 
             <div style="margin-bottom: 1.5rem;">
               <label class="form-label">SUPABASE ANON KEY</label>
-              <input type="text" id="supabaseKeyInput" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required>
+              <input type="text" id="supabaseKeyInput" class="form-input"
+                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." required>
             </div>
 
-            <button type="submit" class="btn-gold"><i class="fa-solid fa-circle-check"></i> Connect Supabase Database</button>
+            <button type="submit" class="btn-gold"><i class="fa-solid fa-circle-check"></i> Connect Supabase
+              Database</button>
           </form>
         </div>
 
 
         <!-- SQL Schema Instructions -->
         <div class="admin-card-table">
-          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-code" style="color: var(--gold-light);"></i> Supabase SQL Setup Script (Run in Supabase SQL Editor)</h3>
+          <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 1rem;"><i class="fa-solid fa-code"
+              style="color: var(--gold-light);"></i> Supabase SQL Setup Script (Run in Supabase SQL Editor)</h3>
           <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1rem;">
-            Open your Supabase Project Dashboard -> <strong>SQL Editor</strong> -> New Query, paste the SQL below and click <strong>RUN</strong>:
+            Open your Supabase Project Dashboard -> <strong>SQL Editor</strong> -> New Query, paste the SQL below and
+            click <strong>RUN</strong>:
           </p>
-          <pre style="background: rgba(5, 10, 23, 0.9); border: 1px solid var(--border-gold); padding: 1.2rem; border-radius: var(--radius-sm); color: #F1C40F; font-size: 0.82rem; overflow-x: auto;">
+          <pre
+            style="background: rgba(5, 10, 23, 0.9); border: 1px solid var(--border-gold); padding: 1.2rem; border-radius: var(--radius-sm); color: #F1C40F; font-size: 0.82rem; overflow-x: auto;">
 -- 1. Create schedule events table
 create table if not exists public.events (
   id uuid default gen_random_uuid() primary key,
@@ -853,7 +1019,8 @@ create policy "Public Access Segment Events" on public.segment_events for all us
 create policy "Public Access Event Groups" on public.event_groups for all using (true) with check (true);
           </pre>
           <div style="margin-top: 1.2rem;">
-            <button type="button" class="btn-outline-gold" onclick="syncLocalDataToSupabase()"><i class="fa-solid fa-cloud-arrow-up"></i> Push Local Data to Supabase</button>
+            <button type="button" class="btn-outline-gold" onclick="syncLocalDataToSupabase()"><i
+                class="fa-solid fa-cloud-arrow-up"></i> Push Local Data to Supabase</button>
           </div>
         </div>
       </div>
@@ -952,7 +1119,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       });
     });
 
-    function switchAdminTab(tabId) {
+    window.switchAdminTab = function (tabId) {
       document.querySelectorAll('.admin-tab-pane').forEach(pane => {
         pane.style.display = pane.id === tabId ? 'block' : 'none';
       });
@@ -963,6 +1130,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
         'tab-schedule': 'Schedule Event Manager',
         'tab-ec': 'Executive Committee Manager',
         'tab-notices': 'Announcements & Notices',
+        'tab-registrations': 'Registrations & Payments Manager',
         'tab-database': 'Supabase Setup & Keys'
       };
 
@@ -970,7 +1138,13 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       if (titleHeading && titleMap[tabId]) {
         titleHeading.innerText = titleMap[tabId];
       }
-    }
+
+      if (tabId === 'tab-registrations' || tabId === 'tab-dashboard') {
+        if (typeof window.renderAdminRegistrationsTable === 'function') {
+          window.renderAdminRegistrationsTable();
+        }
+      }
+    };
 
     let cachedSegmentsData = [];
 
@@ -992,7 +1166,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
             const card = document.createElement('div');
             card.className = 'segment-admin-card';
             card.style.cssText = 'background: rgba(18,22,34,0.7); border: 1px solid var(--border-gold); border-radius: 10px; padding: 1rem;';
-            
+
             const eventsList = (seg.events || []).map(evt => {
               const groupsList = (evt.groups || []).map(grp => `
                 <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; padding: 0.4rem 0.7rem; display: flex; justify-content: space-between; align-items: center;">
@@ -1103,7 +1277,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       }
 
       // 3. Render Executive Committee Table
-      const ROLE_RANK_ORDER_ADMIN = ['President','Vice President','General Secretary','Organizing Secretary','Publication Secretary','Graphic Designer','Office Secretary','Head of Coordinator','Head of Volunteer','External Affairs Secretary','Treasurer'];
+      const ROLE_RANK_ORDER_ADMIN = ['President', 'Vice President', 'General Secretary', 'Organizing Secretary', 'Publication Secretary', 'Graphic Designer', 'Office Secretary', 'Head of Coordinator', 'Head of Volunteer', 'External Affairs Secretary', 'Treasurer'];
       const rawEcMembers = await fetchDbEcMembers();
       const ecMembers = [...rawEcMembers].sort((a, b) => {
         const rankA = ROLE_RANK_ORDER_ADMIN.indexOf(a.role);
@@ -1135,7 +1309,230 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
 
         if (dashEcCount) dashEcCount.innerText = ecMembers.length;
       }
+
+      // 4. Render Registrations Table & Metrics
+      await window.renderAdminRegistrationsTable();
     }
+
+    /* ==========================================================================
+       ADMIN REGISTRATIONS & BKASH MANAGEMENT ENGINE
+       ========================================================================== */
+    let currentRegFilter = 'all';
+    let currentRegSearch = '';
+    let cachedRegistrations = [];
+
+    window.renderAdminRegistrationsTable = async function () {
+      const tbody = document.getElementById('registrationsTableBody');
+      if (!tbody) return;
+
+      // 1. Instantly render from local storage (0ms delay, guarantees instant UI)
+      const localRegs = (typeof getStoredRegistrations === 'function') ? getStoredRegistrations() : [];
+      cachedRegistrations = localRegs;
+      updateRegistrationsUI(localRegs);
+
+      // 2. Asynchronously sync with Supabase in background
+      try {
+        if (typeof fetchDbRegistrations === 'function') {
+          const dbRegs = await fetchDbRegistrations();
+          if (Array.isArray(dbRegs) && dbRegs.length > 0) {
+            cachedRegistrations = dbRegs;
+            updateRegistrationsUI(dbRegs);
+          }
+        }
+      } catch (e) {
+        console.warn('Supabase async sync notice:', e);
+      }
+    };
+
+    function updateRegistrationsUI(regs) {
+      const tbody = document.getElementById('registrationsTableBody');
+      if (!tbody) return;
+
+      const totalCount = regs.length;
+      const pendingCount = regs.filter(r => r.status === 'pending').length;
+      const approvedCount = regs.filter(r => r.status === 'approved').length;
+      const rejectedCount = regs.filter(r => r.status === 'rejected').length;
+
+      let totalRevenue = 0;
+      regs.forEach(r => {
+        if (r.status === 'approved' && r.amount && !isNaN(parseFloat(r.amount))) {
+          totalRevenue += parseFloat(r.amount);
+        }
+      });
+
+      if (document.getElementById('dashRegCount')) document.getElementById('dashRegCount').innerText = totalCount;
+      if (document.getElementById('regTotalCount')) document.getElementById('regTotalCount').innerText = totalCount;
+      if (document.getElementById('regPendingCount')) document.getElementById('regPendingCount').innerText = pendingCount;
+      if (document.getElementById('regApprovedCount')) document.getElementById('regApprovedCount').innerText = approvedCount;
+      if (document.getElementById('regTotalRevenue')) document.getElementById('regTotalRevenue').innerText = `৳${totalRevenue.toLocaleString()}`;
+
+      if (document.getElementById('countFilterAll')) document.getElementById('countFilterAll').innerText = totalCount;
+      if (document.getElementById('countFilterPending')) document.getElementById('countFilterPending').innerText = pendingCount;
+      if (document.getElementById('countFilterApproved')) document.getElementById('countFilterApproved').innerText = approvedCount;
+      if (document.getElementById('countFilterRejected')) document.getElementById('countFilterRejected').innerText = rejectedCount;
+
+      let filtered = regs.filter(r => {
+        if (currentRegFilter !== 'all' && r.status !== currentRegFilter) return false;
+        if (currentRegSearch) {
+          const q = currentRegSearch.toLowerCase();
+          const matchName = (r.name || '').toLowerCase().includes(q);
+          const matchPhone = (r.phone || '').toLowerCase().includes(q);
+          const matchTrx = (r.trx_id || '').toLowerCase().includes(q);
+          const matchInst = (r.institute || '').toLowerCase().includes(q);
+          return matchName || matchPhone || matchTrx || matchInst;
+        }
+        return true;
+      });
+
+      tbody.innerHTML = '';
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">No registrations found for this filter.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((r) => {
+        const tr = document.createElement('tr');
+        const dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'Recent';
+
+        let statusBadge = `<span class="ec-wing-badge" style="background: rgba(241,196,15,0.2); color:#F1C40F; border-color:rgba(241,196,15,0.5);">Pending</span>`;
+        if (r.status === 'approved') {
+          statusBadge = `<span class="ec-wing-badge" style="background: rgba(46,204,113,0.2); color:#2ECC71; border-color:rgba(46,204,113,0.5);">Approved</span>`;
+        } else if (r.status === 'rejected') {
+          statusBadge = `<span class="ec-wing-badge" style="background: rgba(231,76,60,0.2); color:#E74C3C; border-color:rgba(231,76,60,0.5);">Rejected</span>`;
+        }
+
+        const feeDisplay = r.amount && r.amount !== '0' ? `৳${r.amount}` : 'FREE';
+
+        const safeName = (r.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeEvent = ((r.event_title || '') + (r.category_name ? ' ' + r.category_name : '')).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+        tr.innerHTML = `
+          <td>
+            <div style="font-size: 0.8rem; color: var(--gold-light); font-weight: 600;">${dateStr}</div>
+            <div style="font-size: 0.72rem; color: var(--text-muted);">ID: ${String(r.id).substring(0, 8)}</div>
+          </td>
+          <td>
+            <strong style="color: #FFF; font-size: 0.95rem;">${r.name || 'Participant'}</strong>
+            <div style="color: var(--text-muted); font-size: 0.8rem;">${r.class_name || ''} &bull; ${r.institute || ''}</div>
+          </td>
+          <td>
+            <div style="font-weight: 600; color: #FFF;"><i class="fa-solid fa-phone" style="font-size: 0.75rem; color: var(--gold-light);"></i> ${r.phone || ''}</div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">${r.email || ''}</div>
+          </td>
+          <td>
+            <div style="font-weight: 700; color: var(--gold-light);">${r.segment_title || ''}</div>
+            <div style="font-size: 0.82rem; color: #FFF;">${r.event_title || ''} ${r.category_name ? `(${r.category_name})` : ''}</div>
+            <span style="background: rgba(212,175,55,0.15); border: 1px solid var(--border-gold); color: #FFF; font-weight: 700; font-size: 0.75rem; padding: 0.1rem 0.5rem; border-radius: 4px; display: inline-block; margin-top: 0.2rem;">${feeDisplay}</span>
+          </td>
+          <td>
+            <div style="font-size: 0.85rem; color: #FFF;"><strong>Sender:</strong> ${r.sender_bkash || 'N/A'}</div>
+            <div style="font-size: 0.85rem; color: var(--gold-light); font-weight: 700;"><strong>TrxID:</strong> ${r.trx_id || 'N/A'}</div>
+          </td>
+          <td>${statusBadge}</td>
+          <td>
+            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+              ${r.status !== 'approved' ? `<button class="btn-edit-sm" style="background: rgba(46,204,113,0.2); border-color:#2ECC71; color:#2ECC71;" onclick="handleApproveReg('${r.id}')"><i class="fa-solid fa-check"></i> Approve</button>` : ''}
+              ${r.status !== 'rejected' ? `<button class="btn-danger-sm" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="handleRejectReg('${r.id}')"><i class="fa-solid fa-xmark"></i> Reject</button>` : ''}
+              <button class="btn-edit-sm" style="background: rgba(37,211,102,0.2); border-color:#25D366; color:#25D366;" onclick="sendWhatsAppTicket('${r.phone || ''}', '${safeName}', '${safeEvent}', '${r.status || 'pending'}', '${r.trx_id || ''}')"><i class="fa-brands fa-whatsapp"></i> WP Ticket</button>
+              <button class="btn-edit-sm" style="background: rgba(52,152,219,0.2); border-color:#3498DB; color:#3498DB;" onclick="sendEmailTicket('${r.email || ''}', '${safeName}', '${safeEvent}', '${r.status || 'pending'}', '${r.trx_id || ''}')"><i class="fa-solid fa-envelope"></i> Email Ticket</button>
+              <button class="btn-danger-sm" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" onclick="handleDeleteReg('${r.id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.filterRegistrationsTab = function (status, btnElement) {
+      currentRegFilter = status;
+      document.querySelectorAll('.reg-filter-btn').forEach(b => b.classList.remove('active'));
+      if (btnElement) btnElement.classList.add('active');
+      renderAdminRegistrationsTable();
+    };
+
+    window.handleRegSearch = function (query) {
+      currentRegSearch = query.trim();
+      renderAdminRegistrationsTable();
+    };
+
+    window.handleApproveReg = async function (regId) {
+      await updateRegistrationStatus(regId, 'approved');
+      await renderAdminRegistrationsTable();
+    };
+
+    window.handleRejectReg = async function (regId) {
+      if (confirm('Are you sure you want to mark this registration as Rejected?')) {
+        await updateRegistrationStatus(regId, 'rejected');
+        await renderAdminRegistrationsTable();
+      }
+    };
+
+    window.handleDeleteReg = async function (regId) {
+      if (confirm('Are you sure you want to delete this registration permanently?')) {
+        await deleteDbRegistration(regId);
+        await renderAdminRegistrationsTable();
+      }
+    };
+
+    window.sendWhatsAppTicket = function (phone, name, eventName, status, trxId) {
+      const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
+      const formattedPhone = cleanPhone.startsWith('88') ? cleanPhone : '88' + cleanPhone;
+
+      const message = `Hello ${name}! \n\nYour registration for *The Cultura Fiesta 1.0* (${eventName}) has been verified!\n\n *Registration Details:*\n• Status: Approved \n• TrxID: ${trxId}\n\nShow this message at the event venue gate to claim your entry pass ticket.\n\nSee you at the Fiesta!\n— *MPSC Cultural Club Executive Team*`;
+
+      const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    };
+
+    window.sendEmailTicket = function (email, name, eventName, status, trxId) {
+      if (!email || !email.includes('@')) {
+        alert(' Participant does not have a valid email address.');
+        return;
+      }
+
+      const subject = `[MPSC Cultural Club] Cultura Fiesta 2026 - Registration Entry Ticket`;
+      const body = `Hello ${name},\n\nYour registration for Cultura Fiesta 2026 (${eventName}) has been verified and confirmed!\n\nREGISTRATION CONFIRMATION:\n--------------------------------------------------\nParticipant Name: ${name}\nSegment / Event: ${eventName}\nbKash Transaction ID (TrxID): ${trxId}\nStatus: ${status ? status.toUpperCase() : 'APPROVED'}\nFestival Dates: 1st - 3rd October 2026\nVenue: Mohammadpur Preparatory School & College, Dhaka\n--------------------------------------------------\n\nPlease present this email ticket at the event entrance counter to receive your official entry pass.\n\nWarm regards,\nExecutive Committee\nMPSC Cultural Club`;
+
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(gmailUrl, '_blank');
+    };
+
+    window.exportRegistrationsCSV = function () {
+      if (!cachedRegistrations || cachedRegistrations.length === 0) {
+        alert('No registration records to export!');
+        return;
+      }
+
+      let csv = 'ID,Date,Name,Class,Institute,Phone,Email,Segment,Event,Category,Amount,Sender bKash,TrxID,Status\n';
+      cachedRegistrations.forEach(r => {
+        const line = [
+          `"${r.id || ''}"`,
+          `"${r.created_at || ''}"`,
+          `"${(r.name || '').replace(/"/g, '""')}"`,
+          `"${(r.class_name || '').replace(/"/g, '""')}"`,
+          `"${(r.institute || '').replace(/"/g, '""')}"`,
+          `"${(r.phone || '').replace(/"/g, '""')}"`,
+          `"${(r.email || '').replace(/"/g, '""')}"`,
+          `"${(r.segment_title || '').replace(/"/g, '""')}"`,
+          `"${(r.event_title || '').replace(/"/g, '""')}"`,
+          `"${(r.category_name || '').replace(/"/g, '""')}"`,
+          `"${r.amount || '0'}"`,
+          `"${(r.sender_bkash || '').replace(/"/g, '""')}"`,
+          `"${(r.trx_id || '').replace(/"/g, '""')}"`,
+          `"${r.status || 'pending'}"`
+        ].join(',');
+        csv += line + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cultura_fiesta_registrations_${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
 
     // Dynamic cascade for Segment -> Events dropdown in Admin
     document.getElementById('selectSegmentForGroup')?.addEventListener('change', (e) => {
@@ -1266,9 +1663,9 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function(evt) {
+        reader.onload = function (evt) {
           const img = new Image();
-          img.onload = function() {
+          img.onload = function () {
             const canvas = document.createElement('canvas');
             const maxDim = 400;
             let width = img.width;
@@ -1349,7 +1746,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       currentEditIds = { segId };
 
       document.getElementById('editModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: var(--gold-light);"></i> Edit Segment`;
-      
+
       document.getElementById('editModalFields').innerHTML = `
         <div style="display: grid; gap: 1rem;">
           <div>
@@ -1496,23 +1893,27 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
   <!-- Edit Modal Container -->
   <div id="editModalOverlay" class="admin-modal-overlay" style="display: none;">
     <div class="admin-modal-box">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-gold); padding-bottom: 0.8rem;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; border-bottom: 1px solid var(--border-gold); padding-bottom: 0.8rem;">
         <h3 id="editModalTitle" style="font-family: var(--font-heading); color: #FFF; margin: 0;">
           <i class="fa-solid fa-pen-to-square" style="color: var(--gold-light);"></i> Edit Item
         </h3>
-        <button type="button" onclick="closeEditModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">
+        <button type="button" onclick="closeEditModal()"
+          style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
       <form id="editModalForm" onsubmit="handleSaveEditSubmit(event)">
         <div id="editModalFields"></div>
         <div style="display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 1.5rem;">
-          <button type="button" class="btn-danger-sm" style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #FFF;" onclick="closeEditModal()">Cancel</button>
+          <button type="button" class="btn-danger-sm"
+            style="background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: #FFF;"
+            onclick="closeEditModal()">Cancel</button>
           <button type="submit" class="btn-gold"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
         </div>
       </form>
     </div>
   </div>
 </body>
-</html>
 
+</html>

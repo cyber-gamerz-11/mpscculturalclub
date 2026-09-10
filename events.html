@@ -67,6 +67,130 @@
     </div>
   </div>
 
+  <!-- Interactive Participant Registration & bKash Modal -->
+  <div id="registrationModal" class="modal-overlay" style="z-index: 100000;">
+    <div class="modal-card reg-modal-card">
+      <button class="modal-close-btn" onclick="closeRegistrationModal()">&times;</button>
+      
+      <!-- Step 1: Participant Information -->
+      <div id="regStep1">
+        <div class="reg-modal-header">
+          <span class="ec-wing-badge" id="regEventBadge">Segment / Event</span>
+          <h2 class="reg-modal-title">Participant Registration</h2>
+          <div class="reg-price-pill" id="regPriceDisplay">Registration Fee: ৳0</div>
+        </div>
+
+        <form id="regFormStep1" onsubmit="handleRegStep1Submit(event)">
+          <div class="reg-form-grid">
+            <div class="form-group-full">
+              <label class="form-label"><i class="fa-solid fa-user"></i> FULL NAME *</label>
+              <input type="text" id="regNameInput" class="form-input" placeholder="e.g. Abrar Hossain" required>
+            </div>
+
+            <div class="form-group-half">
+              <label class="form-label"><i class="fa-solid fa-graduation-cap"></i> CLASS / YEAR *</label>
+              <input type="text" id="regClassInput" class="form-input" placeholder="e.g. Class 10 / HSC 1st Year" required>
+            </div>
+
+            <div class="form-group-half">
+              <label class="form-label"><i class="fa-solid fa-school"></i> INSTITUTE NAME *</label>
+              <input type="text" id="regInstituteInput" class="form-input" placeholder="e.g. MPSC / Govt. Science College" required>
+            </div>
+
+            <div class="form-group-half">
+              <label class="form-label"><i class="fa-solid fa-phone"></i> PHONE NUMBER (WHATSAPP) *</label>
+              <input type="tel" id="regPhoneInput" class="form-input" placeholder="e.g. 01712345678" required>
+            </div>
+
+            <div class="form-group-half">
+              <label class="form-label"><i class="fa-solid fa-envelope"></i> EMAIL ADDRESS *</label>
+              <input type="email" id="regEmailInput" class="form-input" placeholder="e.g. participant@gmail.com" required>
+            </div>
+          </div>
+
+          <div class="reg-modal-actions">
+            <button type="button" class="btn-outline-gold" onclick="closeRegistrationModal()">Cancel</button>
+            <button type="submit" class="btn-gold">Next: Proceed to Payment <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 2: bKash Payment Details -->
+      <div id="regStep2" style="display: none;">
+        <div class="reg-modal-header">
+          <span class="ec-wing-badge" style="background: rgba(226, 19, 110, 0.2); color: #E2136E; border-color: rgba(226, 19, 110, 0.4);">bKash Payment</span>
+          <h2 class="reg-modal-title">Complete Payment & Transaction</h2>
+          <div class="reg-price-pill" id="regPaymentAmountDisplay" style="border-color: #E2136E; color: #FF66AA;">Total Payable: ৳0</div>
+        </div>
+
+        <!-- bKash Number Box -->
+        <div class="bkash-info-box">
+          <div class="bkash-brand-row">
+            <div style="background: #E2136E; color: #FFF; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; flex-shrink: 0;">
+              ৳
+            </div>
+            <div>
+              <span class="bkash-label">bKash Personal / Send Money Number</span>
+              <div class="bkash-number-row">
+                <span class="bkash-number" id="bkashNumberText">01700000000</span>
+                <button type="button" class="btn-copy-sm" onclick="copyBkashNumber()"><i class="fa-solid fa-copy"></i> Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warning / Instruction Notice Box -->
+        <div class="bkash-warning-box">
+          <i class="fa-solid fa-triangle-exclamation warning-icon"></i>
+          <div>
+            <strong>CRITICAL INSTRUCTION:</strong>
+            <p>Please include your <strong>Full Name & Phone Number</strong> in the bKash Reference note when sending money. After sending money, enter your <strong>Sender bKash Phone Number</strong> and <strong>Transaction ID (TrxID)</strong> below.</p>
+            <p class="whatsapp-note"><i class="fa-brands fa-whatsapp"></i> Our executive committee will verify your payment and send your official entry ticket to your WhatsApp number!</p>
+          </div>
+        </div>
+
+        <form id="regFormStep2" onsubmit="handleRegStep2Submit(event)">
+          <div class="reg-form-grid">
+            <div class="form-group-half">
+              <label class="form-label"><i class="fa-solid fa-mobile-screen-button"></i> SENDER BKASH NUMBER *</label>
+              <input type="tel" id="regSenderBkashInput" class="form-input" placeholder="e.g. 01712345678" required>
+            </div>
+
+            <div class="form-group-half">
+              <label class="form-label"><i class="fa-solid fa-receipt"></i> BKASH TRANSACTION ID (TrxID) *</label>
+              <input type="text" id="regTrxIdInput" class="form-input" placeholder="e.g. 9A8B7C6D5E" required>
+            </div>
+          </div>
+
+          <div class="reg-modal-actions">
+            <button type="button" class="btn-outline-gold" onclick="showRegStep(1)"><i class="fa-solid fa-arrow-left"></i> Back</button>
+            <button type="submit" class="btn-gold" id="btnSubmitRegistration"><i class="fa-solid fa-circle-check"></i> Complete Registration</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 3: Success Screen -->
+      <div id="regStep3" style="display: none; text-align: center; padding: 1rem 0;">
+        <div style="width: 70px; height: 70px; margin: 0 auto 1rem; border-radius: 50%; background: rgba(46, 204, 113, 0.15); border: 2px solid #2ECC71; display: flex; align-items: center; justify-content: center; color: #2ECC71; font-size: 2.2rem;">
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <h2 style="font-family: var(--font-heading); color: #FFF; font-size: 1.6rem; margin-bottom: 0.5rem;">Registration Submitted!</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 500px; margin: 0 auto 1.5rem; line-height: 1.6;">
+          Thank you, <strong id="successParticipantName" style="color: var(--gold-light);">Participant</strong>! Your registration for <strong id="successEventTitle" style="color: #FFF;">Event</strong> has been submitted.
+        </p>
+
+        <div style="background: rgba(11, 19, 43, 0.6); border: 1px dashed var(--border-gold); border-radius: var(--radius-md); padding: 1.2rem; max-width: 500px; margin: 0 auto 1.5rem; text-align: left; font-size: 0.9rem;">
+          <div style="margin-bottom: 0.5rem;"><strong style="color: var(--gold-light);">Status:</strong> <span class="ec-wing-badge" style="background: rgba(241, 196, 15, 0.2); color: #F1C40F; border-color: rgba(241, 196, 15, 0.5);">Pending Executive Verification</span></div>
+          <div style="margin-bottom: 0.5rem;"><strong style="color: var(--gold-light);">TrxID:</strong> <span id="successTrxId">---</span></div>
+          <div><strong style="color: var(--gold-light);">Next Step:</strong> An MPSC executive will verify your bKash payment and dispatch your entrance ticket to <strong id="successPhone">---</strong> via WhatsApp.</div>
+        </div>
+
+        <button type="button" class="btn-gold" onclick="closeRegistrationModal()"><i class="fa-solid fa-thumbs-up"></i> Done</button>
+      </div>
+
+    </div>
+  </div>
+
 
   <!-- Footer -->
   <footer class="site-footer">

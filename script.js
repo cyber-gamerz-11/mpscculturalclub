@@ -484,6 +484,9 @@ window.openSegmentModal = function(segmentId) {
           <div id="${boxId}" class="event-categories-box" style="display: none;">
             ${evt.groups.map(grp => {
               const priceTag = grp.price ? ` · ৳${grp.price}` : '';
+              const safeSegTitle = (seg.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+              const safeEvtTitle = (evt.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+              const safeGrpName = (grp.group_name || grp.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
               return `
               <div class="category-block-item">
                 <div class="category-block-info">
@@ -492,7 +495,7 @@ window.openSegmentModal = function(segmentId) {
                   ${grp.rules ? `<div class="category-block-rules">${grp.rules}</div>` : ''}
                 </div>
                 <div>
-                  <a href="#register" class="btn-gold-sm" onclick="closeSegmentModal()"><i class="fa-solid fa-ticket"></i> Register${priceTag}</a>
+                  <button type="button" class="btn-gold-sm" onclick="openRegistrationModal('${safeSegTitle}', '${safeEvtTitle}', '${safeGrpName}', '${grp.price || ''}')"><i class="fa-solid fa-ticket"></i> Register${priceTag}</button>
                 </div>
               </div>
             `}).join('')}
@@ -501,6 +504,8 @@ window.openSegmentModal = function(segmentId) {
       }
 
       const evtPriceTag = evt.price ? ` · ৳${evt.price}` : '';
+      const safeSegTitle = (seg.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+      const safeEvtTitle = (evt.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
       return `
         <div class="event-block-card">
@@ -516,7 +521,7 @@ window.openSegmentModal = function(segmentId) {
                 <i class="fa-solid fa-layer-group"></i> View Categories (${evt.groups.length}) <i class="fa-solid fa-chevron-down"></i>
               </button>
             ` : `
-              <a href="#register" class="btn-gold-sm" onclick="closeSegmentModal()"><i class="fa-solid fa-ticket"></i> Register${evtPriceTag}</a>
+              <button type="button" class="btn-gold-sm" onclick="openRegistrationModal('${safeSegTitle}', '${safeEvtTitle}', '', '${evt.price || ''}')"><i class="fa-solid fa-ticket"></i> Register${evtPriceTag}</button>
             `}
           </div>
 
@@ -556,6 +561,124 @@ window.toggleEventCategories = function(boxId) {
 window.closeSegmentModal = function() {
   const modal = document.getElementById('segmentDetailModal');
   if (modal) modal.classList.remove('open');
+};
+
+/* ==========================================================================
+   PARTICIPANT REGISTRATION & BKASH MODAL CONTROLLER
+   ========================================================================== */
+let activeRegistration = null;
+
+window.openRegistrationModal = function(segmentTitle, eventTitle, categoryName, priceAmount) {
+  closeSegmentModal(); // Close segment detail view
+
+  activeRegistration = {
+    segment_title: segmentTitle || 'Cultural Segment',
+    event_title: eventTitle || 'Fiesta Event',
+    category_name: categoryName || '',
+    amount: priceAmount || '0'
+  };
+
+  const regModal = document.getElementById('registrationModal');
+  if (!regModal) return;
+
+  // Set Modal Header Badges & Amounts
+  const badgeText = categoryName ? `${segmentTitle} · ${eventTitle} (${categoryName})` : `${segmentTitle} · ${eventTitle}`;
+  const displayPrice = priceAmount && priceAmount !== '0' ? `Registration Fee: ৳${priceAmount}` : 'Registration Fee: FREE';
+  const displayPayable = priceAmount && priceAmount !== '0' ? `Total Payable: ৳${priceAmount}` : 'Total Payable: FREE';
+
+  if (document.getElementById('regEventBadge')) document.getElementById('regEventBadge').innerText = badgeText;
+  if (document.getElementById('regPriceDisplay')) document.getElementById('regPriceDisplay').innerText = displayPrice;
+  if (document.getElementById('regPaymentAmountDisplay')) document.getElementById('regPaymentAmountDisplay').innerText = displayPayable;
+
+  // bKash Number Setup
+  const bkashNum = (window.CULTURA_CONFIG && window.CULTURA_CONFIG.bkashNumber) ? window.CULTURA_CONFIG.bkashNumber : '01700000000';
+  if (document.getElementById('bkashNumberText')) document.getElementById('bkashNumberText').innerText = bkashNum;
+
+  // Reset forms and show step 1
+  document.getElementById('regFormStep1')?.reset();
+  document.getElementById('regFormStep2')?.reset();
+  showRegStep(1);
+
+  regModal.classList.add('open');
+};
+
+window.closeRegistrationModal = function() {
+  const regModal = document.getElementById('registrationModal');
+  if (regModal) regModal.classList.remove('open');
+};
+
+window.showRegStep = function(stepNum) {
+  const step1 = document.getElementById('regStep1');
+  const step2 = document.getElementById('regStep2');
+  const step3 = document.getElementById('regStep3');
+
+  if (step1) step1.style.display = (stepNum === 1) ? 'block' : 'none';
+  if (step2) step2.style.display = (stepNum === 2) ? 'block' : 'none';
+  if (step3) step3.style.display = (stepNum === 3) ? 'block' : 'none';
+};
+
+window.copyBkashNumber = function() {
+  const numText = document.getElementById('bkashNumberText')?.innerText || '01700000000';
+  navigator.clipboard.writeText(numText).then(() => {
+    alert('bKash Number copied to clipboard: ' + numText);
+  }).catch(() => {
+    alert('bKash Number: ' + numText);
+  });
+};
+
+window.handleRegStep1Submit = function(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (!activeRegistration) return;
+
+  activeRegistration.name = document.getElementById('regNameInput').value.trim();
+  activeRegistration.class_name = document.getElementById('regClassInput').value.trim();
+  activeRegistration.institute = document.getElementById('regInstituteInput').value.trim();
+  activeRegistration.phone = document.getElementById('regPhoneInput').value.trim();
+  activeRegistration.email = document.getElementById('regEmailInput').value.trim();
+
+  // If price is free / 0
+  if (!activeRegistration.amount || activeRegistration.amount === '0') {
+    document.getElementById('regSenderBkashInput').value = 'N/A (Free Event)';
+    document.getElementById('regTrxIdInput').value = 'FREE-REG';
+  } else {
+    document.getElementById('regSenderBkashInput').value = activeRegistration.phone;
+  }
+
+  showRegStep(2);
+};
+
+window.handleRegStep2Submit = async function(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (!activeRegistration) return;
+
+  const btnSubmit = document.getElementById('btnSubmitRegistration');
+  if (btnSubmit) {
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Submitting...`;
+  }
+
+  activeRegistration.sender_bkash = document.getElementById('regSenderBkashInput').value.trim();
+  activeRegistration.trx_id = document.getElementById('regTrxIdInput').value.trim();
+
+  try {
+    const savedReg = (typeof addDbRegistration === 'function') ? await addDbRegistration(activeRegistration) : activeRegistration;
+    
+    // Populate Success Screen Details
+    if (document.getElementById('successParticipantName')) document.getElementById('successParticipantName').innerText = activeRegistration.name;
+    if (document.getElementById('successEventTitle')) document.getElementById('successEventTitle').innerText = activeRegistration.event_title + (activeRegistration.category_name ? ` (${activeRegistration.category_name})` : '');
+    if (document.getElementById('successTrxId')) document.getElementById('successTrxId').innerText = activeRegistration.trx_id;
+    if (document.getElementById('successPhone')) document.getElementById('successPhone').innerText = activeRegistration.phone;
+
+    showRegStep(3);
+  } catch (err) {
+    console.error('Registration submit error:', err);
+    alert('Could not submit registration. Please try again.');
+  } finally {
+    if (btnSubmit) {
+      btnSubmit.disabled = false;
+      btnSubmit.innerHTML = `<i class="fa-solid fa-circle-check"></i> Complete Registration`;
+    }
+  }
 };
 
 // Backdrop click listener to close modal

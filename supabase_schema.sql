@@ -61,12 +61,31 @@ CREATE TABLE IF NOT EXISTS public.ec_members (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 6. Create Registrations Table
+CREATE TABLE IF NOT EXISTS public.registrations (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  class_name TEXT NOT NULL,
+  institute TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  email TEXT NOT NULL,
+  segment_title TEXT NOT NULL,
+  event_title TEXT NOT NULL,
+  category_name TEXT DEFAULT '',
+  amount TEXT DEFAULT '0',
+  sender_bkash TEXT NOT NULL,
+  trx_id TEXT NOT NULL,
+  status TEXT DEFAULT 'pending',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.segments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.segment_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.event_groups ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.schedule ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ec_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
 
 -- Allow Public Access Policies (SELECT, INSERT, UPDATE, DELETE)
 DO $$
@@ -94,5 +113,10 @@ BEGIN
   -- EC Members Policies
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access on ec_members') THEN
     CREATE POLICY "Allow public access on ec_members" ON public.ec_members FOR ALL USING (true) WITH CHECK (true);
+  END IF;
+
+  -- Registrations Policies
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access on registrations') THEN
+    CREATE POLICY "Allow public access on registrations" ON public.registrations FOR ALL USING (true) WITH CHECK (true);
   END IF;
 END $$;
