@@ -186,6 +186,80 @@ img {
 }
 
 /* --------------------------------------------------------------------------
+   Global Form Components (.form-group, .form-label, .form-input, .form-textarea)
+   -------------------------------------------------------------------------- */
+.form-group {
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  color: var(--gold-light);
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 0.45rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  background: rgba(5, 10, 23, 0.8);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-sm);
+  color: #FFFFFF;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  outline: none;
+  transition: var(--transition-fast);
+  resize: vertical;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: rgba(160, 174, 192, 0.5);
+  font-size: 0.9rem;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--gold-light);
+  background: rgba(11, 19, 43, 0.95);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+/* File Upload Custom Styling */
+input[type="file"].form-input {
+  background: rgba(5, 10, 23, 0.8);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+input[type="file"].form-input::file-selector-button {
+  background: var(--gold-gradient);
+  border: none;
+  border-radius: 4px;
+  color: #000;
+  font-weight: 700;
+  padding: 0.4rem 0.9rem;
+  margin-right: 0.8rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+input[type="file"].form-input::file-selector-button:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+/* --------------------------------------------------------------------------
    4. Desktop Header & Navigation Bar
    -------------------------------------------------------------------------- */
 .header-nav {
@@ -1286,6 +1360,12 @@ img {
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 1024px) {
+  .moderator-scroll-box {
+    justify-content: center;
+  }
 }
 
 .ec-horizontal-scroll::-webkit-scrollbar {

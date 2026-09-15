@@ -85,13 +85,38 @@ CREATE TABLE IF NOT EXISTS public.registrations (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Backward-Compatibility Migrations (Adds team columns if tables already exist)
+-- 7. Create Campus Ambassador Applications Table
+CREATE TABLE IF NOT EXISTS public.ca_applications (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  institute TEXT NOT NULL,
+  class_name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  email TEXT NOT NULL,
+  fb_link TEXT DEFAULT '',
+  insta_link TEXT DEFAULT '',
+  photo_url TEXT DEFAULT 'logo.png',
+  reason TEXT DEFAULT '',
+  experience TEXT DEFAULT '',
+  status TEXT DEFAULT 'pending',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 8. Create App Settings Table (For toggles like CA Portal On/Off)
+CREATE TABLE IF NOT EXISTS public.app_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Backward-Compatibility Migrations (Adds team & CA columns if tables already exist)
 ALTER TABLE public.segment_events ADD COLUMN IF NOT EXISTS is_team BOOLEAN DEFAULT FALSE;
 ALTER TABLE public.segment_events ADD COLUMN IF NOT EXISTS max_team_members INT DEFAULT 1;
 ALTER TABLE public.event_groups ADD COLUMN IF NOT EXISTS is_team BOOLEAN DEFAULT FALSE;
 ALTER TABLE public.event_groups ADD COLUMN IF NOT EXISTS max_team_members INT DEFAULT 1;
 ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS team_name TEXT DEFAULT '';
 ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS team_members TEXT DEFAULT '';
+ALTER TABLE public.ca_applications ADD COLUMN IF NOT EXISTS insta_link TEXT DEFAULT '';
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.segments ENABLE ROW LEVEL SECURITY;
@@ -100,6 +125,8 @@ ALTER TABLE public.event_groups ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.schedule ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ec_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ca_applications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
 
 -- Allow Public Access Policies (SELECT, INSERT, UPDATE, DELETE)
 DO $$
@@ -132,5 +159,15 @@ BEGIN
   -- Registrations Policies
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access on registrations') THEN
     CREATE POLICY "Allow public access on registrations" ON public.registrations FOR ALL USING (true) WITH CHECK (true);
+  END IF;
+
+  -- CA Applications Policies
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access on ca_applications') THEN
+    CREATE POLICY "Allow public access on ca_applications" ON public.ca_applications FOR ALL USING (true) WITH CHECK (true);
+  END IF;
+
+  -- App Settings Policies
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access on app_settings') THEN
+    CREATE POLICY "Allow public access on app_settings" ON public.app_settings FOR ALL USING (true) WITH CHECK (true);
   END IF;
 END $$;

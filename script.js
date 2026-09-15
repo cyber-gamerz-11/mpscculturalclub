@@ -105,7 +105,25 @@ document.addEventListener('DOMContentLoaded', () => {
   renderLandingEcGrid();
   renderEcPanelPage();
   renderEventsPage();
+  initCaPortalButton();
 });
+
+// Campus Ambassador Portal Toggle Check for Homepage Hero Button
+async function initCaPortalButton() {
+  const heroCaBtn = document.getElementById('heroCaBtn');
+  if (!heroCaBtn) return;
+  try {
+    const isEnabled = (typeof fetchCaPortalStatus === 'function') ? await fetchCaPortalStatus() : true;
+    if (isEnabled) {
+      heroCaBtn.style.display = 'inline-flex';
+    } else {
+      heroCaBtn.style.display = 'none';
+    }
+  } catch (err) {
+    console.error('Error fetching CA Portal status:', err);
+    heroCaBtn.style.display = 'none';
+  }
+}
 
 // Countdown Clock Logic
 function initCountdown() {
@@ -265,8 +283,13 @@ async function renderLandingEcGrid() {
         No Executive Committee members added yet.
       </div>
     `;
+    const landingModContainer = document.getElementById('landing-moderator-container');
+    if (landingModContainer) landingModContainer.innerHTML = buildModeratorRowHTML();
     return;
   }
+
+  const landingModContainer = document.getElementById('landing-moderator-container');
+  if (landingModContainer) landingModContainer.innerHTML = buildModeratorRowHTML();
 
   // Sort: rank first, then wing (BVB→EVB→BVG→EVG) within each rank
   const WING_ORDER = ['BVB', 'EVB', 'BVG', 'EVG'];
@@ -335,26 +358,80 @@ async function renderLandingEcGrid() {
 }
 
 
+function buildModeratorRowHTML() {
+  const mods = [
+    { num: '1', title: 'Moderator', role: 'Club Moderator', isChief: true },
+    { num: '2', title: 'Co-Moderator', role: 'Club Co-Moderator', isChief: false },
+    { num: '3', title: 'Co-Moderator', role: 'Club Co-Moderator', isChief: false },
+    { num: '4', title: 'Co-Moderator', role: 'Club Co-Moderator', isChief: false }
+  ];
+
+  const cardsHTML = mods.map(m => {
+    const badgeBg = m.isChief 
+      ? 'background: rgba(212,175,55,0.25); color: #FFD700; border-color: #FFD700;' 
+      : 'background: rgba(52,152,219,0.2); color: #3498DB; border-color: rgba(52,152,219,0.4);';
+    const badgeIcon = m.isChief ? 'fa-crown' : 'fa-user-shield';
+    const avatarGlow = m.isChief ? 'box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); border-color: var(--gold-light);' : '';
+    const borderStyle = m.isChief ? 'border: 1px solid var(--border-gold);' : 'border: 1px solid rgba(255,255,255,0.1);';
+
+    return `
+      <div class="glass-panel ec-card ec-horizontal-card" style="text-align: center; ${borderStyle}">
+        <div class="ec-avatar-wrapper" style="${avatarGlow}">
+          <img src="moderators/${m.num}.jpg" alt="${m.title}" class="ec-avatar-img" 
+            onerror="if(!this.t1){this.t1=true;this.src='moderators/${m.num}.png';}else if(!this.t2){this.t2=true;this.src='images/moderators/${m.num}.jpg';}else if(!this.t3){this.t3=true;this.src='images/moderators/${m.num}.png';}else if(!this.t4){this.t4=true;this.src='${m.num}.jpg';}else if(!this.t5){this.t5=true;this.src='${m.num}.png';}else{this.src='logo.png';}">
+        </div>
+        <h3 class="ec-name" style="margin-top: 0.4rem; font-size: 1rem;">${m.title} ${m.num}</h3>
+        <p class="ec-role">${m.role}</p>
+        <span class="ec-wing-badge" style="${badgeBg}"><i class="fa-solid ${badgeIcon}"></i> ${m.title.toUpperCase()}</span>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="ec-horizontal-scroll moderator-scroll-box">
+      ${cardsHTML}
+    </div>
+  `;
+}
+
 // Render Full EC Panel Page with 4 Wing Teams (BVB, EVB, BVG, EVG) on ec-panel.html
 async function renderEcPanelPage() {
   const container = document.getElementById('ec-panel-wings-container');
   if (!container) return;
 
+  let html = `
+    <!-- Partition 1 Header: Meet Our Moderators -->
+    <div class="section-header" style="margin-bottom: 2rem; text-align: center;">
+      <span class="section-subtitle">Faculty & Guidance</span>
+      <h2 class="section-title">Meet Our <span>Moderators</span></h2>
+      <div class="title-line"></div>
+    </div>
+
+    ${buildModeratorRowHTML()}
+
+    <!-- Partition Divider -->
+    <div class="ec-partition-divider" style="margin: 3.5rem 0 3.5rem 0; display: flex; align-items: center; justify-content: center; gap: 1.5rem;">
+      <div style="flex: 1; max-width: 250px; height: 1px; background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4));"></div>
+      <span style="color: var(--gold-light); font-size: 1rem;"><i class="fa-solid fa-star"></i></span>
+      <div style="flex: 1; max-width: 250px; height: 1px; background: linear-gradient(90deg, rgba(212,175,55,0.4), transparent);"></div>
+    </div>
+
+    <!-- Partition 2 Header: Executive Panel 2026-27 -->
+    <div class="section-header" style="margin-bottom: 2.5rem; text-align: center;">
+      <span class="section-subtitle">Leadership & Management</span>
+      <h2 class="section-title">Executive Panel <span>2026–27</span></h2>
+      <div class="title-line"></div>
+    </div>
+  `;
+
   const ecMembers = (typeof fetchDbEcMembers === 'function') ? await fetchDbEcMembers() : getStoredEcMembers();
 
   if (!ecMembers || ecMembers.length === 0) {
-    container.innerHTML = `
-      <div style="text-align: center; padding: 4rem 1rem; color: var(--text-muted); font-style: italic; background: var(--bg-card); border: 1px dashed var(--border-gold); border-radius: var(--radius-md); max-width: 600px; margin: 0 auto;">
-        <i class="fa-solid fa-users-slash" style="font-size: 2.5rem; color: var(--gold-primary); margin-bottom: 1rem; display: block;"></i>
-        <h3 style="color: #FFF; font-family: var(--font-heading); margin-bottom: 0.5rem;">Executive Committee Roster Empty</h3>
-        <p>No wing panel members have been added yet. Admin can populate members via the Admin Center.</p>
-      </div>
-    `;
+    container.innerHTML = html;
     return;
   }
 
   const wings = ['BVB', 'EVB', 'BVG', 'EVG'];
-  let html = '';
 
   wings.forEach(wingKey => {
     const rawMembers = ecMembers.filter(m => (m.wing || 'BVB').toUpperCase() === wingKey);

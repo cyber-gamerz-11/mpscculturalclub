@@ -1135,3 +1135,204 @@ async function deleteDbRegistration(regId) {
   return true;
 }
 
+/* ==========================================================================
+   CAMPUS AMBASSADOR (CA) & APP SETTINGS ENGINE
+   ========================================================================== */
+
+function getStoredCaApplications() {
+  const data = localStorage.getItem('cultura_ca_applications');
+  if (!data) return [];
+  try {
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveStoredCaApplications(arr) {
+  localStorage.setItem('cultura_ca_applications', JSON.stringify(arr));
+}
+
+/**
+ * Get CA Registration Portal Status (ON / OFF). Default: true (ON).
+ */
+async function fetchCaPortalStatus() {
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('app_settings')
+        .select('*')
+        .eq('key', 'ca_portal_enabled')
+        .single();
+      if (!error && data) {
+        const val = data.value === 'true';
+        localStorage.setItem('cultura_ca_enabled', val ? 'true' : 'false');
+        return val;
+      }
+    } catch (e) {}
+  }
+
+  const stored = localStorage.getItem('cultura_ca_enabled');
+  return stored !== 'false';
+}
+
+/**
+ * Toggle CA Registration Portal Status (ON / OFF)
+ */
+async function updateCaPortalStatus(enabled) {
+  const strVal = enabled ? 'true' : 'false';
+  localStorage.setItem('cultura_ca_enabled', strVal);
+
+  if (supabaseClient) {
+    try {
+      await supabaseClient
+        .from('app_settings')
+        .upsert({ key: 'ca_portal_enabled', value: strVal, updated_at: new Date().toISOString() });
+    } catch (e) {
+      console.error('Supabase updateCaPortalStatus exception:', e);
+    }
+  }
+  return true;
+}
+
+/**
+ * Fetch all CA Applications
+ */
+async function fetchCaApplications() {
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('ca_applications')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(data)) {
+        const mapped = data.map(app => ({
+          id: app.id,
+          name: app.name,
+          institute: app.institute,
+          class_name: app.class_name,
+          phone: app.phone,
+          email: app.email,
+          fb_link: app.fb_link || '',
+          insta_link: app.insta_link || '',
+          photo_url: app.photo_url || 'logo.png',
+          reason: app.reason || '',
+          experience: app.experience || '',
+          status: app.status || 'pending',
+          created_at: app.created_at
+        }));
+        saveStoredCaApplications(mapped);
+        return mapped;
+      }
+    } catch (e) {
+      console.warn('Supabase fetchCaApplications exception:', e);
+    }
+  }
+
+  return getStoredCaApplications();
+}
+
+/**
+ * Submit a new CA Application
+ */
+async function addCaApplication(caData) {
+  const newApp = {
+    id: caData.id || 'ca-' + Date.now(),
+    name: caData.name,
+    institute: caData.institute,
+    class_name: caData.class_name,
+    phone: caData.phone,
+    email: caData.email,
+    fb_link: caData.fb_link || '',
+    insta_link: caData.insta_link || '',
+    photo_url: caData.photo_url || 'logo.png',
+    reason: caData.reason || '',
+    experience: caData.experience || '',
+    status: 'pending',
+    created_at: new Date().toISOString()
+  };
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('ca_applications')
+        .insert([{
+          name: caData.name,
+          institute: caData.institute,
+          class_name: caData.class_name,
+          phone: caData.phone,
+          email: caData.email,
+          fb_link: caData.fb_link || '',
+          insta_link: caData.insta_link || '',
+          photo_url: caData.photo_url || 'logo.png',
+          reason: caData.reason || '',
+          experience: caData.experience || '',
+          status: 'pending'
+        }])
+        .select();
+
+      if (!error && data && data[0]) {
+        newApp.id = data[0].id;
+        newApp.created_at = data[0].created_at || newApp.created_at;
+      }
+    } catch (e) {
+      console.error('Supabase addCaApplication exception:', e);
+    }
+  }
+
+  const current = getStoredCaApplications();
+  current.unshift(newApp);
+  saveStoredCaApplications(current);
+  return newApp;
+}
+
+/**
+ * Update CA Application status (selected, rejected, pending)
+ */
+async function updateCaApplicationStatus(caId, newStatus) {
+  if (supabaseClient && caId && !String(caId).startsWith('ca-')) {
+    try {
+      await supabaseClient
+        .from('ca_applications')
+        .update({ status: newStatus })
+        .eq('id', caId);
+    } catch (e) {
+      console.error('Supabase updateCaApplicationStatus exception:', e);
+    }
+  }
+
+  const list = getStoredCaApplications();
+  const item = list.find(app => String(app.id) === String(caId));
+  if (item) {
+    item.status = newStatus;
+    saveStoredCaApplications(list);
+  }
+  return true;
+}
+
+/**
+ * Delete CA Application
+ */
+async function deleteCaApplication(caId) {
+  if (supabaseClient && caId && !String(caId).startsWith('ca-')) {
+    try {
+      await supabaseClient
+        .from('ca_applications')
+        .delete()
+        .eq('id', caId);
+    } catch (e) {
+      console.error('Supabase deleteCaApplication exception:', e);
+    }
+  }
+
+  const list = getStoredCaApplications();
+  const idx = list.findIndex(app => String(app.id) === String(caId));
+  if (idx !== -1) {
+    list.splice(idx, 1);
+    saveStoredCaApplications(list);
+  }
+  return true;
+}
+

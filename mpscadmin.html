@@ -416,6 +416,9 @@
         <li class="sidebar-link" data-tab="tab-notices">
           <i class="fa-solid fa-bullhorn"></i> Announcements & Notices
         </li>
+        <li class="sidebar-link" data-tab="tab-ca">
+          <i class="fa-solid fa-id-card"></i> Campus Ambassadors
+        </li>
         <li class="sidebar-link" data-tab="tab-database">
           <i class="fa-solid fa-database"></i> Supabase Setup & Keys
         </li>
@@ -907,6 +910,88 @@
         </div>
       </div>
 
+      <!-- TAB: Campus Ambassador (CA) Applications Manager -->
+      <div id="tab-ca" class="admin-tab-pane" style="display: none;">
+
+        <!-- CA Portal Status Control Card -->
+        <div class="admin-card-table" style="background: var(--bg-card); border: 1px solid var(--border-gold); padding: 1.5rem; margin-bottom: 2rem; border-radius: var(--radius-md);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-family: var(--font-heading); color: #FFF; margin-bottom: 0.3rem;">
+                <i class="fa-solid fa-bullhorn" style="color: var(--gold-light);"></i> Campus Ambassador Registration Portal
+              </h3>
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">
+                Turn ON to display the "Become CA" registration button on the home page. Turn OFF to hide it completely.
+              </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <span id="caPortalStatusBadge" class="status-badge" style="padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">Checking...</span>
+              <button id="caPortalToggleBtn" class="btn-gold" onclick="toggleCaPortalStatusAction()" style="min-width: 140px;">
+                <i class="fa-solid fa-toggle-on"></i> Toggle Portal
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.8rem;">
+          <div class="stat-card">
+            <div class="stat-value" id="caTotalCount">0</div>
+            <div class="stat-label">Total Applicants</div>
+          </div>
+          <div class="stat-card" style="border-color: rgba(46, 204, 113, 0.4);">
+            <div class="stat-value" id="caSelectedCount" style="color: #2ECC71;">0</div>
+            <div class="stat-label">Selected CAs</div>
+          </div>
+          <div class="stat-card" style="border-color: rgba(241, 196, 15, 0.4);">
+            <div class="stat-value" id="caPendingCount" style="color: #F1C40F;">0</div>
+            <div class="stat-label">Pending Review</div>
+          </div>
+          <div class="stat-card" style="border-color: rgba(231, 76, 60, 0.4);">
+            <div class="stat-value" id="caRejectedCount" style="color: #E74C3C;">0</div>
+            <div class="stat-label">Rejected</div>
+          </div>
+        </div>
+
+        <!-- Table & Filter Controls -->
+        <div class="admin-card-table">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="btn-outline-gold active-filter" id="caFilterAllBtn" onclick="setCaFilter('all')">All (<span id="caFilterAllCount">0</span>)</button>
+              <button class="btn-outline-gold" id="caFilterPendingBtn" onclick="setCaFilter('pending')">Pending (<span id="caFilterPendingCount">0</span>)</button>
+              <button class="btn-outline-gold" id="caFilterSelectedBtn" onclick="setCaFilter('selected')">Selected (<span id="caFilterSelectedCount">0</span>)</button>
+              <button class="btn-outline-gold" id="caFilterRejectedBtn" onclick="setCaFilter('rejected')">Rejected (<span id="caFilterRejectedCount">0</span>)</button>
+            </div>
+            <div style="flex: 1; max-width: 300px;">
+              <input type="text" id="caSearchInput" class="form-input" placeholder="Search by name, institute, phone..." oninput="handleCaSearchInput(this.value)">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Applicant Details</th>
+                  <th>Contact Info</th>
+                  <th>Motivation & Experience</th>
+                  <th>Applied Date</th>
+                  <th>Status</th>
+                  <th>Actions & Notifications</th>
+                </tr>
+              </thead>
+              <tbody id="caApplicationsTableBody">
+                <tr>
+                  <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                    Loading Campus Ambassador applications...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
       <!-- TAB 5: Supabase Live Keys & Setup Instructions -->
       <div id="tab-database" class="admin-tab-pane" style="display: none;">
 
@@ -1156,6 +1241,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
         'tab-schedule': 'Schedule Event Manager',
         'tab-ec': 'Executive Committee Manager',
         'tab-notices': 'Announcements & Notices',
+        'tab-ca': 'Campus Ambassador Applications',
         'tab-registrations': 'Registrations & Payments Manager',
         'tab-database': 'Supabase Setup & Keys'
       };
@@ -1168,6 +1254,12 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       if (tabId === 'tab-registrations' || tabId === 'tab-dashboard') {
         if (typeof window.renderAdminRegistrationsTable === 'function') {
           window.renderAdminRegistrationsTable();
+        }
+      }
+
+      if (tabId === 'tab-ca' || tabId === 'tab-dashboard') {
+        if (typeof window.renderCaApplicationsTable === 'function') {
+          window.renderCaApplicationsTable();
         }
       }
     };
@@ -1340,6 +1432,11 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
 
       // 4. Render Registrations Table & Metrics
       await window.renderAdminRegistrationsTable();
+
+      // 5. Render Campus Ambassador Applications Table & Metrics
+      if (typeof window.renderCaApplicationsTable === 'function') {
+        await window.renderCaApplicationsTable();
+      }
     }
 
     /* ==========================================================================
@@ -1962,6 +2059,254 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
         await renderAdminTables();
       }
     }
+
+    /* ==========================================================================
+       CAMPUS AMBASSADOR (CA) MANAGEMENT ENGINE
+       ========================================================================== */
+    let currentCaFilter = 'all';
+    let currentCaSearch = '';
+    let cachedCaApps = [];
+    let isCaPortalEnabled = true;
+
+    window.renderCaApplicationsTable = async function () {
+      const tbody = document.getElementById('caApplicationsTableBody');
+      if (!tbody) return;
+
+      // 1. Fetch & update portal status badge
+      try {
+        if (typeof fetchCaPortalStatus === 'function') {
+          isCaPortalEnabled = await fetchCaPortalStatus();
+        }
+      } catch (err) {
+        console.warn('Error fetching CA portal status:', err);
+      }
+      updateCaPortalBadgeUI(isCaPortalEnabled);
+
+      // 2. Fetch applications list
+      try {
+        if (typeof fetchCaApplications === 'function') {
+          const apps = await fetchCaApplications();
+          cachedCaApps = Array.isArray(apps) ? apps : [];
+        }
+      } catch (err) {
+        console.warn('Error fetching CA applications:', err);
+      }
+
+      updateCaAppsUI(cachedCaApps);
+    };
+
+    function updateCaPortalBadgeUI(enabled) {
+      const badge = document.getElementById('caPortalStatusBadge');
+      const btn = document.getElementById('caPortalToggleBtn');
+      if (badge) {
+        if (enabled) {
+          badge.className = 'status-badge status-approved';
+          badge.style.cssText = 'background: rgba(46,204,113,0.2); color: #2ECC71; border: 1px solid #2ECC71; padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;';
+          badge.innerText = 'Active (Shown on Homepage)';
+        } else {
+          badge.className = 'status-badge status-rejected';
+          badge.style.cssText = 'background: rgba(231,76,60,0.2); color: #E74C3C; border: 1px solid #E74C3C; padding: 0.4rem 0.8rem; border-radius: 20px; font-weight: 700; font-size: 0.85rem;';
+          badge.innerText = 'Disabled (Hidden from Homepage)';
+        }
+      }
+      if (btn) {
+        btn.innerHTML = enabled
+          ? '<i class="fa-solid fa-toggle-off"></i> Turn OFF Portal'
+          : '<i class="fa-solid fa-toggle-on"></i> Turn ON Portal';
+      }
+    }
+
+    window.toggleCaPortalStatusAction = async function () {
+      const newStatus = !isCaPortalEnabled;
+      try {
+        if (typeof updateCaPortalStatus === 'function') {
+          await updateCaPortalStatus(newStatus);
+          isCaPortalEnabled = newStatus;
+          updateCaPortalBadgeUI(isCaPortalEnabled);
+          alert(newStatus ? 'Campus Ambassador Registration Portal is now ACTIVE on the homepage!' : 'Campus Ambassador Registration Portal is now DISABLED and hidden from homepage.');
+        }
+      } catch (err) {
+        alert('Failed to update portal status: ' + err.message);
+      }
+    };
+
+    window.setCaFilter = function (filter) {
+      currentCaFilter = filter;
+      ['all', 'pending', 'selected', 'rejected'].forEach(f => {
+        const btn = document.getElementById(`caFilter${f.charAt(0).toUpperCase() + f.slice(1)}Btn`);
+        if (btn) {
+          if (f === filter) btn.classList.add('active-filter');
+          else btn.classList.remove('active-filter');
+        }
+      });
+      updateCaAppsUI(cachedCaApps);
+    };
+
+    window.handleCaSearchInput = function (val) {
+      currentCaSearch = (val || '').toLowerCase().trim();
+      updateCaAppsUI(cachedCaApps);
+    };
+
+    function updateCaAppsUI(apps) {
+      const tbody = document.getElementById('caApplicationsTableBody');
+      if (!tbody) return;
+
+      const totalCount = apps.length;
+      const selectedCount = apps.filter(a => a.status === 'selected').length;
+      const pendingCount = apps.filter(a => a.status === 'pending').length;
+      const rejectedCount = apps.filter(a => a.status === 'rejected').length;
+
+      if (document.getElementById('caTotalCount')) document.getElementById('caTotalCount').innerText = totalCount;
+      if (document.getElementById('caSelectedCount')) document.getElementById('caSelectedCount').innerText = selectedCount;
+      if (document.getElementById('caPendingCount')) document.getElementById('caPendingCount').innerText = pendingCount;
+      if (document.getElementById('caRejectedCount')) document.getElementById('caRejectedCount').innerText = rejectedCount;
+
+      if (document.getElementById('caFilterAllCount')) document.getElementById('caFilterAllCount').innerText = totalCount;
+      if (document.getElementById('caFilterPendingCount')) document.getElementById('caFilterPendingCount').innerText = pendingCount;
+      if (document.getElementById('caFilterSelectedCount')) document.getElementById('caFilterSelectedCount').innerText = selectedCount;
+      if (document.getElementById('caFilterRejectedCount')) document.getElementById('caFilterRejectedCount').innerText = rejectedCount;
+
+      // Filter applications
+      let filtered = apps;
+      if (currentCaFilter !== 'all') {
+        filtered = filtered.filter(a => a.status === currentCaFilter);
+      }
+      if (currentCaSearch) {
+        filtered = filtered.filter(a =>
+          (a.name && a.name.toLowerCase().includes(currentCaSearch)) ||
+          (a.institute && a.institute.toLowerCase().includes(currentCaSearch)) ||
+          (a.phone && a.phone.toLowerCase().includes(currentCaSearch)) ||
+          (a.email && a.email.toLowerCase().includes(currentCaSearch)) ||
+          (a.insta_link && a.insta_link.toLowerCase().includes(currentCaSearch))
+        );
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">
+              <i class="fa-solid fa-folder-open" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; opacity: 0.5;"></i>
+              No Campus Ambassador applications found.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      filtered.forEach(app => {
+        const tr = document.createElement('tr');
+
+        // Status badge
+        let statusBadge = '<span class="status-badge" style="background: rgba(241,196,15,0.2); color: #F1C40F; border: 1px solid #F1C40F; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.78rem; font-weight:700;">Pending</span>';
+        if (app.status === 'selected') {
+          statusBadge = '<span class="status-badge" style="background: rgba(46,204,113,0.2); color: #2ECC71; border: 1px solid #2ECC71; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.78rem; font-weight:700;">Selected</span>';
+        } else if (app.status === 'rejected') {
+          statusBadge = '<span class="status-badge" style="background: rgba(231,76,60,0.2); color: #E74C3C; border: 1px solid #E74C3C; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.78rem; font-weight:700;">Rejected</span>';
+        }
+
+        const formattedDate = app.created_at ? new Date(app.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+        const photoSrc = app.photo_url || 'logo.png';
+
+        tr.innerHTML = `
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.8rem;">
+              <img src="${photoSrc}" alt="${app.name}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-gold);">
+              <div>
+                <strong style="color: #FFF; font-size: 0.95rem; display: block;">${app.name || 'Unnamed'}</strong>
+                <span style="color: var(--gold-light); font-size: 0.8rem;"><i class="fa-solid fa-building-columns"></i> ${app.institute || 'N/A'}</span>
+                <span style="color: var(--text-muted); font-size: 0.75rem; display: block;">${app.class_name ? 'Class/Year: ' + app.class_name : ''}</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div style="font-size: 0.85rem;">
+              <div style="color: #FFF;"><i class="fa-solid fa-phone" style="color: #2ECC71;"></i> ${app.phone || 'N/A'}</div>
+              <div style="color: var(--text-muted);"><i class="fa-regular fa-envelope"></i> ${app.email || 'N/A'}</div>
+              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.2rem;">
+                ${app.fb_link ? `<a href="${app.fb_link}" target="_blank" style="color: #3498DB; font-size: 0.78rem; text-decoration: underline;"><i class="fa-brands fa-facebook"></i> Facebook</a>` : ''}
+                ${app.insta_link ? `<a href="${app.insta_link}" target="_blank" style="color: #E1306C; font-size: 0.78rem; text-decoration: underline;"><i class="fa-brands fa-instagram"></i> Instagram</a>` : ''}
+              </div>
+            </div>
+          </td>
+          <td style="max-width: 250px;">
+            <div style="font-size: 0.8rem; color: #E2E8F0; line-height: 1.4;">
+              <strong>Reason:</strong> ${app.reason || 'N/A'}
+              ${app.experience ? `<br><span style="color: var(--gold-light);"><strong>Experience:</strong> ${app.experience}</span>` : ''}
+            </div>
+          </td>
+          <td style="font-size: 0.82rem; color: var(--text-muted); white-space: nowrap;">
+            ${formattedDate}
+          </td>
+          <td>
+            ${statusBadge}
+          </td>
+          <td>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;">
+              ${app.status !== 'selected' ? `
+                <button class="btn-edit-sm" onclick="handleCaStatusChange('${app.id}', 'selected')" title="Mark Selected" style="background: rgba(46,204,113,0.15); border-color: #2ECC71; color: #2ECC71;">
+                  <i class="fa-solid fa-check"></i> Select
+                </button>
+              ` : ''}
+              ${app.status !== 'rejected' ? `
+                <button class="btn-danger-sm" onclick="handleCaStatusChange('${app.id}', 'rejected')" title="Mark Rejected">
+                  <i class="fa-solid fa-xmark"></i> Reject
+                </button>
+              ` : ''}
+              <button class="btn-edit-sm" onclick="sendCaWhatsApp('${app.phone || ''}', '${(app.name || '').replace(/'/g, "\\'")}')" title="Send WhatsApp Message" style="background: rgba(37,211,102,0.15); border-color: #25D366; color: #25D366;">
+                <i class="fa-brands fa-whatsapp"></i> WA
+              </button>
+              <button class="btn-edit-sm" onclick="sendCaEmail('${app.email || ''}', '${(app.name || '').replace(/'/g, "\\'")}')" title="Send Email Notification" style="background: rgba(212,175,55,0.15); border-color: var(--border-gold); color: var(--gold-light);">
+                <i class="fa-regular fa-envelope"></i> Email
+              </button>
+              <button class="btn-danger-sm" onclick="handleDeleteCaApp('${app.id}')" title="Delete Record">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.handleCaStatusChange = async function (id, newStatus) {
+      try {
+        if (typeof updateCaApplicationStatus === 'function') {
+          await updateCaApplicationStatus(id, newStatus);
+          await renderCaApplicationsTable();
+        }
+      } catch (err) {
+        alert('Failed to update status: ' + err.message);
+      }
+    };
+
+    window.handleDeleteCaApp = async function (id) {
+      if (!confirm('Are you sure you want to delete this Campus Ambassador application?')) return;
+      try {
+        if (typeof deleteCaApplication === 'function') {
+          await deleteCaApplication(id);
+          await renderCaApplicationsTable();
+        }
+      } catch (err) {
+        alert('Failed to delete application: ' + err.message);
+      }
+    };
+
+    window.sendCaWhatsApp = function (phone, name) {
+      if (!phone) return alert('No phone number provided for this applicant.');
+      const cleanPhone = phone.replace(/[^0-9]/g, '');
+      const waPhone = cleanPhone.startsWith('88') ? cleanPhone : '88' + cleanPhone;
+      const text = encodeURIComponent(`Dear ${name}, Congratulations! You have been selected as an official Campus Ambassador for The Cultura Fiesta 1.0 organized by MPSC Cultural Club. We look forward to working with you!`);
+      window.open(`https://wa.me/${waPhone}?text=${text}`, '_blank');
+    };
+
+    window.sendCaEmail = function (email, name) {
+      if (!email) return alert('No email address provided for this applicant.');
+      const subject = encodeURIComponent('Selected as Campus Ambassador - MPSC Cultural Club');
+      const body = encodeURIComponent(`Dear ${name},\n\nCongratulations! We are pleased to inform you that you have been selected as a Campus Ambassador for The Cultura Fiesta 1.0 organized by MPSC Cultural Club.\n\nWe will reach out to you shortly with promotional banners, registration passes, and further guidelines.\n\nBest regards,\nExecutive Committee\nMPSC Cultural Club`);
+      window.open(`mailto:${email}?subject=${subject}&body=${body}`, '_blank');
+    };
   </script>
 
   <!-- Edit Modal Container -->
