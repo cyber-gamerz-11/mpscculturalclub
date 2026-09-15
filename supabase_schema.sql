@@ -24,6 +24,8 @@ CREATE TABLE IF NOT EXISTS public.segment_events (
   time TEXT,
   venue TEXT,
   price TEXT,
+  is_team BOOLEAN DEFAULT FALSE,
+  max_team_members INT DEFAULT 1,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -36,6 +38,8 @@ CREATE TABLE IF NOT EXISTS public.event_groups (
   rules TEXT,
   description TEXT,
   price TEXT,
+  is_team BOOLEAN DEFAULT FALSE,
+  max_team_members INT DEFAULT 1,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -76,8 +80,18 @@ CREATE TABLE IF NOT EXISTS public.registrations (
   sender_bkash TEXT NOT NULL,
   trx_id TEXT NOT NULL,
   status TEXT DEFAULT 'pending',
+  team_name TEXT DEFAULT '',
+  team_members TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Backward-Compatibility Migrations (Adds team columns if tables already exist)
+ALTER TABLE public.segment_events ADD COLUMN IF NOT EXISTS is_team BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.segment_events ADD COLUMN IF NOT EXISTS max_team_members INT DEFAULT 1;
+ALTER TABLE public.event_groups ADD COLUMN IF NOT EXISTS is_team BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.event_groups ADD COLUMN IF NOT EXISTS max_team_members INT DEFAULT 1;
+ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS team_name TEXT DEFAULT '';
+ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS team_members TEXT DEFAULT '';
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE public.segments ENABLE ROW LEVEL SECURITY;

@@ -650,6 +650,19 @@
                   style="padding-left: 30px;">
               </div>
             </div>
+
+            <!-- Team Event Option -->
+            <div style="margin-bottom: 1.5rem; background: rgba(52, 152, 219, 0.08); padding: 0.8rem 1rem; border-radius: 8px; border: 1px dashed rgba(52, 152, 219, 0.3); display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+              <label style="color: #FFF; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem;">
+                <input type="checkbox" id="segEvtIsTeamInput" onchange="document.getElementById('segEvtTeamGroup').style.display = this.checked ? 'flex' : 'none';" style="width: 18px; height: 18px; accent-color: #3498DB;">
+                <i class="fa-solid fa-users" style="color: #3498DB;"></i> Check if this is a Team / Band Event
+              </label>
+              <div id="segEvtTeamGroup" style="display: none; align-items: center; gap: 0.6rem;">
+                <label class="form-label" style="margin: 0; white-space: nowrap;">MAX TEAM MEMBERS:</label>
+                <input type="number" id="segEvtMaxTeamInput" class="form-input" value="5" min="2" max="25" style="width: 90px;">
+              </div>
+            </div>
+
             <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Add Event to Segment</button>
           </form>
         </div>
@@ -696,6 +709,19 @@
               <textarea id="groupRulesInput" class="form-textarea" rows="2"
                 placeholder="e.g. Max 4 mins stage time. 1 backing track allowed."></textarea>
             </div>
+
+            <!-- Team Category Option -->
+            <div style="margin-bottom: 1.5rem; background: rgba(52, 152, 219, 0.08); padding: 0.8rem 1rem; border-radius: 8px; border: 1px dashed rgba(52, 152, 219, 0.3); display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+              <label style="color: #FFF; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem;">
+                <input type="checkbox" id="groupIsTeamInput" onchange="document.getElementById('groupTeamGroup').style.display = this.checked ? 'flex' : 'none';" style="width: 18px; height: 18px; accent-color: #3498DB;">
+                <i class="fa-solid fa-users" style="color: #3498DB;"></i> Check if this Category is Team-based
+              </label>
+              <div id="groupTeamGroup" style="display: none; align-items: center; gap: 0.6rem;">
+                <label class="form-label" style="margin: 0; white-space: nowrap;">MAX TEAM MEMBERS:</label>
+                <input type="number" id="groupMaxTeamInput" class="form-input" value="5" min="2" max="25" style="width: 90px;">
+              </div>
+            </div>
+
             <button type="submit" class="btn-gold"><i class="fa-solid fa-plus-circle"></i> Save Age Group /
               Category</button>
           </form>
@@ -1172,6 +1198,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
                 <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; padding: 0.4rem 0.7rem; display: flex; justify-content: space-between; align-items: center;">
                   <div>
                     <span style="color: #FFF; font-weight: 600; font-size: 0.85rem;">${grp.group_name}</span>
+                    ${grp.is_team ? `<span class="ec-wing-badge" style="background: rgba(52,152,219,0.2); color:#3498DB; border-color:rgba(52,152,219,0.4); font-size:0.72rem; margin-left: 0.4rem;"><i class="fa-solid fa-users"></i> Team (Max ${grp.max_team_members || 1})</span>` : ''}
                     ${grp.age_limit ? `<span style="color: var(--gold-light); font-size: 0.8rem; margin-left: 0.5rem;">(${grp.age_limit})</span>` : ''}
                     ${grp.price ? `<span style="background: rgba(212,175,55,0.2); color: #FFF; border: 1px solid var(--border-gold); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; margin-left: 0.5rem;">৳${grp.price}</span>` : ''}
                     ${grp.rules ? `<div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.1rem;"><i class="fa-solid fa-circle-info"></i> ${grp.rules}</div>` : ''}
@@ -1188,6 +1215,7 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                       <strong style="color: var(--gold-primary); font-size: 0.95rem;">${evt.title}</strong>
+                      ${evt.is_team ? `<span class="ec-wing-badge" style="background: rgba(52,152,219,0.2); color:#3498DB; border-color:rgba(52,152,219,0.4); font-size:0.75rem; margin-left: 0.5rem;"><i class="fa-solid fa-users"></i> Team Event (Max ${evt.max_team_members || 1})</span>` : ''}
                       ${evt.venue ? `<span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.6rem;"><i class="fa-solid fa-location-dot"></i> ${evt.venue}</span>` : ''}
                       ${evt.price ? `<span style="background: rgba(212,175,55,0.2); color: #FFF; border: 1px solid var(--border-gold); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-left: 0.6rem;">৳${evt.price}</span>` : ''}
                       ${evt.description ? `<div style="color: #DDD; font-size: 0.8rem; margin-top: 0.2rem;">${evt.description}</div>` : ''}
@@ -1405,6 +1433,8 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
 
         const safeName = (r.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         const safeEvent = ((r.event_title || '') + (r.category_name ? ' ' + r.category_name : '')).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeTeamName = (r.team_name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeTeamMembers = (r.team_members || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
         tr.innerHTML = `
           <td>
@@ -1413,7 +1443,9 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
           </td>
           <td>
             <strong style="color: #FFF; font-size: 0.95rem;">${r.name || 'Participant'}</strong>
-            <div style="color: var(--text-muted); font-size: 0.8rem;">${r.class_name || ''} &bull; ${r.institute || ''}</div>
+            ${r.team_name ? `<div style="color: var(--gold-light); font-size: 0.82rem; font-weight: 700; margin-top: 0.2rem;"><i class="fa-solid fa-people-group"></i> Team: ${r.team_name}</div>` : ''}
+            ${r.team_members ? `<div style="color: #BBB; font-size: 0.76rem; margin-top: 0.1rem; line-height: 1.3;"><i class="fa-solid fa-user-group"></i> ${r.team_members}</div>` : ''}
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem;">${r.class_name || ''} &bull; ${r.institute || ''}</div>
           </td>
           <td>
             <div style="font-weight: 600; color: #FFF;"><i class="fa-solid fa-phone" style="font-size: 0.75rem; color: var(--gold-light);"></i> ${r.phone || ''}</div>
@@ -1433,8 +1465,8 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
             <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
               ${r.status !== 'approved' ? `<button class="btn-edit-sm" style="background: rgba(46,204,113,0.2); border-color:#2ECC71; color:#2ECC71;" onclick="handleApproveReg('${r.id}')"><i class="fa-solid fa-check"></i> Approve</button>` : ''}
               ${r.status !== 'rejected' ? `<button class="btn-danger-sm" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="handleRejectReg('${r.id}')"><i class="fa-solid fa-xmark"></i> Reject</button>` : ''}
-              <button class="btn-edit-sm" style="background: rgba(37,211,102,0.2); border-color:#25D366; color:#25D366;" onclick="sendWhatsAppTicket('${r.phone || ''}', '${safeName}', '${safeEvent}', '${r.status || 'pending'}', '${r.trx_id || ''}')"><i class="fa-brands fa-whatsapp"></i> WP Ticket</button>
-              <button class="btn-edit-sm" style="background: rgba(52,152,219,0.2); border-color:#3498DB; color:#3498DB;" onclick="sendEmailTicket('${r.email || ''}', '${safeName}', '${safeEvent}', '${r.status || 'pending'}', '${r.trx_id || ''}')"><i class="fa-solid fa-envelope"></i> Email Ticket</button>
+              <button class="btn-edit-sm" style="background: rgba(37,211,102,0.2); border-color:#25D366; color:#25D366;" onclick="sendWhatsAppTicket('${r.phone || ''}', '${safeName}', '${safeEvent}', '${r.status || 'pending'}', '${r.trx_id || ''}', '${safeTeamName}', '${safeTeamMembers}')"><i class="fa-brands fa-whatsapp"></i> WP Ticket</button>
+              <button class="btn-edit-sm" style="background: rgba(52,152,219,0.2); border-color:#3498DB; color:#3498DB;" onclick="sendEmailTicket('${r.email || ''}', '${safeName}', '${safeEvent}', '${r.status || 'pending'}', '${r.trx_id || ''}', '${safeTeamName}', '${safeTeamMembers}')"><i class="fa-solid fa-envelope"></i> Email Ticket</button>
               <button class="btn-danger-sm" style="padding: 0.3rem 0.5rem; font-size: 0.75rem;" onclick="handleDeleteReg('${r.id}')"><i class="fa-solid fa-trash"></i></button>
             </div>
           </td>
@@ -1474,24 +1506,34 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       }
     };
 
-    window.sendWhatsAppTicket = function (phone, name, eventName, status, trxId) {
+    window.sendWhatsAppTicket = function (phone, name, eventName, status, trxId, teamName, teamMembers) {
       const cleanPhone = (phone || '').replace(/[^0-9]/g, '');
       const formattedPhone = cleanPhone.startsWith('88') ? cleanPhone : '88' + cleanPhone;
 
-      const message = `Hello ${name}! \n\nYour registration for *The Cultura Fiesta 1.0* (${eventName}) has been verified!\n\n *Registration Details:*\n• Status: Approved \n• TrxID: ${trxId}\n\nShow this message at the event venue gate to claim your entry pass ticket.\n\nSee you at the Fiesta!\n— *MPSC Cultural Club Executive Team*`;
+      let teamDetailsStr = '';
+      if (teamName) {
+        teamDetailsStr = `\n• Team Name: ${teamName}${teamMembers ? `\n• Team Members: ${teamMembers}` : ''}`;
+      }
+
+      const message = `Hello ${name}! \n\nYour registration for *The Cultura Fiesta 1.0* (${eventName}) has been verified!\n\n *Registration Details:*\n• Status: Approved \n• Leader: ${name}${teamDetailsStr}\n• TrxID: ${trxId}\n\nShow this message at the event venue gate to claim your entry pass ticket.\n\nSee you at the Fiesta!\n— *MPSC Cultural Club Executive Team*`;
 
       const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
       window.open(url, '_blank');
     };
 
-    window.sendEmailTicket = function (email, name, eventName, status, trxId) {
+    window.sendEmailTicket = function (email, name, eventName, status, trxId, teamName, teamMembers) {
       if (!email || !email.includes('@')) {
         alert(' Participant does not have a valid email address.');
         return;
       }
 
+      let teamSection = '';
+      if (teamName) {
+        teamSection = `Team Name: ${teamName}\n${teamMembers ? `Team Members: ${teamMembers}\n` : ''}`;
+      }
+
       const subject = `[MPSC Cultural Club] Cultura Fiesta 2026 - Registration Entry Ticket`;
-      const body = `Hello ${name},\n\nYour registration for Cultura Fiesta 2026 (${eventName}) has been verified and confirmed!\n\nREGISTRATION CONFIRMATION:\n--------------------------------------------------\nParticipant Name: ${name}\nSegment / Event: ${eventName}\nbKash Transaction ID (TrxID): ${trxId}\nStatus: ${status ? status.toUpperCase() : 'APPROVED'}\nFestival Dates: 1st - 3rd October 2026\nVenue: Mohammadpur Preparatory School & College, Dhaka\n--------------------------------------------------\n\nPlease present this email ticket at the event entrance counter to receive your official entry pass.\n\nWarm regards,\nExecutive Committee\nMPSC Cultural Club`;
+      const body = `Hello ${name},\n\nYour registration for Cultura Fiesta 2026 (${eventName}) has been verified and confirmed!\n\nREGISTRATION CONFIRMATION:\n--------------------------------------------------\nLeader Name: ${name}\n${teamSection}Segment / Event: ${eventName}\nbKash Transaction ID (TrxID): ${trxId}\nStatus: ${status ? status.toUpperCase() : 'APPROVED'}\nFestival Dates: 1st - 3rd October 2026\nVenue: Mohammadpur Preparatory School & College, Dhaka\n--------------------------------------------------\n\nPlease present this email ticket at the event entrance counter to receive your official entry pass.\n\nWarm regards,\nExecutive Committee\nMPSC Cultural Club`;
 
       const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       window.open(gmailUrl, '_blank');
@@ -1503,12 +1545,14 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
         return;
       }
 
-      let csv = 'ID,Date,Name,Class,Institute,Phone,Email,Segment,Event,Category,Amount,Sender bKash,TrxID,Status\n';
+      let csv = 'ID,Date,Leader Name,Team Name,Team Members,Class,Institute,Phone,Email,Segment,Event,Category,Amount,Sender bKash,TrxID,Status\n';
       cachedRegistrations.forEach(r => {
         const line = [
           `"${r.id || ''}"`,
           `"${r.created_at || ''}"`,
           `"${(r.name || '').replace(/"/g, '""')}"`,
+          `"${(r.team_name || '').replace(/"/g, '""')}"`,
+          `"${(r.team_members || '').replace(/"/g, '""')}"`,
           `"${(r.class_name || '').replace(/"/g, '""')}"`,
           `"${(r.institute || '').replace(/"/g, '""')}"`,
           `"${(r.phone || '').replace(/"/g, '""')}"`,
@@ -1590,14 +1634,17 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       const venue = document.getElementById('segEvtVenueInput')?.value.trim() || '';
       const desc = document.getElementById('segEvtDescInput')?.value.trim() || '';
       const price = document.getElementById('segEvtPriceInput')?.value.trim() || '';
+      const isTeam = document.getElementById('segEvtIsTeamInput')?.checked || false;
+      const maxTeam = document.getElementById('segEvtMaxTeamInput')?.value || 5;
 
       if (!segId) {
         alert('Please select a Segment!');
         return;
       }
 
-      await addDbSegmentEvent(segId, title, desc, '', venue, price);
+      await addDbSegmentEvent(segId, title, desc, '', venue, price, isTeam, maxTeam);
       e.target.reset();
+      document.getElementById('segEvtTeamGroup').style.display = 'none';
       await renderAdminTables();
       alert('Event added to Segment successfully!');
     });
@@ -1610,14 +1657,17 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
       const ageLimit = document.getElementById('groupAgeLimitInput').value.trim();
       const rules = document.getElementById('groupRulesInput').value.trim();
       const price = document.getElementById('groupPriceInput').value.trim();
+      const isTeam = document.getElementById('groupIsTeamInput')?.checked || false;
+      const maxTeam = document.getElementById('groupMaxTeamInput')?.value || 5;
 
       if (!segId || !evtId) {
         alert('Please select both Segment and Event!');
         return;
       }
 
-      await addDbEventGroup(segId, evtId, name, ageLimit, rules, '', price);
+      await addDbEventGroup(segId, evtId, name, ageLimit, rules, '', price, isTeam, maxTeam);
       e.target.reset();
+      document.getElementById('groupTeamGroup').style.display = 'none';
       await renderAdminTables();
       alert('Age Group / Category added successfully!');
     });
@@ -1798,6 +1848,16 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
             <label class="form-label">EVENT REGISTRATION PRICE (৳)</label>
             <input type="number" id="editEvtPrice" class="form-input" value="${evt.price || ''}" min="0" step="1">
           </div>
+          <div style="background: rgba(52, 152, 219, 0.08); padding: 0.8rem; border-radius: 6px; border: 1px dashed rgba(52, 152, 219, 0.3);">
+            <label style="color: #FFF; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+              <input type="checkbox" id="editEvtIsTeam" ${evt.is_team ? 'checked' : ''} onchange="document.getElementById('editEvtTeamGroup').style.display = this.checked ? 'block' : 'none';" style="width: 18px; height: 18px; accent-color: #3498DB;">
+              <i class="fa-solid fa-users" style="color: #3498DB;"></i> Check if this is a Team Event
+            </label>
+            <div id="editEvtTeamGroup" style="display: ${evt.is_team ? 'block' : 'none'}; margin-top: 0.6rem;">
+              <label class="form-label">MAX TEAM MEMBERS</label>
+              <input type="number" id="editEvtMaxTeam" class="form-input" value="${evt.max_team_members || 5}" min="2" max="25">
+            </div>
+          </div>
           <div>
             <label class="form-label">EVENT DESCRIPTION</label>
             <textarea id="editEvtDesc" class="form-textarea" rows="3">${evt.description || ''}</textarea>
@@ -1832,6 +1892,16 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
             <label class="form-label">REGISTRATION PRICE (৳)</label>
             <input type="number" id="editGrpPrice" class="form-input" value="${grp.price || ''}" min="0" step="1">
           </div>
+          <div style="background: rgba(52, 152, 219, 0.08); padding: 0.8rem; border-radius: 6px; border: 1px dashed rgba(52, 152, 219, 0.3);">
+            <label style="color: #FFF; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;">
+              <input type="checkbox" id="editGrpIsTeam" ${grp.is_team ? 'checked' : ''} onchange="document.getElementById('editGrpTeamGroup').style.display = this.checked ? 'block' : 'none';" style="width: 18px; height: 18px; accent-color: #3498DB;">
+              <i class="fa-solid fa-users" style="color: #3498DB;"></i> Check if this Category is Team-based
+            </label>
+            <div id="editGrpTeamGroup" style="display: ${grp.is_team ? 'block' : 'none'}; margin-top: 0.6rem;">
+              <label class="form-label">MAX TEAM MEMBERS</label>
+              <input type="number" id="editGrpMaxTeam" class="form-input" value="${grp.max_team_members || 5}" min="2" max="25">
+            </div>
+          </div>
           <div>
             <label class="form-label">RULES & GUIDELINES</label>
             <textarea id="editGrpRules" class="form-textarea" rows="2">${grp.rules || ''}</textarea>
@@ -1859,14 +1929,18 @@ create policy "Public Access Event Groups" on public.event_groups for all using 
         const venue = document.getElementById('editEvtVenue').value.trim();
         const price = document.getElementById('editEvtPrice').value.trim();
         const description = document.getElementById('editEvtDesc').value.trim();
-        await updateDbSegmentEvent(currentEditIds.segId, currentEditIds.evtId, { title, venue, price, description });
+        const is_team = document.getElementById('editEvtIsTeam').checked;
+        const max_team_members = document.getElementById('editEvtMaxTeam').value;
+        await updateDbSegmentEvent(currentEditIds.segId, currentEditIds.evtId, { title, venue, price, description, is_team, max_team_members });
       } else if (currentEditType === 'group') {
         const group_name = document.getElementById('editGrpName').value.trim();
         const age_limit = document.getElementById('editGrpAge').value.trim();
         const price = document.getElementById('editGrpPrice').value.trim();
         const rules = document.getElementById('editGrpRules').value.trim();
         const description = document.getElementById('editGrpDesc').value.trim();
-        await updateDbEventGroup(currentEditIds.segId, currentEditIds.evtId, currentEditIds.grpId, { group_name, age_limit, price, rules, description });
+        const is_team = document.getElementById('editGrpIsTeam').checked;
+        const max_team_members = document.getElementById('editGrpMaxTeam').value;
+        await updateDbEventGroup(currentEditIds.segId, currentEditIds.evtId, currentEditIds.grpId, { group_name, age_limit, price, rules, description, is_team, max_team_members });
       }
 
       closeEditModal();

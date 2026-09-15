@@ -522,7 +522,9 @@ async function fetchDbSegments() {
               age_limit: g.age_limit || g.age_group,
               rules: g.rules || '',
               description: g.description || '',
-              price: g.price || ''
+              price: g.price || '',
+              is_team: !!g.is_team,
+              max_team_members: parseInt(g.max_team_members) || 1
             }));
             return {
               id: e.id,
@@ -531,6 +533,8 @@ async function fetchDbSegments() {
               time: e.time,
               venue: e.venue,
               price: e.price || '',
+              is_team: !!e.is_team,
+              max_team_members: parseInt(e.max_team_members) || 1,
               groups: matchedGrps
             };
           });
@@ -617,7 +621,7 @@ async function deleteDbSegment(segmentId, index) {
 /**
  * Add Event under a Segment
  */
-async function addDbSegmentEvent(segmentId, title, description, time, venue, price) {
+async function addDbSegmentEvent(segmentId, title, description, time, venue, price, is_team = false, max_team_members = 1) {
   const newEvt = {
     id: 'evt-' + Date.now(),
     title,
@@ -625,12 +629,14 @@ async function addDbSegmentEvent(segmentId, title, description, time, venue, pri
     time: time || 'TBA',
     venue: venue || 'Main Campus',
     price: price || '',
+    is_team: !!is_team,
+    max_team_members: parseInt(max_team_members) || 1,
     groups: []
   };
 
   if (supabaseClient && segmentId && !String(segmentId).startsWith('seg-')) {
     try {
-      const insertObj = { segment_id: segmentId, title, description, time, venue };
+      const insertObj = { segment_id: segmentId, title, description, time, venue, is_team: !!is_team, max_team_members: parseInt(max_team_members) || 1 };
       if (price) insertObj.price = price;
       const { data, error } = await supabaseClient
         .from('segment_events')
@@ -678,19 +684,21 @@ async function deleteDbSegmentEvent(segmentId, eventId) {
 /**
  * Add Group / Category under an Event
  */
-async function addDbEventGroup(segmentId, eventId, group_name, age_limit, rules, description, price) {
+async function addDbEventGroup(segmentId, eventId, group_name, age_limit, rules, description, price, is_team = false, max_team_members = 1) {
   const newGrp = {
     id: 'grp-' + Date.now(),
     group_name,
     age_limit: age_limit || 'All ages',
     rules: rules || '',
     description: description || '',
-    price: price || ''
+    price: price || '',
+    is_team: !!is_team,
+    max_team_members: parseInt(max_team_members) || 1
   };
 
   if (supabaseClient && eventId && !String(eventId).startsWith('evt-')) {
     try {
-      const insertObj = { event_id: eventId, group_name, age_limit, rules, description };
+      const insertObj = { event_id: eventId, group_name, age_limit, rules, description, is_team: !!is_team, max_team_members: parseInt(max_team_members) || 1 };
       if (price) insertObj.price = price;
       const { data } = await supabaseClient
         .from('event_groups')
@@ -774,12 +782,15 @@ async function updateDbSegment(segmentId, data) {
  * Update Event under a Segment
  */
 async function updateDbSegmentEvent(segmentId, eventId, data) {
-  const { title, description, venue, price } = data;
+  const { title, description, venue, price, is_team, max_team_members } = data;
   if (supabaseClient && eventId && !String(eventId).startsWith('evt-')) {
     try {
+      const updateObj = { title, description, venue, price };
+      if (is_team !== undefined) updateObj.is_team = !!is_team;
+      if (max_team_members !== undefined) updateObj.max_team_members = parseInt(max_team_members) || 1;
       await supabaseClient
         .from('segment_events')
-        .update({ title, description, venue, price })
+        .update(updateObj)
         .eq('id', eventId);
     } catch (e) {
       console.error('Supabase updateDbSegmentEvent exception:', e);
@@ -795,6 +806,8 @@ async function updateDbSegmentEvent(segmentId, eventId, data) {
       if (description !== undefined) targetEvt.description = description;
       if (venue !== undefined) targetEvt.venue = venue;
       if (price !== undefined) targetEvt.price = price;
+      if (is_team !== undefined) targetEvt.is_team = !!is_team;
+      if (max_team_members !== undefined) targetEvt.max_team_members = parseInt(max_team_members) || 1;
       saveStoredSegments(segments);
     }
   }
@@ -805,12 +818,15 @@ async function updateDbSegmentEvent(segmentId, eventId, data) {
  * Update Group/Category under an Event
  */
 async function updateDbEventGroup(segmentId, eventId, groupId, data) {
-  const { group_name, age_limit, rules, description, price } = data;
+  const { group_name, age_limit, rules, description, price, is_team, max_team_members } = data;
   if (supabaseClient && groupId && !String(groupId).startsWith('grp-')) {
     try {
+      const updateObj = { group_name, age_limit, rules, description, price };
+      if (is_team !== undefined) updateObj.is_team = !!is_team;
+      if (max_team_members !== undefined) updateObj.max_team_members = parseInt(max_team_members) || 1;
       await supabaseClient
         .from('event_groups')
-        .update({ group_name, age_limit, rules, description, price })
+        .update(updateObj)
         .eq('id', groupId);
     } catch (e) {
       console.error('Supabase updateDbEventGroup exception:', e);
@@ -829,6 +845,8 @@ async function updateDbEventGroup(segmentId, eventId, groupId, data) {
         if (rules !== undefined) targetGrp.rules = rules;
         if (description !== undefined) targetGrp.description = description;
         if (price !== undefined) targetGrp.price = price;
+        if (is_team !== undefined) targetGrp.is_team = !!is_team;
+        if (max_team_members !== undefined) targetGrp.max_team_members = parseInt(max_team_members) || 1;
         saveStoredSegments(segments);
       }
     }
@@ -995,6 +1013,8 @@ async function fetchDbRegistrations() {
           sender_bkash: r.sender_bkash,
           trx_id: r.trx_id,
           status: r.status || 'pending',
+          team_name: r.team_name || '',
+          team_members: r.team_members || '',
           created_at: r.created_at
         }));
         saveStoredRegistrations(mapped);
@@ -1026,6 +1046,8 @@ async function addDbRegistration(regData) {
     sender_bkash: regData.sender_bkash,
     trx_id: regData.trx_id,
     status: 'pending',
+    team_name: regData.team_name || '',
+    team_members: regData.team_members || '',
     created_at: new Date().toISOString()
   };
 
@@ -1043,7 +1065,9 @@ async function addDbRegistration(regData) {
         amount: regData.amount || '0',
         sender_bkash: regData.sender_bkash,
         trx_id: regData.trx_id,
-        status: 'pending'
+        status: 'pending',
+        team_name: regData.team_name || '',
+        team_members: regData.team_members || ''
       };
       const { data, error } = await supabaseClient
         .from('registrations')

@@ -483,6 +483,8 @@ window.openSegmentModal = function(segmentId) {
         groupsCollapsibleHTML = `
           <div id="${boxId}" class="event-categories-box" style="display: none;">
             ${evt.groups.map(grp => {
+              const isGrpTeam = grp.is_team || evt.is_team;
+              const grpMaxMembers = grp.is_team ? grp.max_team_members : (evt.is_team ? evt.max_team_members : 1);
               const priceTag = grp.price ? ` · ৳${grp.price}` : '';
               const safeSegTitle = (seg.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
               const safeEvtTitle = (evt.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -490,19 +492,25 @@ window.openSegmentModal = function(segmentId) {
               return `
               <div class="category-block-item">
                 <div class="category-block-info">
-                  <div class="category-block-name">${grp.group_name || grp.name || 'Category'}</div>
+                  <div class="category-block-name">
+                    ${grp.group_name || grp.name || 'Category'}
+                    ${isGrpTeam ? `<span class="ec-wing-badge" style="background: rgba(52, 152, 219, 0.2); color: #3498DB; border-color: rgba(52, 152, 219, 0.4); margin-left: 0.4rem; font-size: 0.72rem;"><i class="fa-solid fa-users"></i> Team (Max ${grpMaxMembers})</span>` : ''}
+                  </div>
                   ${(grp.age_limit || grp.age_group) ? `<span class="category-block-eligibility">${grp.age_limit || grp.age_group}</span>` : ''}
                   ${grp.rules ? `<div class="category-block-rules">${grp.rules}</div>` : ''}
                 </div>
                 <div>
-                  <button type="button" class="btn-gold-sm" onclick="openRegistrationModal('${safeSegTitle}', '${safeEvtTitle}', '${safeGrpName}', '${grp.price || ''}')"><i class="fa-solid fa-ticket"></i> Register${priceTag}</button>
+                  <button type="button" class="btn-gold-sm" onclick="openRegistrationModal('${safeSegTitle}', '${safeEvtTitle}', '${safeGrpName}', '${grp.price || ''}', ${isGrpTeam}, ${grpMaxMembers})"><i class="fa-solid fa-ticket"></i> Register${priceTag}</button>
                 </div>
               </div>
-            `}).join('')}
+            `;
+            }).join('')}
           </div>
         `;
       }
 
+      const isEvtTeam = !!evt.is_team;
+      const evtMaxMembers = evt.max_team_members || 1;
       const evtPriceTag = evt.price ? ` · ৳${evt.price}` : '';
       const safeSegTitle = (seg.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
       const safeEvtTitle = (evt.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
@@ -510,7 +518,10 @@ window.openSegmentModal = function(segmentId) {
       return `
         <div class="event-block-card">
           <div class="event-block-header">
-            <div class="event-block-title">${evt.title || 'Event'}</div>
+            <div class="event-block-title">
+              ${evt.title || 'Event'}
+              ${isEvtTeam ? `<span class="ec-wing-badge" style="background: rgba(52, 152, 219, 0.2); color: #3498DB; border-color: rgba(52, 152, 219, 0.4); margin-left: 0.5rem; font-size: 0.75rem;"><i class="fa-solid fa-users"></i> Team Event (Max ${evtMaxMembers})</span>` : ''}
+            </div>
           </div>
           ${evt.venue ? `<div class="event-block-venue"><i class="fa-solid fa-location-dot"></i> ${evt.venue}</div>` : ''}
           ${evt.description ? `<p class="event-block-desc">${evt.description}</p>` : ''}
@@ -521,7 +532,7 @@ window.openSegmentModal = function(segmentId) {
                 <i class="fa-solid fa-layer-group"></i> View Categories (${evt.groups.length}) <i class="fa-solid fa-chevron-down"></i>
               </button>
             ` : `
-              <button type="button" class="btn-gold-sm" onclick="openRegistrationModal('${safeSegTitle}', '${safeEvtTitle}', '', '${evt.price || ''}')"><i class="fa-solid fa-ticket"></i> Register${evtPriceTag}</button>
+              <button type="button" class="btn-gold-sm" onclick="openRegistrationModal('${safeSegTitle}', '${safeEvtTitle}', '', '${evt.price || ''}', ${isEvtTeam}, ${evtMaxMembers})"><i class="fa-solid fa-ticket"></i> Register${evtPriceTag}</button>
             `}
           </div>
 
@@ -568,27 +579,64 @@ window.closeSegmentModal = function() {
    ========================================================================== */
 let activeRegistration = null;
 
-window.openRegistrationModal = function(segmentTitle, eventTitle, categoryName, priceAmount) {
+window.openRegistrationModal = function(segmentTitle, eventTitle, categoryName, priceAmount, isTeam = false, maxTeamMembers = 1) {
   closeSegmentModal(); // Close segment detail view
 
   activeRegistration = {
     segment_title: segmentTitle || 'Cultural Segment',
     event_title: eventTitle || 'Fiesta Event',
     category_name: categoryName || '',
-    amount: priceAmount || '0'
+    amount: priceAmount || '0',
+    is_team: !!isTeam,
+    max_team_members: parseInt(maxTeamMembers) || 1
   };
 
   const regModal = document.getElementById('registrationModal');
   if (!regModal) return;
 
   // Set Modal Header Badges & Amounts
-  const badgeText = categoryName ? `${segmentTitle} · ${eventTitle} (${categoryName})` : `${segmentTitle} · ${eventTitle}`;
+  let badgeText = categoryName ? `${segmentTitle} · ${eventTitle} (${categoryName})` : `${segmentTitle} · ${eventTitle}`;
+  if (isTeam) {
+    badgeText += ` · 👥 Team Event (Max ${maxTeamMembers} Members)`;
+  }
   const displayPrice = priceAmount && priceAmount !== '0' ? `Registration Fee: ৳${priceAmount}` : 'Registration Fee: FREE';
   const displayPayable = priceAmount && priceAmount !== '0' ? `Total Payable: ৳${priceAmount}` : 'Total Payable: FREE';
 
   if (document.getElementById('regEventBadge')) document.getElementById('regEventBadge').innerText = badgeText;
   if (document.getElementById('regPriceDisplay')) document.getElementById('regPriceDisplay').innerText = displayPrice;
   if (document.getElementById('regPaymentAmountDisplay')) document.getElementById('regPaymentAmountDisplay').innerText = displayPayable;
+
+  // Setup Team Section & Inputs
+  const regTeamSection = document.getElementById('regTeamSection');
+  const regTeamNameInput = document.getElementById('regTeamNameInput');
+  const membersContainer = document.getElementById('regTeamMembersContainer');
+
+  if (regTeamSection) {
+    if (isTeam) {
+      regTeamSection.style.display = 'block';
+      if (regTeamNameInput) regTeamNameInput.required = true;
+      if (membersContainer) {
+        membersContainer.innerHTML = '';
+        const extraMembers = Math.max(1, parseInt(maxTeamMembers) - 1);
+        for (let i = 2; i <= extraMembers + 1; i++) {
+          const div = document.createElement('div');
+          div.className = 'form-group-full';
+          div.innerHTML = `
+            <label class="form-label" style="font-size: 0.8rem; color: #FFF;"><i class="fa-solid fa-user-plus"></i> MEMBER ${i} FULL NAME ${i === 2 ? '*' : '(Optional)'}</label>
+            <input type="text" class="form-input reg-team-member-input" placeholder="e.g. Member ${i} Name" ${i === 2 ? 'required' : ''}>
+          `;
+          membersContainer.appendChild(div);
+        }
+      }
+    } else {
+      regTeamSection.style.display = 'none';
+      if (regTeamNameInput) {
+        regTeamNameInput.required = false;
+        regTeamNameInput.value = '';
+      }
+      if (membersContainer) membersContainer.innerHTML = '';
+    }
+  }
 
   // bKash Number Setup
   const bkashNum = (window.CULTURA_CONFIG && window.CULTURA_CONFIG.bkashNumber) ? window.CULTURA_CONFIG.bkashNumber : '01700000000';
@@ -597,6 +645,7 @@ window.openRegistrationModal = function(segmentTitle, eventTitle, categoryName, 
   // Reset forms and show step 1
   document.getElementById('regFormStep1')?.reset();
   document.getElementById('regFormStep2')?.reset();
+  if (regTeamSection && isTeam) regTeamSection.style.display = 'block';
   showRegStep(1);
 
   regModal.classList.add('open');
@@ -635,6 +684,19 @@ window.handleRegStep1Submit = function(e) {
   activeRegistration.institute = document.getElementById('regInstituteInput').value.trim();
   activeRegistration.phone = document.getElementById('regPhoneInput').value.trim();
   activeRegistration.email = document.getElementById('regEmailInput').value.trim();
+
+  if (activeRegistration.is_team) {
+    activeRegistration.team_name = document.getElementById('regTeamNameInput')?.value.trim() || '';
+    const memberInputs = document.querySelectorAll('.reg-team-member-input');
+    const membersList = Array.from(memberInputs)
+      .map((inp, idx) => inp.value.trim() ? `Member ${idx + 2}: ${inp.value.trim()}` : '')
+      .filter(Boolean)
+      .join('; ');
+    activeRegistration.team_members = membersList;
+  } else {
+    activeRegistration.team_name = '';
+    activeRegistration.team_members = '';
+  }
 
   // If price is free / 0
   if (!activeRegistration.amount || activeRegistration.amount === '0') {
