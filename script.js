@@ -264,12 +264,10 @@ async function renderLandingSchedule() {
   });
 }
 
-// Render dynamic EC roster preview on index.html — infinite seamless marquee
-async function renderLandingEcGrid() {
-  const ecMembers = (typeof fetchDbEcMembers === 'function') ? await fetchDbEcMembers() : getStoredEcMembers();
+// Helper to render EC Marquee Track
+function renderLandingEcMarqueeUI(ecMembers) {
   const ecTrack = document.getElementById('landing-ec-grid');
   const ecOuter = document.getElementById('landing-ec-marquee-outer');
-
   if (!ecTrack) return;
 
   ecTrack.innerHTML = '';
@@ -283,13 +281,8 @@ async function renderLandingEcGrid() {
         No Executive Committee members added yet.
       </div>
     `;
-    const landingModContainer = document.getElementById('landing-moderator-container');
-    if (landingModContainer) landingModContainer.innerHTML = buildModeratorRowHTML();
     return;
   }
-
-  const landingModContainer = document.getElementById('landing-moderator-container');
-  if (landingModContainer) landingModContainer.innerHTML = buildModeratorRowHTML();
 
   // Sort: rank first, then wing (BVB→EVB→BVG→EVG) within each rank
   const WING_ORDER = ['BVB', 'EVB', 'BVG', 'EVG'];
@@ -321,22 +314,16 @@ async function renderLandingEcGrid() {
     `;
   }
 
-  // --- Calculate how many full repetitions we need ---
-  // Each card is ~200px wide + ~19px gap = ~219px per card
   const cardWidthEstimate = 219;
   const oneSetPx = sorted.length * cardWidthEstimate;
   const viewportW = window.innerWidth || 1280;
 
-  // We need: (copies - 1) * oneSetPx >= viewportW so there's never a gap visible
-  // And copies must be even so translateX(-50%) snaps back to the same visual start
-  let copies = Math.ceil(viewportW / oneSetPx) + 2; // +2 buffer
-  if (copies % 2 !== 0) copies++; // force even
+  let copies = Math.ceil(viewportW / oneSetPx) + 2;
+  if (copies % 2 !== 0) copies++;
 
   const cardsHTML = sorted.map(buildCard).join('');
   ecTrack.innerHTML = cardsHTML.repeat(copies);
 
-  // The animation moves by (1/copies * 100)% = width of ONE set
-  // Update the keyframe dynamically via a style tag
   const pct = (100 / copies).toFixed(4);
   let styleTag = document.getElementById('ec-marquee-keyframe-style');
   if (!styleTag) {
@@ -351,10 +338,33 @@ async function renderLandingEcGrid() {
     }
   `;
 
-  // Speed: ~60px/s feels smooth
   const duration = Math.round(oneSetPx / 60);
   ecTrack.style.animationDuration = `${duration}s`;
   ecTrack.style.animation = `ec-marquee-scroll ${duration}s linear infinite`;
+}
+
+// Render dynamic EC roster preview on index.html — infinite seamless marquee
+async function renderLandingEcGrid() {
+  const landingModContainer = document.getElementById('landing-moderator-container');
+  if (landingModContainer) {
+    landingModContainer.innerHTML = buildModeratorRowHTML();
+  }
+
+  // 1. Synchronously render 0ms local storage state
+  const localMembers = (typeof getStoredEcMembers === 'function') ? getStoredEcMembers() : [];
+  renderLandingEcMarqueeUI(localMembers);
+
+  // 2. Asynchronously fetch Supabase database state
+  try {
+    if (typeof fetchDbEcMembers === 'function') {
+      const dbMembers = await fetchDbEcMembers();
+      if (Array.isArray(dbMembers)) {
+        renderLandingEcMarqueeUI(dbMembers);
+      }
+    }
+  } catch (e) {
+    console.warn('Async fetchDbEcMembers notice:', e);
+  }
 }
 
 
@@ -370,7 +380,6 @@ function buildModeratorRowHTML() {
     const badgeBg = m.isChief 
       ? 'background: rgba(212,175,55,0.25); color: #FFD700; border-color: #FFD700;' 
       : 'background: rgba(52,152,219,0.2); color: #3498DB; border-color: rgba(52,152,219,0.4);';
-    const badgeIcon = m.isChief ? 'fa-crown' : 'fa-user-shield';
     const avatarGlow = m.isChief ? 'box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); border-color: var(--gold-light);' : '';
     const borderStyle = m.isChief ? 'border: 1px solid var(--border-gold);' : 'border: 1px solid rgba(255,255,255,0.1);';
 
@@ -382,7 +391,7 @@ function buildModeratorRowHTML() {
         </div>
         <h3 class="ec-name" style="margin-top: 0.4rem; font-size: 1rem;">${m.title} ${m.num}</h3>
         <p class="ec-role">${m.role}</p>
-        <span class="ec-wing-badge" style="${badgeBg}"><i class="fa-solid ${badgeIcon}"></i> ${m.title.toUpperCase()}</span>
+        <span class="ec-wing-badge" style="${badgeBg}">${m.title.toUpperCase()}</span>
       </div>
     `;
   }).join('');
