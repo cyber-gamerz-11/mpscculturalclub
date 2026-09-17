@@ -518,6 +518,85 @@ function formatIconClass(iconStr) {
   return 'fa-solid ' + clean;
 }
 
+// Helper to parse and format raw event descriptions & rules into structured HTML
+function formatFormattedDescription(text) {
+  if (!text) return '';
+
+  // 1. Cleanup broken syntax like @*ro.dela* -> @ro.dela
+  let formatted = text.replace(/@\*([^*]+)\*/g, '@$1');
+  formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+  // 2. Parse markdown links [label](url)
+  formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, link) => {
+    let href = link.trim();
+    const isMail = href.startsWith('mailto:') || (href.includes('@') && !href.startsWith('http'));
+    if (isMail && !href.startsWith('mailto:')) href = 'mailto:' + href;
+    const icon = isMail ? '<i class="fa-solid fa-envelope" style="margin-right:0.35rem;"></i>' : '<i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:0.35rem;font-size:0.75rem;"></i>';
+    return `<a href="${href}" ${isMail ? '' : 'target="_blank" rel="noopener"'} class="desc-link">${icon}${label}</a>`;
+  });
+
+  // 3. Convert standalone raw emails or http URLs to links (if not inside an HTML attribute)
+  formatted = formatted.replace(/(^|[\s(])([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})([\s)]|$)/g, '$1<a href="mailto:$2" class="desc-link"><i class="fa-solid fa-envelope" style="margin-right:0.3rem;"></i>$2</a>$3');
+
+  // 4. Split lines and extract bullet points / headers / paragraphs
+  const rawLines = formatted.split(/\r?\n/).filter(l => l.trim().length > 0);
+  let finalElements = [];
+
+  rawLines.forEach(line => {
+    let trimmed = line.trim();
+
+    if (trimmed.includes('•')) {
+      const parts = trimmed.split('•').map(p => p.trim()).filter(Boolean);
+      parts.forEach((part, pIdx) => {
+        if (pIdx === 0 && !trimmed.startsWith('•')) {
+          if (part.endsWith(':') || /rules|guidelines|categories|subcategories|include|provide|details|contact/i.test(part)) {
+            finalElements.push({ type: 'header', text: part });
+          } else {
+            finalElements.push({ type: 'paragraph', text: part });
+          }
+        } else {
+          finalElements.push({ type: 'bullet', text: part });
+        }
+      });
+    } else if (/^[\-\*\u2022]\s*/.test(trimmed)) {
+      finalElements.push({ type: 'bullet', text: trimmed.replace(/^[\-\*\u2022]\s*/, '') });
+    } else if (trimmed.endsWith(':') || /^(primary round|final round|video audition|video submission|rules & guidelines|categories|subcategories|registration fee|please include|the organisers will provide|for any queries|submission deadline)/i.test(trimmed)) {
+      finalElements.push({ type: 'header', text: trimmed });
+    } else {
+      finalElements.push({ type: 'paragraph', text: trimmed });
+    }
+  });
+
+  let html = '';
+  let inBulletList = false;
+
+  finalElements.forEach(item => {
+    if (item.type === 'bullet') {
+      if (!inBulletList) {
+        html += `<ul class="desc-bullet-list">`;
+        inBulletList = true;
+      }
+      html += `<li>${item.text}</li>`;
+    } else {
+      if (inBulletList) {
+        html += `</ul>`;
+        inBulletList = false;
+      }
+      if (item.type === 'header') {
+        html += `<div class="desc-section-header">${item.text}</div>`;
+      } else {
+        html += `<p class="desc-paragraph">${item.text}</p>`;
+      }
+    }
+  });
+
+  if (inBulletList) {
+    html += `</ul>`;
+  }
+
+  return html;
+}
+
 async function renderEventsPage() {
   const container = document.getElementById('segments-grid');
   if (!container) return;
@@ -600,7 +679,7 @@ window.openSegmentModal = function(segmentId) {
                     ${isGrpTeam ? `<span class="ec-wing-badge" style="background: rgba(52, 152, 219, 0.2); color: #3498DB; border-color: rgba(52, 152, 219, 0.4); margin-left: 0.4rem; font-size: 0.72rem;"><i class="fa-solid fa-users"></i> Team (Max ${grpMaxMembers})</span>` : ''}
                   </div>
                   ${(grp.age_limit || grp.age_group) ? `<span class="category-block-eligibility">${grp.age_limit || grp.age_group}</span>` : ''}
-                  ${grp.rules ? `<div class="category-block-rules">${grp.rules}</div>` : ''}
+                  ${grp.rules ? `<div class="category-block-rules">${formatFormattedDescription(grp.rules)}</div>` : ''}
                 </div>
                 <div>
                   <button type="button" class="btn-gold-sm" onclick="openRegistrationModal('${safeSegTitle}', '${safeEvtTitle}', '${safeGrpName}', '${grp.price || ''}', ${isGrpTeam}, ${grpMaxMembers})"><i class="fa-solid fa-ticket"></i> Register${priceTag}</button>
@@ -627,7 +706,7 @@ window.openSegmentModal = function(segmentId) {
             </div>
           </div>
           ${evt.venue ? `<div class="event-block-venue"><i class="fa-solid fa-location-dot"></i> ${evt.venue}</div>` : ''}
-          ${evt.description ? `<p class="event-block-desc">${evt.description}</p>` : ''}
+          ${evt.description ? `<div class="event-block-desc">${formatFormattedDescription(evt.description)}</div>` : ''}
 
           <div class="event-block-footer">
             ${hasGroups ? `
@@ -649,7 +728,7 @@ window.openSegmentModal = function(segmentId) {
     <div style="text-align: center; margin-bottom: 1.8rem; padding-bottom: 1.2rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
       <span class="ec-wing-badge" style="margin-bottom: 0.6rem;">${tagText}</span>
       <h2 style="font-family: var(--font-heading); color: #FFF; font-size: clamp(1.4rem, 4vw, 2rem); margin-bottom: 0.5rem;">${seg.title || 'Competition Segment'}</h2>
-      <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 650px; margin: 0 auto; line-height: 1.6;">${descText}</p>
+      <div style="color: var(--text-muted); font-size: 0.92rem; max-width: 750px; margin: 0 auto;" class="event-block-desc">${formatFormattedDescription(descText)}</div>
     </div>
 
     <!-- Block-by-Block Events Stack -->
@@ -787,6 +866,7 @@ window.handleRegStep1Submit = function(e) {
   activeRegistration.institute = document.getElementById('regInstituteInput').value.trim();
   activeRegistration.phone = document.getElementById('regPhoneInput').value.trim();
   activeRegistration.email = document.getElementById('regEmailInput').value.trim();
+  activeRegistration.ca_reference = document.getElementById('regCaReferenceInput')?.value.trim() || '';
 
   if (activeRegistration.is_team) {
     activeRegistration.team_name = document.getElementById('regTeamNameInput')?.value.trim() || '';

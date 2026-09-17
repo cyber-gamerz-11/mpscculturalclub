@@ -1560,10 +1560,71 @@ input[type="file"].form-input::file-selector-button:hover {
 }
 
 .event-block-desc {
-  color: var(--text-muted);
-  font-size: 0.88rem;
-  line-height: 1.5;
+  color: #CBD5E1;
+  font-size: 0.9rem;
+  line-height: 1.65;
   margin-bottom: 1rem;
+  text-align: left;
+}
+
+.desc-section-header {
+  color: var(--gold-light);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-top: 0.9rem;
+  margin-bottom: 0.35rem;
+  display: block;
+  letter-spacing: 0.2px;
+}
+
+.event-block-desc > .desc-section-header:first-child {
+  margin-top: 0;
+}
+
+.desc-paragraph {
+  margin-bottom: 0.5rem;
+  color: #E2E8F0;
+  text-align: left;
+}
+
+.desc-bullet-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0.4rem 0 0.8rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.desc-bullet-list li {
+  position: relative;
+  padding-left: 1.3rem;
+  color: #E2E8F0;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.desc-bullet-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0.3rem;
+  top: -0.05rem;
+  color: var(--gold-primary);
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.desc-link {
+  color: var(--gold-light);
+  text-decoration: underline;
+  font-weight: 600;
+  word-break: break-all;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.desc-link:hover {
+  color: #FFFFFF;
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 }
 
 .event-block-footer {

@@ -82,8 +82,11 @@
     status TEXT DEFAULT 'pending',
     team_name TEXT DEFAULT '',
     team_members TEXT DEFAULT '',
+    ca_reference TEXT DEFAULT '',
     created_at TIMESTAMPTZ DEFAULT NOW()
   );
+
+  ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS ca_reference TEXT DEFAULT '';
 
   -- 7. Create Campus Ambassador Applications Table
   CREATE TABLE IF NOT EXISTS public.ca_applications (

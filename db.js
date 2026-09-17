@@ -1048,6 +1048,7 @@ async function addDbRegistration(regData) {
     status: 'pending',
     team_name: regData.team_name || '',
     team_members: regData.team_members || '',
+    ca_reference: regData.ca_reference || '',
     created_at: new Date().toISOString()
   };
 
@@ -1067,7 +1068,8 @@ async function addDbRegistration(regData) {
         trx_id: regData.trx_id,
         status: 'pending',
         team_name: regData.team_name || '',
-        team_members: regData.team_members || ''
+        team_members: regData.team_members || '',
+        ca_reference: regData.ca_reference || ''
       };
       const { data, error } = await supabaseClient
         .from('registrations')
