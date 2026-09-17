@@ -11,12 +11,12 @@
 //   2. localStorage    (set via Admin Center)    ← fallback / local override
 //   3. Placeholder     (no connection)
 
-const _fileCfg   = (typeof window !== 'undefined' && window.CULTURA_CONFIG) ? window.CULTURA_CONFIG : {};
+const _fileCfg = (typeof window !== 'undefined' && window.CULTURA_CONFIG) ? window.CULTURA_CONFIG : {};
 const _storedUrl = (typeof localStorage !== 'undefined') ? localStorage.getItem('cultura_supabase_url') : null;
 const _storedKey = (typeof localStorage !== 'undefined') ? localStorage.getItem('cultura_supabase_key') : null;
 
 const SUPABASE_CONFIG = {
-  url:     _fileCfg.supabaseUrl     || _storedUrl || 'https://your-supabase-project-id.supabase.co',
+  url: _fileCfg.supabaseUrl || _storedUrl || 'https://your-supabase-project-id.supabase.co',
   anonKey: _fileCfg.supabaseAnonKey || _storedKey || 'your-supabase-anon-key-here'
 };
 
@@ -94,7 +94,7 @@ async function addDbEvent(day, time, title, venue, desc) {
       const { data, error } = await supabaseClient
         .from('events')
         .insert([{ day, time, title, venue, description: desc }]);
-      
+
       if (error) {
         console.error('Supabase addEvent error:', error);
         alert('⚠️ Supabase Error adding event: ' + (error.message || JSON.stringify(error)));
@@ -920,7 +920,7 @@ async function syncLocalDataToSupabase() {
           .from('schedule')
           .insert([{ day: dayKey, time: item.time, title: item.title, venue: item.venue, description: item.desc || '' }]);
         if (!error) schedulePushed++;
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 
@@ -932,7 +932,7 @@ async function syncLocalDataToSupabase() {
         .from('ec_members')
         .insert([{ name: member.name, role: member.role, wing: member.wing || 'BVB', batch: member.wing || 'BVB', image_url: member.image || 'logo.png' }]);
       if (!error) ecPushed++;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   alert(`✅ Full Sync Complete!\nPushed:\n- ${segPushed} Segment(s)\n- ${evtPushed} Event(s)\n- ${grpPushed} Category/Group(s)\n- ${schedulePushed} Schedule Event(s)\n- ${ecPushed} EC Member(s)\n\nAll data is now live on Supabase!`);
@@ -958,7 +958,7 @@ async function authenticateAdmin(emailOrId, password) {
   }
 
   // Secure Local Authentication Gate (Default Admin Gate)
-  if (emailOrId === 'admin' && password === 'admin') {
+  if (emailOrId === 'admin' && password === 'admin1976') {
     return { success: true, user: { id: 'admin-local' } };
   }
   return { success: false };
@@ -1172,7 +1172,7 @@ async function fetchCaPortalStatus() {
         localStorage.setItem('cultura_ca_enabled', val ? 'true' : 'false');
         return val;
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   const stored = localStorage.getItem('cultura_ca_enabled');
