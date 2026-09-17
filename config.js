@@ -17,5 +17,15 @@
 window.CULTURA_CONFIG = {
   supabaseUrl: 'https://imdxvceivzpkqgkatpbq.supabase.co',
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltZHh2Y2Vpdnpwa3Fna2F0cGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MzE0MzcsImV4cCI6MjEwNDAwNzQzN30.KD3C14NxyChfFoeIlt0WQctkTeYKhX9WhtCJcAbu1wA',
-  bkashNumber: '+8801339490923'
+  bkashNumber: '+8801339490923',
+
+  // --------------------------------------------------------------------------
+  // Faculty & Guidance: Club Moderators & Co-Moderators Configuration
+  // --------------------------------------------------------------------------
+  moderators: [
+    { num: '1', name: 'Moderator 1', role: 'Club Moderator', wing: 'BVB', image: 'moderators/1.jpg', isChief: true },
+    { num: '2', name: 'Co-Moderator 2', role: 'Club Co-Moderator', wing: 'EVB', image: 'moderators/2.jpg', isChief: false },
+    { num: '3', name: 'Co-Moderator 3', role: 'Club Co-Moderator', wing: 'BVG', image: 'moderators/3.jpg', isChief: false },
+    { num: '4', name: 'Co-Moderator 4', role: 'Club Co-Moderator', wing: 'EVG', image: 'moderators/4.jpg', isChief: false }
+  ]
 };

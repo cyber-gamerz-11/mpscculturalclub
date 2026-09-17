@@ -252,6 +252,36 @@ async function deleteDbEcMember(index, dbId = null) {
   return true;
 }
 
+const DEFAULT_MODERATORS_LIST = [
+  { num: '1', name: 'Moderator 1', role: 'Club Moderator', wing: 'BVB', image: 'moderators/1.jpg', isChief: true },
+  { num: '2', name: 'Co-Moderator 2', role: 'Club Co-Moderator', wing: 'EVB', image: 'moderators/2.jpg', isChief: false },
+  { num: '3', name: 'Co-Moderator 3', role: 'Club Co-Moderator', wing: 'BVG', image: 'moderators/3.jpg', isChief: false },
+  { num: '4', name: 'Co-Moderator 4', role: 'Club Co-Moderator', wing: 'EVG', image: 'moderators/4.jpg', isChief: false }
+];
+
+function getStoredModerators() {
+  if (typeof window !== 'undefined' && window.CULTURA_CONFIG && Array.isArray(window.CULTURA_CONFIG.moderators) && window.CULTURA_CONFIG.moderators.length > 0) {
+    return window.CULTURA_CONFIG.moderators;
+  }
+  const raw = (typeof localStorage !== 'undefined') ? localStorage.getItem('cultura_moderators_data') : null;
+  if (raw) {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch(e) {}
+  }
+  return DEFAULT_MODERATORS_LIST;
+}
+
+function saveStoredModerators(mods) {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem('cultura_moderators_data', JSON.stringify(mods));
+  }
+  if (typeof window !== 'undefined' && window.CULTURA_CONFIG) {
+    window.CULTURA_CONFIG.moderators = mods;
+  }
+}
+
 // --------------------------------------------------------------------------
 // 3. Segment & Event Hierarchy API Methods (3-Tier: Segment -> Event -> Group)
 // --------------------------------------------------------------------------

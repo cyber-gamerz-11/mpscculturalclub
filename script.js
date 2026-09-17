@@ -6,7 +6,7 @@
 // --------------------------------------------------------------------------
 // 1. Global Mobile Navigation Drawer Toggle (Instant Single Tap Trigger)
 // --------------------------------------------------------------------------
-window.toggleMobileMenu = function(e) {
+window.toggleMobileMenu = function (e) {
   if (e && e.preventDefault) e.preventDefault();
   const navMenu = document.querySelector('.nav-menu');
   const mobileToggle = document.querySelector('.mobile-toggle');
@@ -293,17 +293,17 @@ function renderLandingEcMarqueeUI(ecMembers) {
   // Sort: rank first, then wing (BVB→EVB→BVG→EVG) within each rank
   const WING_ORDER = ['BVB', 'EVB', 'BVG', 'EVG'];
   const ROLE_RANK_LANDING = [
-    'President','Vice President','General Secretary','Organizing Secretary',
-    'Publication Secretary','Graphic Designer','Office Secretary','Head of Coordinator',
-    'Head of Volunteer','External Affairs Secretary','Treasurer'
+    'President', 'Vice President', 'General Secretary', 'Organizing Secretary',
+    'Publication Secretary', 'Graphic Designer', 'Office Secretary', 'Head of Coordinator',
+    'Head of Volunteer', 'External Affairs Secretary', 'Treasurer'
   ];
 
   const sorted = [...ecMembers].sort((a, b) => {
     const rankDiff = (ROLE_RANK_LANDING.indexOf(a.role) === -1 ? 99 : ROLE_RANK_LANDING.indexOf(a.role))
-                   - (ROLE_RANK_LANDING.indexOf(b.role) === -1 ? 99 : ROLE_RANK_LANDING.indexOf(b.role));
+      - (ROLE_RANK_LANDING.indexOf(b.role) === -1 ? 99 : ROLE_RANK_LANDING.indexOf(b.role));
     if (rankDiff !== 0) return rankDiff;
-    return (WING_ORDER.indexOf((a.wing||'BVB').toUpperCase()) === -1 ? 9 : WING_ORDER.indexOf((a.wing||'BVB').toUpperCase()))
-         - (WING_ORDER.indexOf((b.wing||'BVB').toUpperCase()) === -1 ? 9 : WING_ORDER.indexOf((b.wing||'BVB').toUpperCase()));
+    return (WING_ORDER.indexOf((a.wing || 'BVB').toUpperCase()) === -1 ? 9 : WING_ORDER.indexOf((a.wing || 'BVB').toUpperCase()))
+      - (WING_ORDER.indexOf((b.wing || 'BVB').toUpperCase()) === -1 ? 9 : WING_ORDER.indexOf((b.wing || 'BVB').toUpperCase()));
   });
 
   function buildCard(member) {
@@ -386,29 +386,35 @@ async function renderLandingEcGrid() {
 
 
 function buildModeratorRowHTML() {
-  const mods = [
-    { num: '1', title: 'Moderator', role: 'Club Moderator', isChief: true },
-    { num: '2', title: 'Co-Moderator', role: 'Club Co-Moderator', isChief: false },
-    { num: '3', title: 'Co-Moderator', role: 'Club Co-Moderator', isChief: false },
-    { num: '4', title: 'Co-Moderator', role: 'Club Co-Moderator', isChief: false }
+  const defaultMods = [
+    { num: '1', name: 'Moderator 1', role: 'Club Moderator', wing: 'BVB', image: 'moderators/1.jpg', isChief: true },
+    { num: '2', name: 'Co-Moderator 2', role: 'Club Co-Moderator', wing: 'EVB', image: 'moderators/2.jpg', isChief: false },
+    { num: '3', name: 'Co-Moderator 3', role: 'Club Co-Moderator', wing: 'BVG', image: 'moderators/3.jpg', isChief: false },
+    { num: '4', name: 'Co-Moderator 4', role: 'Club Co-Moderator', wing: 'EVG', image: 'moderators/4.jpg', isChief: false }
   ];
+  const mods = (typeof getStoredModerators === 'function') ? getStoredModerators() : defaultMods;
 
-  const cardsHTML = mods.map(m => {
-    const badgeBg = m.isChief 
+  const cardsHTML = mods.map((m, idx) => {
+    const isChief = !!m.isChief || idx === 0;
+    const badgeBg = isChief 
       ? 'background: rgba(212,175,55,0.25); color: #FFD700; border-color: #FFD700;' 
       : 'background: rgba(52,152,219,0.2); color: #3498DB; border-color: rgba(52,152,219,0.4);';
-    const avatarGlow = m.isChief ? 'box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); border-color: var(--gold-light);' : '';
-    const borderStyle = m.isChief ? 'border: 1px solid var(--border-gold);' : 'border: 1px solid rgba(255,255,255,0.1);';
+    const avatarGlow = isChief ? 'box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); border-color: var(--gold-light);' : '';
+    const borderStyle = isChief ? 'border: 1px solid var(--border-gold);' : 'border: 1px solid rgba(255,255,255,0.1);';
+
+    const numIndex = m.num || (idx + 1);
+    const imgSrc = m.image || `moderators/${numIndex}.jpg`;
+    const wingText = (m.wing || (isChief ? 'BVB' : 'CO-MODERATOR')).toUpperCase();
 
     return `
       <div class="glass-panel ec-card ec-horizontal-card" style="text-align: center; ${borderStyle}">
         <div class="ec-avatar-wrapper" style="${avatarGlow}">
-          <img src="moderators/${m.num}.jpg" alt="${m.title}" class="ec-avatar-img" 
-            onerror="if(!this.t1){this.t1=true;this.src='moderators/${m.num}.png';}else if(!this.t2){this.t2=true;this.src='images/moderators/${m.num}.jpg';}else if(!this.t3){this.t3=true;this.src='images/moderators/${m.num}.png';}else if(!this.t4){this.t4=true;this.src='${m.num}.jpg';}else if(!this.t5){this.t5=true;this.src='${m.num}.png';}else{this.src='logo.png';}">
+          <img src="${imgSrc}" alt="${m.name || 'Moderator'}" class="ec-avatar-img" 
+            onerror="if(!this.t1){this.t1=true;this.src='moderators/${numIndex}.png';}else if(!this.t2){this.t2=true;this.src='images/moderators/${numIndex}.jpg';}else if(!this.t3){this.t3=true;this.src='images/moderators/${numIndex}.png';}else if(!this.t4){this.t4=true;this.src='${numIndex}.jpg';}else if(!this.t5){this.t5=true;this.src='${numIndex}.png';}else{this.src='logo.png';}">
         </div>
-        <h3 class="ec-name" style="margin-top: 0.4rem; font-size: 1rem;">${m.title} ${m.num}</h3>
-        <p class="ec-role">${m.role}</p>
-        <span class="ec-wing-badge" style="${badgeBg}">${m.title.toUpperCase()}</span>
+        <h3 class="ec-name" style="margin-top: 0.4rem; font-size: 1rem; color: #FFF;">${m.name || ('Moderator ' + numIndex)}</h3>
+        <p class="ec-role" style="color: var(--gold-light); font-weight: 600; font-size: 0.85rem; margin: 0.2rem 0 0.5rem 0;">${m.role || (isChief ? 'Club Moderator' : 'Club Co-Moderator')}</p>
+        <span class="ec-wing-badge" style="${badgeBg}">${wingText}</span>
       </div>
     `;
   }).join('');
@@ -462,7 +468,7 @@ async function renderEcPanelPage() {
   wings.forEach(wingKey => {
     const rawMembers = ecMembers.filter(m => (m.wing || 'BVB').toUpperCase() === wingKey);
     const wingMembers = (typeof sortEcMembersByRank === 'function') ? sortEcMembersByRank(rawMembers) : rawMembers;
-    
+
     html += `
       <div class="ec-wing-box">
         <div class="ec-wing-title-bar">
@@ -637,7 +643,7 @@ async function renderEventsPage() {
   }).join('');
 }
 
-window.openSegmentModal = function(segmentId) {
+window.openSegmentModal = function (segmentId) {
   const modal = document.getElementById('segmentDetailModal');
   const content = document.getElementById('modalSegmentContent');
   if (!modal || !content) return;
@@ -665,13 +671,13 @@ window.openSegmentModal = function(segmentId) {
         groupsCollapsibleHTML = `
           <div id="${boxId}" class="event-categories-box" style="display: none;">
             ${evt.groups.map(grp => {
-              const isGrpTeam = grp.is_team || evt.is_team;
-              const grpMaxMembers = grp.is_team ? grp.max_team_members : (evt.is_team ? evt.max_team_members : 1);
-              const priceTag = grp.price ? ` · ৳${grp.price}` : '';
-              const safeSegTitle = (seg.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-              const safeEvtTitle = (evt.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-              const safeGrpName = (grp.group_name || grp.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-              return `
+          const isGrpTeam = grp.is_team || evt.is_team;
+          const grpMaxMembers = grp.is_team ? grp.max_team_members : (evt.is_team ? evt.max_team_members : 1);
+          const priceTag = grp.price ? ` · ৳${grp.price}` : '';
+          const safeSegTitle = (seg.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          const safeEvtTitle = (evt.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          const safeGrpName = (grp.group_name || grp.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+          return `
               <div class="category-block-item">
                 <div class="category-block-info">
                   <div class="category-block-name">
@@ -686,7 +692,7 @@ window.openSegmentModal = function(segmentId) {
                 </div>
               </div>
             `;
-            }).join('')}
+        }).join('')}
           </div>
         `;
       }
@@ -740,7 +746,7 @@ window.openSegmentModal = function(segmentId) {
   modal.classList.add('open');
 };
 
-window.toggleEventCategories = function(boxId) {
+window.toggleEventCategories = function (boxId) {
   const box = document.getElementById(boxId);
   if (box) {
     if (box.style.display === 'none' || !box.style.display) {
@@ -751,7 +757,7 @@ window.toggleEventCategories = function(boxId) {
   }
 };
 
-window.closeSegmentModal = function() {
+window.closeSegmentModal = function () {
   const modal = document.getElementById('segmentDetailModal');
   if (modal) modal.classList.remove('open');
 };
@@ -761,7 +767,7 @@ window.closeSegmentModal = function() {
    ========================================================================== */
 let activeRegistration = null;
 
-window.openRegistrationModal = function(segmentTitle, eventTitle, categoryName, priceAmount, isTeam = false, maxTeamMembers = 1) {
+window.openRegistrationModal = function (segmentTitle, eventTitle, categoryName, priceAmount, isTeam = false, maxTeamMembers = 1) {
   closeSegmentModal(); // Close segment detail view
 
   activeRegistration = {
@@ -833,12 +839,12 @@ window.openRegistrationModal = function(segmentTitle, eventTitle, categoryName, 
   regModal.classList.add('open');
 };
 
-window.closeRegistrationModal = function() {
+window.closeRegistrationModal = function () {
   const regModal = document.getElementById('registrationModal');
   if (regModal) regModal.classList.remove('open');
 };
 
-window.showRegStep = function(stepNum) {
+window.showRegStep = function (stepNum) {
   const step1 = document.getElementById('regStep1');
   const step2 = document.getElementById('regStep2');
   const step3 = document.getElementById('regStep3');
@@ -848,7 +854,7 @@ window.showRegStep = function(stepNum) {
   if (step3) step3.style.display = (stepNum === 3) ? 'block' : 'none';
 };
 
-window.copyBkashNumber = function() {
+window.copyBkashNumber = function () {
   const numText = document.getElementById('bkashNumberText')?.innerText || '01700000000';
   navigator.clipboard.writeText(numText).then(() => {
     alert('bKash Number copied to clipboard: ' + numText);
@@ -857,7 +863,7 @@ window.copyBkashNumber = function() {
   });
 };
 
-window.handleRegStep1Submit = function(e) {
+window.handleRegStep1Submit = function (e) {
   if (e && e.preventDefault) e.preventDefault();
   if (!activeRegistration) return;
 
@@ -892,7 +898,7 @@ window.handleRegStep1Submit = function(e) {
   showRegStep(2);
 };
 
-window.handleRegStep2Submit = async function(e) {
+window.handleRegStep2Submit = async function (e) {
   if (e && e.preventDefault) e.preventDefault();
   if (!activeRegistration) return;
 
@@ -907,7 +913,7 @@ window.handleRegStep2Submit = async function(e) {
 
   try {
     const savedReg = (typeof addDbRegistration === 'function') ? await addDbRegistration(activeRegistration) : activeRegistration;
-    
+
     // Populate Success Screen Details
     if (document.getElementById('successParticipantName')) document.getElementById('successParticipantName').innerText = activeRegistration.name;
     if (document.getElementById('successEventTitle')) document.getElementById('successEventTitle').innerText = activeRegistration.event_title + (activeRegistration.category_name ? ` (${activeRegistration.category_name})` : '');
