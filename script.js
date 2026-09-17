@@ -264,11 +264,17 @@ async function renderLandingSchedule() {
   });
 }
 
+let currentLandingEcMembers = [];
+
 // Helper to render EC Marquee Track
 function renderLandingEcMarqueeUI(ecMembers) {
   const ecTrack = document.getElementById('landing-ec-grid');
   const ecOuter = document.getElementById('landing-ec-marquee-outer');
   if (!ecTrack) return;
+
+  if (ecMembers && ecMembers.length > 0) {
+    currentLandingEcMembers = ecMembers;
+  }
 
   ecTrack.innerHTML = '';
 
@@ -342,6 +348,17 @@ function renderLandingEcMarqueeUI(ecMembers) {
   ecTrack.style.animationDuration = `${duration}s`;
   ecTrack.style.animation = `ec-marquee-scroll ${duration}s linear infinite`;
 }
+
+// Window resize listener to recalculate marquee duplicates on screen size change
+let ecMarqueeResizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(ecMarqueeResizeTimer);
+  ecMarqueeResizeTimer = setTimeout(() => {
+    if (currentLandingEcMembers && currentLandingEcMembers.length > 0) {
+      renderLandingEcMarqueeUI(currentLandingEcMembers);
+    }
+  }, 200);
+});
 
 // Render dynamic EC roster preview on index.html — infinite seamless marquee
 async function renderLandingEcGrid() {
