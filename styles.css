@@ -1047,7 +1047,7 @@ input[type="file"].form-input::file-selector-button:hover {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  grid-template-columns: 1.4fr 1fr 1.2fr;
   gap: 2.5rem;
   margin-bottom: 3rem;
 }
@@ -1172,7 +1172,50 @@ input[type="file"].form-input::file-selector-button:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.2rem;
   font-size: 0.82rem;
+}
+
+/* Developer Credit Button Styling */
+.footer-dev-credit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dev-credit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.95rem;
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.dev-credit-btn i {
+  color: var(--gold-light);
+  font-size: 0.85rem;
+}
+
+.dev-credit-btn .dev-highlight {
+  color: var(--gold-light);
+  font-weight: 700;
+}
+
+.dev-credit-btn:hover {
+  background: var(--gold-gradient-soft);
+  border-color: var(--gold-light);
+  color: #FFFFFF;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.35);
+  transform: translateY(-1.5px);
 }
 
 .social-links {
