@@ -25,21 +25,21 @@ window.CULTURA_CONFIG = {
   // --------------------------------------------------------------------------
   moderators: [
     {
-      name: 'Moderator Name',
+      name: 'Rahana Husne Akhter',
       role: 'Club Moderator',
       wing: 'BVB',
       image: 'moderators/1.jpg',
       isChief: true
     },
     {
-      name: 'Co-Moderator Name 1',
+      name: 'Md. Naimur Rahman',
       role: 'Club Co-Moderator',
       wing: 'EVB',
       image: 'moderators/2.jpg',
       isChief: false
     },
     {
-      name: 'Co-Moderator Name 2',
+      name: 'Sanjida Chowdhury Rupa',
       role: 'Club Co-Moderator',
       wing: 'BVG',
       image: 'moderators/3.jpg',
