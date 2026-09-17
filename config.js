@@ -17,7 +17,7 @@
 window.CULTURA_CONFIG = {
   supabaseUrl: 'https://imdxvceivzpkqgkatpbq.supabase.co',
   supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltZHh2Y2Vpdnpwa3Fna2F0cGJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg0MzE0MzcsImV4cCI6MjEwNDAwNzQzN30.KD3C14NxyChfFoeIlt0WQctkTeYKhX9WhtCJcAbu1wA',
-  bkashNumber: '+8801339490923',
+  bkashNumber: '+8801784726352',
 
   // --------------------------------------------------------------------------
   // CLUB MODERATORS & CO-MODERATORS CONFIGURATION
@@ -46,7 +46,7 @@ window.CULTURA_CONFIG = {
       isChief: false
     },
     {
-      name: 'Co-Moderator Name 3',
+      name: 'Tania Farjana Shurovi',
       role: 'Club Co-Moderator',
       wing: 'EVG',
       image: 'moderators/4.jpg',
