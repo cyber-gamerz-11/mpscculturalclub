@@ -20,12 +20,37 @@ window.CULTURA_CONFIG = {
   bkashNumber: '+8801339490923',
 
   // --------------------------------------------------------------------------
-  // Faculty & Guidance: Club Moderators & Co-Moderators Configuration
+  // CLUB MODERATORS & CO-MODERATORS CONFIGURATION
+  // Edit names, roles, wings (BVB / EVB / BVG / EVG), and photo paths below!
   // --------------------------------------------------------------------------
   moderators: [
-    { num: '1', name: 'Moderator 1', role: 'Club Moderator', wing: 'BVB', image: 'moderators/1.jpg', isChief: true },
-    { num: '2', name: 'Co-Moderator 2', role: 'Club Co-Moderator', wing: 'EVB', image: 'moderators/2.jpg', isChief: false },
-    { num: '3', name: 'Co-Moderator 3', role: 'Club Co-Moderator', wing: 'BVG', image: 'moderators/3.jpg', isChief: false },
-    { num: '4', name: 'Co-Moderator 4', role: 'Club Co-Moderator', wing: 'EVG', image: 'moderators/4.jpg', isChief: false }
+    {
+      name: 'Moderator Name',
+      role: 'Club Moderator',
+      wing: 'BVB',
+      image: 'moderators/1.jpg',
+      isChief: true
+    },
+    {
+      name: 'Co-Moderator Name 1',
+      role: 'Club Co-Moderator',
+      wing: 'EVB',
+      image: 'moderators/2.jpg',
+      isChief: false
+    },
+    {
+      name: 'Co-Moderator Name 2',
+      role: 'Club Co-Moderator',
+      wing: 'BVG',
+      image: 'moderators/3.jpg',
+      isChief: false
+    },
+    {
+      name: 'Co-Moderator Name 3',
+      role: 'Club Co-Moderator',
+      wing: 'EVG',
+      image: 'moderators/4.jpg',
+      isChief: false
+    }
   ]
 };

@@ -387,34 +387,38 @@ async function renderLandingEcGrid() {
 
 function buildModeratorRowHTML() {
   const defaultMods = [
-    { num: '1', name: 'Moderator 1', role: 'Club Moderator', wing: 'BVB', image: 'moderators/1.jpg', isChief: true },
-    { num: '2', name: 'Co-Moderator 2', role: 'Club Co-Moderator', wing: 'EVB', image: 'moderators/2.jpg', isChief: false },
-    { num: '3', name: 'Co-Moderator 3', role: 'Club Co-Moderator', wing: 'BVG', image: 'moderators/3.jpg', isChief: false },
-    { num: '4', name: 'Co-Moderator 4', role: 'Club Co-Moderator', wing: 'EVG', image: 'moderators/4.jpg', isChief: false }
+    { name: 'Moderator Name', role: 'Club Moderator', wing: 'BVB', image: 'moderators/1.jpg', isChief: true },
+    { name: 'Co-Moderator Name 1', role: 'Club Co-Moderator', wing: 'EVB', image: 'moderators/2.jpg', isChief: false },
+    { name: 'Co-Moderator Name 2', role: 'Club Co-Moderator', wing: 'BVG', image: 'moderators/3.jpg', isChief: false },
+    { name: 'Co-Moderator Name 3', role: 'Club Co-Moderator', wing: 'EVG', image: 'moderators/4.jpg', isChief: false }
   ];
-  const mods = (typeof getStoredModerators === 'function') ? getStoredModerators() : defaultMods;
+
+  const mods = (window.CULTURA_CONFIG && Array.isArray(window.CULTURA_CONFIG.moderators) && window.CULTURA_CONFIG.moderators.length > 0)
+    ? window.CULTURA_CONFIG.moderators
+    : defaultMods;
 
   const cardsHTML = mods.map((m, idx) => {
     const isChief = !!m.isChief || idx === 0;
-    const badgeBg = isChief 
-      ? 'background: rgba(212,175,55,0.25); color: #FFD700; border-color: #FFD700;' 
+    const badgeBg = isChief
+      ? 'background: rgba(212,175,55,0.25); color: #FFD700; border-color: #FFD700;'
       : 'background: rgba(52,152,219,0.2); color: #3498DB; border-color: rgba(52,152,219,0.4);';
     const avatarGlow = isChief ? 'box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); border-color: var(--gold-light);' : '';
     const borderStyle = isChief ? 'border: 1px solid var(--border-gold);' : 'border: 1px solid rgba(255,255,255,0.1);';
-
-    const numIndex = m.num || (idx + 1);
-    const imgSrc = m.image || `moderators/${numIndex}.jpg`;
-    const wingText = (m.wing || (isChief ? 'BVB' : 'CO-MODERATOR')).toUpperCase();
+    const num = idx + 1;
+    const imgSrc = m.image || `moderators/${num}.jpg`;
+    const nameDisplay = m.name || `Moderator`;
+    const roleDisplay = m.role || (isChief ? 'Club Moderator' : 'Club Co-Moderator');
+    const wingDisplay = (m.wing || (isChief ? 'BVB' : 'EVB')).toUpperCase();
 
     return `
       <div class="glass-panel ec-card ec-horizontal-card" style="text-align: center; ${borderStyle}">
         <div class="ec-avatar-wrapper" style="${avatarGlow}">
-          <img src="${imgSrc}" alt="${m.name || 'Moderator'}" class="ec-avatar-img" 
-            onerror="if(!this.t1){this.t1=true;this.src='moderators/${numIndex}.png';}else if(!this.t2){this.t2=true;this.src='images/moderators/${numIndex}.jpg';}else if(!this.t3){this.t3=true;this.src='images/moderators/${numIndex}.png';}else if(!this.t4){this.t4=true;this.src='${numIndex}.jpg';}else if(!this.t5){this.t5=true;this.src='${numIndex}.png';}else{this.src='logo.png';}">
+          <img src="${imgSrc}" alt="${nameDisplay}" class="ec-avatar-img" 
+            onerror="if(!this.t1){this.t1=true;this.src='moderators/${num}.png';}else if(!this.t2){this.t2=true;this.src='images/moderators/${num}.jpg';}else if(!this.t3){this.t3=true;this.src='images/moderators/${num}.png';}else if(!this.t4){this.t4=true;this.src='${num}.jpg';}else if(!this.t5){this.t5=true;this.src='${num}.png';}else{this.src='logo.png';}">
         </div>
-        <h3 class="ec-name" style="margin-top: 0.4rem; font-size: 1rem; color: #FFF;">${m.name || ('Moderator ' + numIndex)}</h3>
-        <p class="ec-role" style="color: var(--gold-light); font-weight: 600; font-size: 0.85rem; margin: 0.2rem 0 0.5rem 0;">${m.role || (isChief ? 'Club Moderator' : 'Club Co-Moderator')}</p>
-        <span class="ec-wing-badge" style="${badgeBg}">${wingText}</span>
+        <h3 class="ec-name" style="margin-top: 0.4rem; font-size: 1rem;">${nameDisplay}</h3>
+        <p class="ec-role">${roleDisplay}</p>
+        <span class="ec-wing-badge" style="${badgeBg}">${wingDisplay}</span>
       </div>
     `;
   }).join('');
