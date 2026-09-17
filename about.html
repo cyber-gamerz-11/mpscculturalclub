@@ -4,13 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Us | MPSC Cultural Club</title>
+  <meta name="description" content="Discover the legacy, history, and four wings of MPSC Cultural Club at Mohammadpur Preparatory School & College.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/png" href="logo.png">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- Header -->
+  <!-- ==========================================================================
+       Header Navigation
+       ========================================================================== -->
   <header class="header-nav">
     <div class="container nav-container">
       <a href="index.html" class="brand-logo-link">
@@ -41,41 +44,291 @@
     </div>
   </header>
 
-  <!-- Page Banner -->
-  <section style="padding-top: 150px; padding-bottom: 60px; text-align: center; background: rgba(11, 19, 43, 0.6);">
+  <!-- ==========================================================================
+       1. Hero Banner
+       ========================================================================== -->
+  <section class="about-hero-banner">
     <div class="container">
-      <span class="section-subtitle">Our History & Legacy</span>
+      <div class="about-hero-seal-wrapper">
+        <img src="logo.png" alt="MPSC Cultural Club Emblem" class="about-hero-seal-glow">
+      </div>
+      <span class="section-subtitle">OUR HISTORY & HERITAGE</span>
       <h1 class="section-title">About <span>MPSC Cultural Club</span></h1>
       <div class="title-line"></div>
+      <p style="max-width: 780px; margin: 1.2rem auto 0; color: var(--text-muted); font-size: 1.05rem; line-height: 1.7;">
+        From a long-standing school tradition established in 1976 to a growing national platform, fostering student leadership, performance excellence, and cultural discovery.
+      </p>
+
+      <!-- Key Quick Stats Row -->
+      <div class="about-stats-row">
+        <div class="about-stat-card">
+          <span class="about-stat-val">1976</span>
+          <span class="about-stat-lbl">Foundation Year</span>
+        </div>
+        <div class="about-stat-card">
+          <span class="about-stat-val">4 Wings</span>
+          <span class="about-stat-lbl">Bangla & English</span>
+        </div>
+        <div class="about-stat-card">
+          <span class="about-stat-val">350+</span>
+          <span class="about-stat-lbl">Masterclass Participants</span>
+        </div>
+        <div class="about-stat-card">
+          <span class="about-stat-val">OCT 1–3</span>
+          <span class="about-stat-lbl">National Fiesta 2026</span>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Main Content -->
-  <section style="padding: 80px 0;">
+  <!-- ==========================================================================
+       2. Overview Narrative
+       ========================================================================== -->
+  <section style="padding: 85px 0; background: rgba(5, 10, 23, 0.4);">
     <div class="container">
       <div class="about-grid">
         <div class="about-logo-frame">
           <img src="logo.png" alt="MPSC Cultural Club Seal" class="about-logo-img">
         </div>
         <div class="about-content-text">
+          <span class="section-subtitle">FOUNDATIONAL IDENTITY</span>
+          <h2 style="font-family: var(--font-heading); color: #FFF; font-size: clamp(1.6rem, 3.5vw, 2.2rem); margin: 0.4rem 0 1rem 0;">
+            A Legacy of Artistic Excellence
+          </h2>
           <p>
-            Founded in 1976, <strong>MPSC Cultural Club</strong> stands as one of the most prestigious student organizations at Mohammadpur Preparatory School & College. For decades, our club has served as a creative home for students passionate about music, theatre, fine arts, recitation, dance, and cultural heritage.
+            Established in 1976, <strong>Mohammadpur Preparatory School and College</strong> has always regarded cultural activities as an important part of its institutional identity. Its annual Cultural Week, featuring singing, dance, poetry recitation, and other creative segments, has been one of the school’s signature traditions since 2003.
           </p>
           <p>
-            Our flagship annual festival, <strong>The Cultura Fiesta 1.0</strong>, brings together talented participants from schools, colleges, and universities across Bangladesh to celebrate creativity, competition, and cultural harmony.
+            Building upon this legacy, the <strong>MPSC Cultural Club</strong> was established in 2022 across all four wings: <em>Bangla Version Girls, Bangla Version Boys, English Version Girls,</em> and <em>English Version Boys</em>. Since then, the club has hosted a wide range of cultural festivals, workshops, seminars, and creative activities, with each wing contributing to the institution’s growing cultural landscape.
           </p>
-          <div class="club-features-list">
-            <div class="feature-pill"><i class="fa-solid fa-gem"></i> Heritage Preservation</div>
-            <div class="feature-pill"><i class="fa-solid fa-masks-theater"></i> Artistic Platform</div>
-            <div class="feature-pill"><i class="fa-solid fa-lightbulb"></i> Youth Innovation</div>
-            <div class="feature-pill"><i class="fa-solid fa-trophy"></i> National Competitions</div>
+
+          <div class="club-features-list" style="margin-top: 1.8rem;">
+            <div class="feature-pill"><i class="fa-solid fa-masks-theater"></i> Performing Arts</div>
+            <div class="feature-pill"><i class="fa-solid fa-award"></i> Youth Leadership</div>
+            <div class="feature-pill"><i class="fa-solid fa-paintbrush"></i> Masterclasses</div>
+            <div class="feature-pill"><i class="fa-solid fa-globe"></i> National Platform</div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
+  <!-- ==========================================================================
+       3. Historical Milestone Timeline
+       ========================================================================== -->
+  <section class="timeline-section">
+    <div class="container">
+      <div class="section-header" style="text-align: center;">
+        <span class="section-subtitle">JOURNEY THROUGH THE YEARS</span>
+        <h2 class="section-title">Key Institutional <span>Milestones</span></h2>
+        <div class="title-line"></div>
+      </div>
+
+      <div class="timeline-vertical">
+        <!-- Milestone 1 -->
+        <div class="timeline-item">
+          <div class="timeline-node"><i class="fa-solid fa-school"></i></div>
+          <div class="timeline-card">
+            <span class="timeline-year-badge">1976</span>
+            <h3 class="timeline-title">Institutional Foundation</h3>
+            <p class="timeline-desc">
+              Mohammadpur Preparatory School and College establishes its core commitment to artistic growth and cultural discovery alongside academic distinction.
+            </p>
+          </div>
+        </div>
+
+        <!-- Milestone 2 -->
+        <div class="timeline-item">
+          <div class="timeline-node"><i class="fa-solid fa-calendar-star"></i></div>
+          <div class="timeline-card">
+            <span class="timeline-year-badge">2003</span>
+            <h3 class="timeline-title">Annual Cultural Week Launch</h3>
+            <p class="timeline-desc">
+              The inauguration of the signature annual Cultural Week tradition, celebrating student talent in solo singing, choreography, poetry recitation, and literature.
+            </p>
+          </div>
+        </div>
+
+        <!-- Milestone 3 -->
+        <div class="timeline-item">
+          <div class="timeline-node"><i class="fa-solid fa-layer-group"></i></div>
+          <div class="timeline-card">
+            <span class="timeline-year-badge">2022</span>
+            <h3 class="timeline-title">MPSC Cultural Club Formation</h3>
+            <p class="timeline-desc">
+              Unification of all four student wings into a unified student-led organization: Bangla Version Girls, Bangla Version Boys, English Version Girls, and English Version Boys.
+            </p>
+          </div>
+        </div>
+
+        <!-- Milestone 4 -->
+        <div class="timeline-item">
+          <div class="timeline-node"><i class="fa-solid fa-masks-theater"></i></div>
+          <div class="timeline-card">
+            <span class="timeline-year-badge">2023–2025</span>
+            <h3 class="timeline-title">Masterclasses & Wing Festivals</h3>
+            <p class="timeline-desc">
+              Hosting landmark initiatives including <em>The Odyssey of Artistry</em> masterclass with Antik Mahmud, <em>Folk Fest 2023</em>, <em>CARNIVAL</em>, cultural seminars, and <em>Modhu Mela 2025</em> across all wings.
+            </p>
+          </div>
+        </div>
+
+        <!-- Milestone 5 -->
+        <div class="timeline-item">
+          <div class="timeline-node"><i class="fa-solid fa-trophy"></i></div>
+          <div class="timeline-card">
+            <span class="timeline-year-badge">OCTOBER 1–3, 2026</span>
+            <h3 class="timeline-title">The Cultura Fiesta 1.0 (National Festival)</h3>
+            <p class="timeline-desc">
+              Hosting the first national-level cultural festival in the history of Mohammadpur Preparatory School and College, opening doors to students across Bangladesh.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       4. The Four Wings Showcase
+       ========================================================================== -->
+  <section class="wings-section">
+    <div class="container">
+      <div class="section-header" style="text-align: center;">
+        <span class="section-subtitle">FOUR PILLARS OF OUR CLUB</span>
+        <h2 class="section-title">Explore Our <span>Four Wings</span></h2>
+        <div class="title-line"></div>
+        <p style="max-width: 650px; margin: 0.8rem auto 0; color: var(--text-muted); font-size: 0.95rem;">
+          Each wing brings a distinct creative energy, contributing to MPSC’s rich and dynamic cultural landscape.
+        </p>
+      </div>
+
+      <div class="wings-grid-luxury">
+        <!-- Wing 1 -->
+        <div class="wing-card-luxury">
+          <div class="wing-badge-icon"><i class="fa-solid fa-venus"></i></div>
+          <h3 class="wing-name">Bangla Version Girls</h3>
+          <span class="wing-code">BVG WING</span>
+          <p class="wing-desc">
+            Pioneers in traditional Bengali classical dance, solo recitations, and cultural celebrations including Modhu Mela 2025 performances.
+          </p>
+        </div>
+
+        <!-- Wing 2 -->
+        <div class="wing-card-luxury">
+          <div class="wing-badge-icon"><i class="fa-solid fa-mars"></i></div>
+          <h3 class="wing-name">Bangla Version Boys</h3>
+          <span class="wing-code">BVB WING</span>
+          <p class="wing-desc">
+            Organizers of CARNIVAL intra-wing festival, instrumental music clashes, cultural seminars, and vocal recitals.
+          </p>
+        </div>
+
+        <!-- Wing 3 -->
+        <div class="wing-card-luxury">
+          <div class="wing-badge-icon"><i class="fa-solid fa-star"></i></div>
+          <h3 class="wing-name">English Version Girls</h3>
+          <span class="wing-code">EVG WING</span>
+          <p class="wing-desc">
+            Host of The Odyssey of Artistry masterclass (350+ participants) and Folk Fest 2023 with Bengali character cosplay & quizzes.
+          </p>
+        </div>
+
+        <!-- Wing 4 -->
+        <div class="wing-card-luxury">
+          <div class="wing-badge-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <h3 class="wing-name">English Version Boys</h3>
+          <span class="wing-code">EVB WING</span>
+          <p class="wing-desc">
+            Leading modern musical performances, cultural seminars, band battles, and collaborative artistic seminars.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       5. Landmark Initiatives Spotlight
+       ========================================================================== -->
+  <section class="initiatives-section">
+    <div class="container">
+      <div class="section-header" style="text-align: center;">
+        <span class="section-subtitle">MEMORABLE INITIATIVES</span>
+        <h2 class="section-title">Flagship <span>Workshops & Festivals</span></h2>
+        <div class="title-line"></div>
+      </div>
+
+      <div class="initiatives-grid">
+        <!-- Initiative 1 -->
+        <div class="initiative-card">
+          <span class="initiative-tag"><i class="fa-solid fa-palette"></i> EVG Masterclass</span>
+          <h3 class="initiative-title">The Odyssey of Artistry</h3>
+          <p class="initiative-desc">
+            A Masterclass in Creativity and Success — one of the largest intra-wing workshops organized by the English Version Girls’ Wing.
+          </p>
+          <div class="guest-speaker-badge">
+            <i class="fa-solid fa-user-astronaut" style="color: var(--gold-light);"></i>
+            <span>Guest Speaker: <strong>Antik Mahmud</strong> (350+ Participants)</span>
+          </div>
+        </div>
+
+        <!-- Initiative 2 -->
+        <div class="initiative-card">
+          <span class="initiative-tag"><i class="fa-solid fa-feather"></i> Folk Fest 2023</span>
+          <h3 class="initiative-title">Folk Fest & Bengali Cosplay</h3>
+          <p class="initiative-desc">
+            An intra-wing festival by EVG featuring Bengali character cosplay, movie & book quizzes, group dance, and traditional vocal performances.
+          </p>
+        </div>
+
+        <!-- Initiative 3 -->
+        <div class="initiative-card">
+          <span class="initiative-tag"><i class="fa-solid fa-guitar"></i> BVB Festival</span>
+          <h3 class="initiative-title">CARNIVAL & Seminars</h3>
+          <p class="initiative-desc">
+            Intra-wing festival organized by Bangla Version Boys featuring vocal renditions, poetry recitations, instrumental jams, and cultural seminars.
+          </p>
+        </div>
+
+        <!-- Initiative 4 -->
+        <div class="initiative-card">
+          <span class="initiative-tag"><i class="fa-solid fa-music"></i> Campus-Wide</span>
+          <h3 class="initiative-title">Modhu Mela 2025</h3>
+          <p class="initiative-desc">
+            Held individually across the Bangla Version and English Version wings, celebrating spring with group dances, solo performances, and folk songs.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       6. Official Mission Statement Quote
+       ========================================================================== -->
+  <section class="quote-section">
+    <div class="container">
+      <div class="quote-gold-card">
+        <div class="quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+        <p class="quote-text">
+          "From a long-standing school tradition to a growing national platform, the MPSC Cultural Club continues to foster creativity, celebrate culture, and provide students with opportunities to express, create, and lead."
+        </p>
+        <div class="quote-author">MPSC CULTURAL CLUB EXECUTIVE PANEL</div>
+      </div>
+
+      <!-- Call to Action Buttons -->
+      <div style="margin-top: 3.5rem; display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap;">
+        <a href="events.html" class="btn-gold" style="padding: 0.9rem 2rem; font-size: 1rem;">
+          <i class="fa-solid fa-ticket"></i> Explore Festival Events
+        </a>
+        <a href="ec-panel.html" class="btn-outline-gold" style="padding: 0.9rem 2rem; font-size: 1rem;">
+          <i class="fa-solid fa-crown"></i> Meet Our EC Panel
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       7. Site Footer
+       ========================================================================== -->
   <footer class="site-footer">
     <div class="container">
       <div class="footer-grid">
@@ -141,12 +394,13 @@
         </div>
         <div class="social-links">
           <a href="#" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-          <a href="#" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://www.instagram.com/mpscculturalclub/" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
           <a href="#" class="social-icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
         </div>
       </div>
     </div>
   </footer>
+
   <script src="config.js"></script>
   <script src="db.js"></script>
   <script src="script.js"></script>
