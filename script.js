@@ -231,6 +231,9 @@ function initScrollReveal() {
 
 // Render dynamic schedule on index.html
 async function renderLandingSchedule() {
+  const hasContainer = document.querySelector('[data-day-container]');
+  if (!hasContainer) return;
+
   const schedule = (typeof fetchDbSchedule === 'function') ? await fetchDbSchedule() : getStoredSchedule();
 
   ['day1', 'day2', 'day3'].forEach(dayKey => {
@@ -366,6 +369,9 @@ async function renderLandingEcGrid() {
   if (landingModContainer) {
     landingModContainer.innerHTML = buildModeratorRowHTML();
   }
+
+  const ecTrack = document.getElementById('landing-ec-grid');
+  if (!ecTrack) return;
 
   // 1. Synchronously render 0ms local storage state
   const localMembers = (typeof getStoredEcMembers === 'function') ? getStoredEcMembers() : [];
