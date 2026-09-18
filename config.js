@@ -46,7 +46,7 @@ window.CULTURA_CONFIG = {
       isChief: false
     },
     {
-      name: 'Tania Farjana Shurovi',
+      name: 'Tania Farzana Shurovi',
       role: 'Club Co-Moderator',
       wing: 'EVG',
       image: 'moderators/4.jpg',
