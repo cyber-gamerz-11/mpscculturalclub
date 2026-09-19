@@ -121,6 +121,22 @@
   ALTER TABLE public.registrations ADD COLUMN IF NOT EXISTS team_members TEXT DEFAULT '';
   ALTER TABLE public.ca_applications ADD COLUMN IF NOT EXISTS insta_link TEXT DEFAULT '';
 
+  -- 9. Create Concert Tickets Table
+  CREATE TABLE IF NOT EXISTS public.concert_tickets (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    ticket_code TEXT NOT NULL,
+    name TEXT NOT NULL,
+    institute TEXT NOT NULL,
+    class_name TEXT NOT NULL,
+    phone TEXT NOT NULL,
+    email TEXT NOT NULL,
+    amount TEXT DEFAULT '300',
+    sender_bkash TEXT NOT NULL,
+    trx_id TEXT NOT NULL,
+    status TEXT DEFAULT 'pending',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
   -- Enable Row Level Security (RLS)
   ALTER TABLE public.segments ENABLE ROW LEVEL SECURITY;
   ALTER TABLE public.segment_events ENABLE ROW LEVEL SECURITY;
@@ -129,6 +145,7 @@
   ALTER TABLE public.ec_members ENABLE ROW LEVEL SECURITY;
   ALTER TABLE public.registrations ENABLE ROW LEVEL SECURITY;
   ALTER TABLE public.ca_applications ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE public.concert_tickets ENABLE ROW LEVEL SECURITY;
   ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
 
   -- Allow Public Access Policies (SELECT, INSERT, UPDATE, DELETE)
@@ -167,6 +184,11 @@
     -- CA Applications Policies
     IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access on ca_applications') THEN
       CREATE POLICY "Allow public access on ca_applications" ON public.ca_applications FOR ALL USING (true) WITH CHECK (true);
+    END IF;
+
+    -- Concert Tickets Policies
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Allow public access on concert_tickets') THEN
+      CREATE POLICY "Allow public access on concert_tickets" ON public.concert_tickets FOR ALL USING (true) WITH CHECK (true);
     END IF;
 
     -- App Settings Policies

@@ -1338,3 +1338,161 @@ async function deleteCaApplication(caId) {
   return true;
 }
 
+/* ==========================================================================
+   CONCERT TICKET BOOKING & MANAGEMENT ENGINE
+   ========================================================================== */
+
+function getStoredConcertTickets() {
+  const data = localStorage.getItem('cultura_concert_tickets');
+  if (!data) return [];
+  try {
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveStoredConcertTickets(arr) {
+  localStorage.setItem('cultura_concert_tickets', JSON.stringify(arr));
+}
+
+/**
+ * Fetch Concert Tickets: Supabase is the SINGLE SOURCE OF TRUTH.
+ */
+async function fetchDbConcertTickets() {
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('concert_tickets')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(data)) {
+        const mapped = data.map(t => ({
+          id: t.id,
+          ticket_code: t.ticket_code,
+          name: t.name,
+          institute: t.institute,
+          class_name: t.class_name,
+          phone: t.phone,
+          email: t.email,
+          amount: t.amount || '300',
+          sender_bkash: t.sender_bkash,
+          trx_id: t.trx_id,
+          status: t.status || 'pending',
+          created_at: t.created_at
+        }));
+        saveStoredConcertTickets(mapped);
+        return mapped;
+      } else if (error) {
+        console.warn('Supabase fetchDbConcertTickets error:', error.message || error);
+      }
+    } catch (e) {
+      console.warn('Supabase fetchDbConcertTickets exception (falling back to local):', e);
+    }
+  }
+  return getStoredConcertTickets();
+}
+
+/**
+ * Add new Concert Ticket purchase
+ */
+async function addDbConcertTicket(ticketData) {
+  const newTicket = {
+    id: 'tkt-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+    ticket_code: ticketData.ticket_code || ('MPSC-TKT-' + Math.floor(1000 + Math.random() * 9000)),
+    name: ticketData.name,
+    institute: ticketData.institute,
+    class_name: ticketData.class_name,
+    phone: ticketData.phone,
+    email: ticketData.email,
+    amount: ticketData.amount || '300',
+    sender_bkash: ticketData.sender_bkash,
+    trx_id: ticketData.trx_id,
+    status: 'pending',
+    created_at: new Date().toISOString()
+  };
+
+  if (supabaseClient) {
+    try {
+      const { data, error } = await supabaseClient
+        .from('concert_tickets')
+        .insert([{
+          ticket_code: newTicket.ticket_code,
+          name: newTicket.name,
+          institute: newTicket.institute,
+          class_name: newTicket.class_name,
+          phone: newTicket.phone,
+          email: newTicket.email,
+          amount: newTicket.amount,
+          sender_bkash: newTicket.sender_bkash,
+          trx_id: newTicket.trx_id,
+          status: 'pending'
+        }])
+        .select();
+
+      if (!error && data && data.length > 0) {
+        newTicket.id = data[0].id;
+      } else if (error) {
+        console.error('Supabase addDbConcertTicket error:', error);
+      }
+    } catch (e) {
+      console.error('Supabase addDbConcertTicket exception:', e);
+    }
+  }
+
+  const list = getStoredConcertTickets();
+  list.unshift(newTicket);
+  saveStoredConcertTickets(list);
+  return newTicket;
+}
+
+/**
+ * Update Concert Ticket Status (verified, rejected, pending)
+ */
+async function updateConcertTicketStatus(ticketId, newStatus) {
+  if (supabaseClient && ticketId && !String(ticketId).startsWith('tkt-')) {
+    try {
+      await supabaseClient
+        .from('concert_tickets')
+        .update({ status: newStatus })
+        .eq('id', ticketId);
+    } catch (e) {
+      console.error('Supabase updateConcertTicketStatus exception:', e);
+    }
+  }
+
+  const list = getStoredConcertTickets();
+  const item = list.find(t => String(t.id) === String(ticketId));
+  if (item) {
+    item.status = newStatus;
+    saveStoredConcertTickets(list);
+  }
+  return true;
+}
+
+/**
+ * Delete Concert Ticket
+ */
+async function deleteConcertTicket(ticketId) {
+  if (supabaseClient && ticketId && !String(ticketId).startsWith('tkt-')) {
+    try {
+      await supabaseClient
+        .from('concert_tickets')
+        .delete()
+        .eq('id', ticketId);
+    } catch (e) {
+      console.error('Supabase deleteConcertTicket exception:', e);
+    }
+  }
+
+  const list = getStoredConcertTickets();
+  const idx = list.findIndex(t => String(t.id) === String(ticketId));
+  if (idx !== -1) {
+    list.splice(idx, 1);
+    saveStoredConcertTickets(list);
+  }
+  return true;
+}
+

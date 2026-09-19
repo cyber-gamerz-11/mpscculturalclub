@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buy Concert Ticket | Cultura Fiesta 1.0 — MPSC Cultural Club</title>
+  <meta name="description"
+    content="Book your official concert ticket for Cultura Fiesta 1.0 organized by MPSC Cultural Club. 300 BDT per pass via bKash.">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="logo.png">
+
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Custom responsive refinements for concert ticket form */
+    .tkt-step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(212, 175, 55, 0.12);
+      color: var(--gold-light);
+      border: 1px solid var(--border-gold);
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .tkt-summary-bar {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1.1rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      font-size: 0.88rem;
+    }
+
+    .bkash-number-row-custom {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-top: 0.3rem;
+    }
+
+    .bkash-num-text {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: 1px;
+      word-break: break-all;
+    }
+
+    @media (max-width: 600px) {
+      .tkt-form-card {
+        padding: 1.5rem 1rem !important;
+      }
+      .bkash-num-text {
+        font-size: 1.1rem !important;
+      }
+      .tkt-summary-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .tkt-actions-row {
+        flex-direction: column-reverse;
+        gap: 0.8rem;
+      }
+      .tkt-actions-row button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==========================================================================
+       Navigation Bar
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="container nav-container">
+      <!-- Brand Logo & Title -->
+      <a href="index.html" class="brand-logo-link">
+        <img src="logo.png" alt="MPSC Cultural Club Logo" class="brand-logo-img">
+        <div class="brand-text-container">
+          <span class="brand-name">MPSC CULTURAL CLUB</span>
+          <span class="brand-sub">Est. 1976 &bull; Mohammadpur</span>
+        </div>
+      </a>
+
+      <!-- Navigation Menu -->
+      <nav>
+        <ul class="nav-menu">
+          <li class="mobile-drawer-header">
+            <img src="logo.png" alt="MPSC Cultural Club Logo" class="mobile-drawer-logo">
+            <div class="mobile-drawer-title">MPSC CULTURAL CLUB</div>
+            <div class="mobile-drawer-sub">The Cultura Fiesta 1.0</div>
+          </li>
+
+          <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+          <li class="nav-item"><a href="events.html" class="nav-link">Events</a></li>
+          <li class="nav-item"><a href="concert-ticket.html" class="nav-link active">Concert Ticket</a></li>
+          <li class="nav-item"><a href="ec-panel.html" class="nav-link">EC Panel</a></li>
+          <li class="nav-item"><a href="gallery.html" class="nav-link">Gallery</a></li>
+          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+
+          <li class="mobile-drawer-footer">
+            <a href="concert-ticket.html" class="btn-gold mobile-menu-cta"><i class="fa-solid fa-ticket"></i> Buy Concert Ticket</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Mobile Hamburger Toggle -->
+      <button class="mobile-toggle" aria-label="Toggle Navigation Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       Main Hero & Booking Section
+       ========================================================================== -->
+  <main style="padding-top: 110px; padding-bottom: 4rem;">
+    <div class="container">
+      <div class="section-header" style="text-align: center; margin-bottom: 2rem;">
+        <span class="section-subtitle" style="letter-spacing: 2px; text-transform: uppercase; color: var(--gold-primary);">
+          <i class="fa-solid fa-guitar"></i> Cultura Fiesta 1.0 Grand Concert
+        </span>
+        <h1 class="section-title" style="font-size: 2.3rem; margin-top: 0.4rem;">
+          Buy <span>Concert Ticket</span>
+        </h1>
+        <div class="title-line" style="margin: 0.8rem auto 1rem auto;"></div>
+        
+        <!-- Price Pill -->
+        <div style="display: inline-flex; align-items: center; gap: 0.6rem; background: rgba(212, 175, 55, 0.12); border: 1px solid var(--border-gold-bright); padding: 0.6rem 1.4rem; border-radius: 50px; box-shadow: var(--shadow-gold); margin-top: 0.2rem;">
+          <i class="fa-solid fa-ticket" style="color: var(--gold-primary); font-size: 1.1rem;"></i>
+          <span style="color: #FFF; font-size: 1rem; font-weight: 700;">Concert Entry Fee: <span style="color: var(--gold-primary); font-size: 1.2rem;">৳300 BDT</span></span>
+        </div>
+      </div>
+
+      <!-- Main Booking Form Card -->
+      <div class="glass-panel tkt-form-card"
+        style="max-width: 720px; margin: 0 auto; padding: 2.2rem; border: 1px solid var(--border-gold); border-radius: var(--radius-lg); background: linear-gradient(145deg, #0B132B 0%, #050A17 100%); box-shadow: 0 15px 35px rgba(0,0,0,0.5);">
+
+        <!-- STEP 1: PARTICIPANT INFORMATION -->
+        <div id="tktStep1">
+          <div style="text-align: center; margin-bottom: 1.8rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+            <div class="tkt-step-badge">
+              <i class="fa-solid fa-user"></i> Step 1 of 2: Personal Details
+            </div>
+            <h2 style="font-family: var(--font-heading); color: #FFF; font-size: 1.6rem; margin-bottom: 0.3rem;">
+              Purchaser Information
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.86rem; margin: 0;">
+              Please enter your authentic details. Your ticket pass will be registered under this name.
+            </p>
+          </div>
+
+          <form id="tktFormStep1" onsubmit="handleTktStep1Submit(event)">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem;">
+
+              <div>
+                <label class="form-label"><i class="fa-solid fa-user"></i> FULL NAME <span style="color: var(--gold-light);">*</span></label>
+                <input type="text" id="tktNameInput" class="form-input" placeholder="e.g. Tanvir Ahmed" required>
+              </div>
+
+              <div>
+                <label class="form-label"><i class="fa-solid fa-building-columns"></i> INSTITUTE / SCHOOL / COLLEGE <span style="color: var(--gold-light);">*</span></label>
+                <input type="text" id="tktInstituteInput" class="form-input" placeholder="e.g. MPSC / Govt. Science College" required>
+              </div>
+
+              <div>
+                <label class="form-label"><i class="fa-solid fa-graduation-cap"></i> CLASS OR YEAR <span style="color: var(--gold-light);">*</span></label>
+                <input type="text" id="tktClassInput" class="form-input" placeholder="e.g. Class 11 / HSC 25" required>
+              </div>
+
+              <div>
+                <label class="form-label"><i class="fa-solid fa-phone"></i> PHONE NUMBER (WHATSAPP) <span style="color: var(--gold-light);">*</span></label>
+                <input type="tel" id="tktPhoneInput" class="form-input" placeholder="e.g. 01712345678" required>
+              </div>
+
+              <div style="grid-column: 1 / -1;">
+                <label class="form-label"><i class="fa-solid fa-envelope"></i> EMAIL ADDRESS (GMAIL) <span style="color: var(--gold-light);">*</span></label>
+                <input type="email" id="tktEmailInput" class="form-input" placeholder="e.g. yourname@gmail.com" required>
+              </div>
+
+            </div>
+
+            <div style="text-align: right;">
+              <button type="submit" class="btn-gold" style="width: 100%; padding: 1rem; font-size: 1.05rem; font-weight: 700; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.6rem;">
+                Next: Proceed to Payment (৳300) <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- STEP 2: BKASH PAYMENT & TRXID -->
+        <div id="tktStep2" style="display: none;">
+          <div style="text-align: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(212, 175, 55, 0.2);">
+            <div class="tkt-step-badge" style="background: rgba(226, 19, 110, 0.15); color: #FF88BC; border-color: rgba(226, 19, 110, 0.4);">
+              <i class="fa-solid fa-credit-card"></i> Step 2 of 2: bKash Payment
+            </div>
+            <h2 style="font-family: var(--font-heading); color: #FFF; font-size: 1.6rem; margin-bottom: 0.3rem;">
+              Complete bKash Payment
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.86rem; margin: 0;">
+              Send <strong>৳300 BDT</strong> via bKash Send Money and enter your Transaction ID below.
+            </p>
+          </div>
+
+          <!-- Summary preview of Step 1 data -->
+          <div class="tkt-summary-bar">
+            <div>
+              <span style="color: var(--gold-light);"><i class="fa-solid fa-user-check"></i> Purchaser:</span>
+              <strong style="color: #FFF;" id="summaryTktName">-</strong>
+              <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 0.4rem;" id="summaryTktPhone">(-)</span>
+            </div>
+            <button type="button" onclick="goToTktStep(1)" style="background: transparent; border: none; color: var(--gold-primary); text-decoration: underline; font-size: 0.82rem; cursor: pointer;">
+              <i class="fa-solid fa-pen-to-square"></i> Edit Info
+            </button>
+          </div>
+
+          <form id="tktFormStep2" onsubmit="handleTktStep2Submit(event)">
+
+            <!-- bKash Information Box -->
+            <div class="bkash-info-box">
+              <div class="bkash-brand-row">
+                <div style="background: #E2136E; color: #FFF; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; flex-shrink: 0;">
+                  ৳
+                </div>
+                <div style="flex: 1;">
+                  <span class="bkash-label">bKash Personal / Send Money Number</span>
+                  <div class="bkash-number-row-custom">
+                    <span class="bkash-num-text" id="bkashNumberTicket">+8801784726352</span>
+                    <button type="button" class="btn-copy-sm" onclick="copyTicketBkashNumber()"><i class="fa-solid fa-copy"></i> Copy</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Warning Notice Box -->
+            <div class="bkash-warning-box">
+              <i class="fa-solid fa-triangle-exclamation warning-icon"></i>
+              <div>
+                <strong>PAYMENT INSTRUCTIONS:</strong>
+                <p>1. Send <strong>৳300 BDT</strong> using bKash <strong>Send Money</strong> to the number above.</p>
+                <p>2. Include your <strong>Full Name & Phone Number</strong> in the bKash Reference note.</p>
+                <p>3. Enter your Sender bKash Number and Transaction ID (TrxID) below.</p>
+              </div>
+            </div>
+
+            <!-- Payment Input Fields -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem;">
+              <div>
+                <label class="form-label"><i class="fa-solid fa-mobile-screen-button"></i> SENDER BKASH PHONE NUMBER <span style="color: var(--gold-light);">*</span></label>
+                <input type="tel" id="tktSenderBkashInput" class="form-input" placeholder="e.g. 01712345678" required>
+              </div>
+
+              <div>
+                <label class="form-label"><i class="fa-solid fa-receipt"></i> BKASH TRANSACTION ID (TRXID) <span style="color: var(--gold-light);">*</span></label>
+                <input type="text" id="tktTrxIdInput" class="form-input" placeholder="e.g. 9J8A7K2M" required style="text-transform: uppercase;">
+              </div>
+            </div>
+
+            <!-- Action Buttons Row -->
+            <div class="tkt-actions-row" style="display: flex; gap: 1rem; align-items: center;">
+              <button type="button" class="btn-outline-gold" style="padding: 0.9rem 1.5rem;" onclick="goToTktStep(1)">
+                <i class="fa-solid fa-arrow-left"></i> Back
+              </button>
+              <button type="submit" id="tktSubmitBtn" class="btn-gold"
+                style="flex: 1; padding: 0.95rem; font-size: 1rem; font-weight: 700; text-transform: uppercase; cursor: pointer; background: linear-gradient(135deg, #D4AF37 0%, #F39C12 100%); border: none; border-radius: var(--radius-md); box-shadow: 0 0 20px rgba(212,175,55,0.4); display: flex; align-items: center; justify-content: center; gap: 0.6rem;">
+                <i class="fa-solid fa-ticket"></i> Submit & Get Ticket (৳300 BDT)
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       Ticket Confirmation / Pass Receipt POP-UP MODAL OVERLAY
+       ========================================================================== -->
+  <div id="ticketSuccessModal" class="modal-overlay" style="z-index: 100000;">
+    <div class="modal-card reg-modal-card" style="max-width: 520px; text-align: left; padding: 2.2rem; position: relative;">
+      
+      <button class="modal-close-btn" onclick="closeTicketSuccessModal()" aria-label="Close Modal">&times;</button>
+
+      <div style="text-align: center; margin-bottom: 1.2rem;">
+        <div style="width: 65px; height: 65px; margin: 0 auto 0.8rem auto; background: rgba(46, 204, 113, 0.15); border: 2px solid #2ECC71; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <i class="fa-solid fa-circle-check" style="font-size: 2.2rem; color: #2ECC71;"></i>
+        </div>
+        <h2 style="font-family: var(--font-heading); color: #FFF; font-size: 1.6rem; margin-bottom: 0.2rem;">Ticket Reserved!</h2>
+        <p style="color: var(--gold-light); font-size: 0.88rem; margin: 0;">Cultura Fiesta 1.0 Concert Pass</p>
+      </div>
+
+      <!-- Ticket Pass Card Preview -->
+      <div style="background: linear-gradient(135deg, #111C38 0%, #080E1E 100%); border: 1px solid var(--border-gold-bright); border-radius: var(--radius-md); padding: 1.3rem; margin-bottom: 1.2rem; position: relative; box-shadow: var(--shadow-gold);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed rgba(212, 175, 55, 0.3); padding-bottom: 0.8rem; margin-bottom: 0.9rem; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <div style="color: var(--gold-primary); font-size: 0.72rem; letter-spacing: 1px; text-transform: uppercase;">Ticket Pass Code</div>
+            <div id="modalTicketCode" style="font-family: monospace; font-size: 1.35rem; font-weight: 800; color: #FFF; letter-spacing: 2px;">MPSC-TKT-0000</div>
+          </div>
+          <span style="background: rgba(243, 156, 18, 0.2); color: #F39C12; border: 1px solid #F39C12; font-size: 0.72rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 20px;">PENDING VERIFICATION</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; font-size: 0.85rem; color: #DDD;">
+          <div><strong>Name:</strong> <span id="modalTktName">-</span></div>
+          <div><strong>Phone:</strong> <span id="modalTktPhone">-</span></div>
+          <div><strong>Institute:</strong> <span id="modalTktInstitute">-</span></div>
+          <div><strong>Class/Year:</strong> <span id="modalTktClass">-</span></div>
+          <div style="grid-column: 1 / -1;"><strong>bKash TrxID:</strong> <span id="modalTktTrxId" style="font-family: monospace; color: var(--gold-light);">-</span></div>
+        </div>
+      </div>
+
+      <div style="background: rgba(37, 211, 102, 0.08); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: var(--radius-sm); padding: 0.85rem 1rem; margin-bottom: 1rem; font-size: 0.84rem; color: #E2E8F0; text-align: center; line-height: 1.5;">
+        <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 1.05rem; margin-right: 0.3rem;"></i>
+        <strong>Payment Verification Notice:</strong> An Executive Committee (EC) member will verify your bKash payment and contact you via WhatsApp / Email with your verified pass confirmation!
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.82rem; text-align: center; margin-bottom: 1.2rem; line-height: 1.5;">
+        <i class="fa-solid fa-camera"></i> <strong>Please take a screenshot</strong> or copy your Ticket Code. Present it at the entrance gate on Concert Night to receive your physical pass.
+      </p>
+
+      <div class="tkt-actions-row" style="display: flex; gap: 0.8rem;">
+        <button type="button" class="btn-outline-gold" style="flex: 1; padding: 0.85rem; text-align: center; justify-content: center;" onclick="copyTicketPassCode()">
+          <i class="fa-solid fa-copy"></i> Copy Code
+        </button>
+        <button type="button" class="btn-gold" style="flex: 1; padding: 0.85rem; text-align: center; justify-content: center;" onclick="closeTicketSuccessModal()">
+          <i class="fa-solid fa-house"></i> Return Home
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       Site Footer
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand Info -->
+        <div class="footer-brand">
+          <div class="footer-logo-row">
+            <img src="logo.png" alt="MPSC Cultural Club Logo" class="footer-logo-img">
+            <div>
+              <div class="footer-brand-name">MPSC CULTURAL CLUB</div>
+              <div class="footer-brand-sub">Est. 1976 &bull; Mohammadpur</div>
+            </div>
+          </div>
+          <p class="footer-desc">
+            Promoting heritage, artistic excellence, and youthful talent across music, drama, dance, and literature.
+          </p>
+          <div>
+            <span class="mpsc-affiliation"><i class="fa-solid fa-shield-halved"></i> A CLUB OF MPSC</span>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="footer-col-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="index.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> Home</a></li>
+            <li><a href="about.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> About Us</a></li>
+            <li><a href="events.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> Segments & Rules</a></li>
+            <li><a href="concert-ticket.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> Buy Concert Ticket</a></li>
+            <li><a href="ec-panel.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> EC Panel</a></li>
+            <li><a href="ca-registration.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> Campus Ambassador</a></li>
+            <li><a href="gallery.html"><i class="fa-solid fa-chevron-right" style="font-size: 0.7rem; color: var(--gold-primary);"></i> Gallery</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <h4 class="footer-col-title">Contact Us</h4>
+          <div class="footer-contact-info">
+            <div class="contact-item">
+              <i class="fa-solid fa-envelope"></i>
+              <span>mpscculturalclub.2026@gmail.com</span>
+            </div>
+            <div class="contact-item">
+              <i class="fa-solid fa-location-dot"></i>
+              <span>Mohammadpur Preparatory School & College</span>
+            </div>
+            <div class="contact-item">
+              <i class="fa-solid fa-phone"></i>
+              <span>+880 013 3949 0923</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom">
+        <div>
+          &copy; 2026 <strong>MPSC CULTURAL CLUB&trade;</strong>. All Rights Reserved.
+        </div>
+        <div class="footer-dev-credit">
+          <a href="https://cyber-gamerz-11.github.io/-/" target="_blank" rel="noopener noreferrer" class="dev-credit-btn" title="Developer Portfolio / Website">
+            <i class="fa-solid fa-code"></i> Developed by <span class="dev-highlight">MD RIFAQAT ISLAM</span>
+          </a>
+        </div>
+        <div class="social-links">
+          <a href="https://www.facebook.com/profile.php?id=61594290877487&mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://www.instagram.com/mpsc_cultural_club/" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://youtube.com/@mpscculturalclub" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="config.js"></script>
+  <script src="db.js"></script>
+  <script src="script.js"></script>
+
+  <script>
+    let activeTicketDraft = {
+      name: '',
+      institute: '',
+      class_name: '',
+      phone: '',
+      email: ''
+    };
+
+    let lastGeneratedTicketCode = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const bkashNum = (window.CULTURA_CONFIG && window.CULTURA_CONFIG.bkashNumber) ? window.CULTURA_CONFIG.bkashNumber : '+8801784726352';
+      const el = document.getElementById('bkashNumberTicket');
+      if (el) el.innerText = bkashNum;
+    });
+
+    function goToTktStep(stepNum) {
+      const s1 = document.getElementById('tktStep1');
+      const s2 = document.getElementById('tktStep2');
+      if (stepNum === 1) {
+        if (s1) s1.style.display = 'block';
+        if (s2) s2.style.display = 'none';
+        window.scrollTo({ top: 150, behavior: 'smooth' });
+      } else if (stepNum === 2) {
+        if (s1) s1.style.display = 'none';
+        if (s2) s2.style.display = 'block';
+        window.scrollTo({ top: 150, behavior: 'smooth' });
+      }
+    }
+
+    function handleTktStep1Submit(e) {
+      e.preventDefault();
+      activeTicketDraft.name = document.getElementById('tktNameInput').value.trim();
+      activeTicketDraft.institute = document.getElementById('tktInstituteInput').value.trim();
+      activeTicketDraft.class_name = document.getElementById('tktClassInput').value.trim();
+      activeTicketDraft.phone = document.getElementById('tktPhoneInput').value.trim();
+      activeTicketDraft.email = document.getElementById('tktEmailInput').value.trim();
+
+      document.getElementById('summaryTktName').innerText = activeTicketDraft.name;
+      document.getElementById('summaryTktPhone').innerText = `(${activeTicketDraft.phone})`;
+
+      const senderInput = document.getElementById('tktSenderBkashInput');
+      if (senderInput && !senderInput.value.trim()) {
+        senderInput.value = activeTicketDraft.phone;
+      }
+
+      goToTktStep(2);
+    }
+
+    async function handleTktStep2Submit(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('tktSubmitBtn');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing Ticket...';
+      }
+
+      const ticketData = {
+        ticket_code: 'MPSC-TKT-' + Math.floor(1000 + Math.random() * 9000),
+        name: activeTicketDraft.name,
+        institute: activeTicketDraft.institute,
+        class_name: activeTicketDraft.class_name,
+        phone: activeTicketDraft.phone,
+        email: activeTicketDraft.email,
+        amount: '300',
+        sender_bkash: document.getElementById('tktSenderBkashInput').value.trim(),
+        trx_id: document.getElementById('tktTrxIdInput').value.trim().toUpperCase()
+      };
+
+      try {
+        const saved = await addDbConcertTicket(ticketData);
+        lastGeneratedTicketCode = saved.ticket_code;
+
+        document.getElementById('modalTicketCode').innerText = saved.ticket_code;
+        document.getElementById('modalTktName').innerText = saved.name;
+        document.getElementById('modalTktPhone').innerText = saved.phone;
+        document.getElementById('modalTktInstitute').innerText = saved.institute;
+        document.getElementById('modalTktClass').innerText = saved.class_name;
+        document.getElementById('modalTktTrxId').innerText = saved.trx_id;
+
+        // Open Pop-Up Modal
+        const modal = document.getElementById('ticketSuccessModal');
+        if (modal) modal.classList.add('open');
+      } catch (err) {
+        alert('An error occurred while booking ticket. Please try again.');
+        console.error(err);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fa-solid fa-ticket"></i> Submit & Get Ticket (৳300 BDT)';
+        }
+      }
+    }
+
+    function closeTicketSuccessModal() {
+      const modal = document.getElementById('ticketSuccessModal');
+      if (modal) modal.classList.remove('open');
+      window.location.href = 'index.html';
+    }
+
+    function copyTicketBkashNumber() {
+      const numText = document.getElementById('bkashNumberTicket')?.innerText || '+8801784726352';
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(numText);
+        alert('bKash Number copied to clipboard: ' + numText);
+      } else {
+        alert('bKash Number: ' + numText);
+      }
+    }
+
+    function copyTicketPassCode() {
+      if (lastGeneratedTicketCode && navigator.clipboard) {
+        navigator.clipboard.writeText(lastGeneratedTicketCode);
+        alert('Ticket Pass Code copied: ' + lastGeneratedTicketCode);
+      } else if (lastGeneratedTicketCode) {
+        alert('Ticket Code: ' + lastGeneratedTicketCode);
+      }
+    }
+  </script>
+
+</body>
+
+</html>

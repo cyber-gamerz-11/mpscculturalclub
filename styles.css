@@ -1471,6 +1471,7 @@ input[type="file"].form-input::file-selector-button:hover {
   padding: 2.2rem;
   overflow-y: auto;
   position: relative;
+  margin: auto;
   transform: scale(0.92);
   transition: transform 0.3s ease;
   -ms-overflow-style: none;  /* IE and Edge */
@@ -2061,6 +2062,7 @@ input[type="file"].form-input::file-selector-button:hover {
   align-items: center;
   gap: 0.8rem;
   margin-top: 0.2rem;
+  flex-wrap: wrap;
 }
 
 .bkash-number {
