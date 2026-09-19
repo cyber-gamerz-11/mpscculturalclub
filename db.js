@@ -942,6 +942,18 @@ async function syncLocalDataToSupabase() {
 /**
  * Supabase Secure Auth Login
  */
+async function hashPassword(str) {
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch (e) {
+    return '';
+  }
+}
+
 async function authenticateAdmin(emailOrId, password) {
   if (supabaseClient) {
     try {
@@ -957,8 +969,9 @@ async function authenticateAdmin(emailOrId, password) {
     }
   }
 
-  // Secure Local Authentication Gate (Default Admin Gate)
-  if (emailOrId === 'admin' && password === 'Culturalclub#19651960') {
+  // Secure Local Authentication Gate (SHA-256 Hashed Password - No Plaintext in Inspect Element)
+  const passHash = await hashPassword(password);
+  if (emailOrId === 'admin' && passHash === '57bfd85f075ec30abcee37e52ae1b4b50ad8a3dd8fc0fc5bec837c7492ad4aa8') {
     return { success: true, user: { id: 'admin-local' } };
   }
   return { success: false };
