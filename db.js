@@ -958,7 +958,7 @@ async function authenticateAdmin(emailOrId, password) {
   }
 
   // Secure Local Authentication Gate (Default Admin Gate)
-  if (emailOrId === 'admin' && password === 'admin1976') {
+  if (emailOrId === 'admin' && password === 'Culturalclub#19651960') {
     return { success: true, user: { id: 'admin-local' } };
   }
   return { success: false };
